@@ -3,21 +3,13 @@ syntax = "proto3";
 package coteacher.v1;
 
 service HealthcheckService {
-  rpc Unary(UnaryRequest) returns (UnaryResponse);
-  rpc ServerStreaming(ServerStreamingRequest)
-      returns (stream ServerStreamingResponse);
-  rpc ClientStreaming(stream ClientStreamingRequest)
-      returns (ClientStreamingResponse);
-  rpc BidirectionalStreaming(stream BidirectionalStreamingRequest)
-      returns (stream BidirectionalStreamingResponse);
+  rpc Ping(PingRequest) returns (PingResponse);
 }
 
-message UnaryRequest { string msg = 1; }
-message UnaryResponse { string msg = 1; }
-message ServerStreamingRequest { string msg = 1; }
-message ServerStreamingResponse { string msg = 1; }
-message ClientStreamingRequest { string msg = 1; }
-message ClientStreamingResponse { string msg = 1; }
-message BidirectionalStreamingRequest { string msg = 1; }
-message BidirectionalStreamingResponse { string msg = 1; }
+message PingRequest {
+  string name = 1;
+}
 
+message PingResponse {
+  string message = 1;
+}
