@@ -9,7 +9,7 @@ import {
   chakra,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { FaTwitter, FaYoutube, FaInstagram } from 'react-icons/fa'
+import { FaTwitter, FaGithub} from 'react-icons/fa'
 
 
 const ListHeader = ({ children }: { children: ReactNode }) => {
@@ -122,11 +122,8 @@ export default function LargeWithAppLinksAndSocial() {
             <SocialButton label={'Twitter'} href={'#'}>
               <FaTwitter />
             </SocialButton>
-            <SocialButton label={'YouTube'} href={'#'}>
-              <FaYoutube />
-            </SocialButton>
-            <SocialButton label={'Instagram'} href={'#'}>
-              <FaInstagram />
+            <SocialButton label={'GitHub'} href={'#'}>
+              <FaGithub />
             </SocialButton>
           </Stack>
         </Container>
