@@ -1,8 +1,9 @@
 import React from 'react';
-import { ChakraProvider, Button, Text, VStack, Image, Center, Container } from '@chakra-ui/react';
+import { ChakraProvider, Button, Text, VStack, Image, Center, Container, useDisclosure, Modal } from '@chakra-ui/react';
 import theme from '@/theme'; // Import custom theme
 import LargeWithAppLinksAndSocial from '@/components/footer';
 import app_icon from '@/images/app-icon.svg';
+import StudentAuth from '@/components/modal/StudentAuth';
 
 // ボタンのプロパティの型定義
 type LoginButtonProps = {
@@ -29,6 +30,8 @@ const IntroductionText = () => (
 );
 
 const HomeView = () => {
+  const { isOpen, onClose}  = useDisclosure();
+
   return (
     <ChakraProvider theme={theme}>
       <Center py={5}>
@@ -42,7 +45,11 @@ const HomeView = () => {
           </VStack>
         </Container>
       </Center>
+
       <LargeWithAppLinksAndSocial />
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <StudentAuth onClose={onClose} />
+      </Modal>
     </ChakraProvider>
   );
 }
