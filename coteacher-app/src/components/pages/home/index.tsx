@@ -7,12 +7,13 @@ import StudentAuth from '@/components/modal/StudentAuth';
 
 // ボタンのプロパティの型定義
 type LoginButtonProps = {
-  children: React.ReactNode; // ReactNodeからReact.ReactNodeに変更
+  children: React.ReactNode;
+  onClick?: () => void; // ボタンクリックのためのオプショナルなonClickハンドラーを追加
 };
 
 // ログインボタンコンポーネント
-const LoginButton: React.FC<LoginButtonProps> = ({ children }) => (
-  <Button colorScheme="teal" size="lg" borderRadius="30px" variant="outline">
+const LoginButton: React.FC<LoginButtonProps> = ({ children, onClick }) => (
+  <Button onClick={onClick} colorScheme="teal" size="lg" borderRadius="30px" variant="outline">
     {children}
   </Button>
 );
@@ -25,12 +26,12 @@ const IntroductionText = () => (
     <br /><br />
     生徒は、自分の学習スタイルやペースに合わせて、先生の用意した人工知能と対話することができます。
     <br /><br />
-    私たちの目標は、教育の質を高め、学習の可能性を広げることです。あなたの先生を通じて、学習はもっと柔軟で、アクセスしやすく、そして楽しくなります。
+  私たちの目標は、教育の質を高め、学習の可能性を広げることです。あなたの先生を通じて、学習はもっと柔軟で、アクセスしやすく、そして楽しくなります。
   </Text>
 );
 
 const HomeView = () => {
-  const { isOpen, onClose}  = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <ChakraProvider theme={theme}>
@@ -40,16 +41,15 @@ const HomeView = () => {
             <Image src={app_icon.src} alt="logo" boxSize="200px" />
             <Text fontSize="4xl">あなたの先生</Text>
             <LoginButton>先生ログイン</LoginButton>
-            <LoginButton>生徒ログイン</LoginButton>
+            <LoginButton onClick={onOpen}>生徒ログイン</LoginButton>
+            <Modal isOpen={isOpen} onClose={onClose} isCentered>
+              <StudentAuth onClose={onClose} />
+            </Modal>
             <IntroductionText />
           </VStack>
         </Container>
       </Center>
-
       <LargeWithAppLinksAndSocial />
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <StudentAuth onClose={onClose} />
-      </Modal>
     </ChakraProvider>
   );
 }
