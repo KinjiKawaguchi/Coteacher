@@ -11,15 +11,6 @@ import {
 } from '@chakra-ui/react'
 import { FaTwitter, FaGithub} from 'react-icons/fa'
 
-
-const ListHeader = ({ children }: { children: ReactNode }) => {
-  return (
-    <Text fontWeight={'500'} fontSize={'lg'} mb={2}>
-      {children}
-    </Text>
-  )
-}
-
 const SocialButton = ({
   children,
   label,
@@ -59,47 +50,20 @@ export default function LargeWithAppLinksAndSocial() {
       <Container as={Stack} maxW={'6xl'} py={10}>
         <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={8}>
           <Stack align={'flex-start'}>
-            <ListHeader>Company</ListHeader>
             <Box as="a" href={'#'}>
-              About Us
+              ホーム
             </Box>
             <Box as="a" href={'#'}>
-              Blog
-            </Box>
-            <Box as="a" href={'#'}>
-              Careers
-            </Box>
-            <Box as="a" href={'#'}>
-              Contact Us
+              問い合わせ
             </Box>
           </Stack>
 
           <Stack align={'flex-start'}>
-            <ListHeader>Support</ListHeader>
             <Box as="a" href={'#'}>
-              Help Center
+              規約
             </Box>
             <Box as="a" href={'#'}>
-              Safety Center
-            </Box>
-            <Box as="a" href={'#'}>
-              Community Guidelines
-            </Box>
-          </Stack>
-
-          <Stack align={'flex-start'}>
-            <ListHeader>Legal</ListHeader>
-            <Box as="a" href={'#'}>
-              Cookies Policy
-            </Box>
-            <Box as="a" href={'#'}>
-              Privacy Policy
-            </Box>
-            <Box as="a" href={'#'}>
-              Terms of Service
-            </Box>
-            <Box as="a" href={'#'}>
-              Law Enforcement
+              ポリシー
             </Box>
           </Stack>
         </SimpleGrid>
