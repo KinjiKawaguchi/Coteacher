@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import { ChakraProvider, Button, Text, VStack, Image, Center, Container, useDisclosure, Modal } from '@chakra-ui/react';
 import theme from '@/theme'; // Import custom theme
@@ -26,12 +27,12 @@ const IntroductionText = () => (
     <br /><br />
     生徒は、自分の学習スタイルやペースに合わせて、先生の用意した人工知能と対話することができます。
     <br /><br />
-  私たちの目標は、教育の質を高め、学習の可能性を広げることです。あなたの先生を通じて、学習はもっと柔軟で、アクセスしやすく、そして楽しくなります。
+    私たちの目標は、教育の質を高め、学習の可能性を広げることです。あなたの先生を通じて、学習はもっと柔軟で、アクセスしやすく、そして楽しくなります。
   </Text>
 );
 
 const HomeView = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure(); 
 
   return (
     <ChakraProvider theme={theme}>
