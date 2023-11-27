@@ -1,24 +1,24 @@
 package main
 
 import (
-  "database/sql"
-  "log"
-  "os"
+	"os"
 
-  _ "github.com/go-sql-driver/mysql"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-    db, err := sql.Open("mysql", os.Getenv("DSN"))
-    if err != nil {
-        log.Fatalf("failed to connect: %v", err)
-    }
-    defer db.Close()
+	r := gin.Default()
 
-    if err := db.Ping(); err != nil {
-        log.Fatalf("failed to ping: %v", err)
-    }
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
 
-    log.Println("Successfully connected to PlanetScale!")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Cloud Run以外でのデフォルトポート
+	}
+
+	r.Run(":" + port)
 }
-
