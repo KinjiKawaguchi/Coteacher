@@ -34,17 +34,32 @@ func main() {
 
 	// Build router & define routes
 	router := gin.Default()
+	router.Use(CORSMiddleware()) // CORSミドルウェアの追加
 	router.GET("/CheckAcountExist/:email", CheckAcountExist)
 
 	// Run the router
 	router.Run()
 }
 
+// CORSMiddleware はCORSリクエストを許可するミドルウェアです。
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*") // すべてのオリジンを許可
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(200)
+		} else {
+			c.Next()
+		}
+	}
+}
+
 func CheckAcountExist(c *gin.Context) {
 	email := c.Param("email")
 	email = strings.ReplaceAll(email, "/", "")
 
-	// No need to convert email to an integer.
 	var student Student
 	query := `SELECT * FROM Student WHERE email = ?`
 	err := db.QueryRow(query, email).Scan(&student.StudentID, &student.Email, &student.Name)
@@ -58,3 +73,4 @@ func CheckAcountExist(c *gin.Context) {
 		})
 	}
 }
+
