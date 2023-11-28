@@ -4,7 +4,8 @@ import { extendTheme } from '@chakra-ui/react';
 const theme = extendTheme({
   fonts: {
     body: 'Inter, GenJyuuGothicL, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif',
-    heading: 'Inter, GenJyuuGothicL, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif',
+    heading:
+      'Inter, GenJyuuGothicL, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif',
   },
 });
 
