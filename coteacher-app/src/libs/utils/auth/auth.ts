@@ -1,6 +1,7 @@
 import { getAuth, sendSignInLinkToEmail } from 'firebase/auth';
 import toast from '@/libs/utils/toast/index';
 import { LOGIN_LINK_URL } from '@/constants';
+import '@/libs/utils/auth/FirebaseConfig';
 
 export const sendEmailLink = async (email: string) => {
   const actionCodeSettings = {
@@ -10,7 +11,15 @@ export const sendEmailLink = async (email: string) => {
 
   try {
     console.log(email);
-    await sendSignInLinkToEmail(getAuth(), email, actionCodeSettings);
+    const auth = getAuth();
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings)
+      .then(() => {
+        window.localStorage.setItem('email', email);
+      })
+      .catch((error) => {
+        toast({ status: 'error', title: 'エラーが発生しました' });
+        return;
+      });
     toast({
       status: 'success',
       title: 'メールを送信しました',
