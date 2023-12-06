@@ -4,7 +4,7 @@ import { auth } from '@/libs/utils/auth/FirebaseConfig'; // Firebase設定のイ
 import { checkStudentExist } from '@/libs/services/api'; // アカウント確認APIのインポート
 
 const withAuth: (Component: React.FC<any>) => React.FC<any> = (Component) => {
-  return (props: any) => {
+  const WithAuthComponent: React.FC<any> = (props) => {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
@@ -23,7 +23,7 @@ const withAuth: (Component: React.FC<any>) => React.FC<any> = (Component) => {
 
       // コンポーネントのアンマウント時にリスナーを解除
       return () => unsubscribe();
-    }, []);
+    }, [router]);
 
     if (isLoading) {
       return <div>Loading...</div>;
@@ -31,6 +31,12 @@ const withAuth: (Component: React.FC<any>) => React.FC<any> = (Component) => {
 
     return <Component {...props} />;
   };
+
+  WithAuthComponent.displayName = `withAuth(${
+    Component.displayName || Component.name
+  })`;
+
+  return WithAuthComponent;
 };
 
 export default withAuth;

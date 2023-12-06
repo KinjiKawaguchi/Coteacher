@@ -6,7 +6,7 @@ import { checkStudentExist } from '@/libs/services/api'; // アカウント確�
 const withAuthAndAccountCheck: (Component: React.FC<any>) => React.FC<any> = (
   Component
 ) => {
-  return (props: any) => {
+  const WithAuthAndAccountCheck: React.FC<any> = (props) => {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
@@ -30,7 +30,7 @@ const withAuthAndAccountCheck: (Component: React.FC<any>) => React.FC<any> = (
 
       // コンポーネントのアンマウント時にリスナーを解除
       return () => unsubscribe();
-    }, []);
+    }, [router]);
 
     if (isLoading) {
       return <div>Loading...</div>;
@@ -38,6 +38,12 @@ const withAuthAndAccountCheck: (Component: React.FC<any>) => React.FC<any> = (
 
     return <Component {...props} />;
   };
+
+  WithAuthAndAccountCheck.displayName = `withAuthAndAccountCheck(${
+    Component.displayName || Component.name || 'Component'
+  })`;
+
+  return WithAuthAndAccountCheck;
 };
 
 export default withAuthAndAccountCheck;
