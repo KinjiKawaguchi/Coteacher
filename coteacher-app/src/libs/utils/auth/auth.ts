@@ -10,24 +10,16 @@ export const sendEmailLink = async (email: string) => {
   };
 
   try {
-    console.log(email);
     const auth = getAuth();
-    await sendSignInLinkToEmail(auth, email, actionCodeSettings)
-      .then(() => {
-        window.localStorage.setItem('email', email);
-      })
-      .catch((error) => {
-        toast({ status: 'error', title: 'エラーが発生しました' });
-        return;
-      });
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+    window.localStorage.setItem('login-email', email);
     toast({
       status: 'success',
       title: 'メールを送信しました',
       description: 'メールを確認してログインしてください。',
     });
-    window.localStorage.setItem('emailForSignIn', email);
   } catch (error) {
-    console.error(error);
+    console.error('Error sending sign-in email link:', error);
     toast({ status: 'error', title: 'エラーが発生しました' });
   }
 };
