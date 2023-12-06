@@ -12,11 +12,12 @@ function Callback() {
   useEffect(() => {
     setIsLoading(true); // 認証プロセス開始時にisLoadingをtrueに設定
     if (isSignInWithEmailLink(auth, window.location.href)) {
-      const email = window.localStorage.getItem('email');
+      const email = window.localStorage.getItem('login-email');
       if (email) {
         signInWithEmailLink(auth, email, window.location.href)
           .then(() => {
-            window.localStorage.removeItem('email');
+            window.localStorage.setItem('email', email);
+            window.localStorage.removeItem('login-email');
             router.push('/RegisterStudent');
           })
           .catch((error) => {
