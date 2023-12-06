@@ -15,11 +15,29 @@ import (
 
 var db *sql.DB
 
-type Student struct {
-	StudentID uuid.UUID
+type Students struct {
+	ID uuid.UUID
 	Email     string
 	Name      string
 }
+
+type Teachers struct {
+	ID uuid.UUID
+	Email     string
+	Name      string
+}
+
+type Classes struct {
+	ID uuid.UUID
+	Name string
+	TeacherID uuid.UUID
+}
+
+type StudentClasses struct {
+	ClassID uuid.UUID
+	StudentID uuid.UUID
+}
+
 
 func main() {
 	// Load in the `.env` file
@@ -38,7 +56,8 @@ func main() {
 	router := gin.Default()
 	router.Use(CORSMiddleware()) // CORSミドルウェアの追加
 	router.GET("/Student/CheckAcountExist/:email", checkAcountExist)
-  router.POST("/Student/Create", createStudent) // ルーティングを変更
+  	router.POST("/Student/Create", createStudent) // ルーティングを変更
+	router.GET("/StudentClass/GetParticipatingClass", getParticipatingClass)
 	// Run the router
 	router.Run()
 }
@@ -62,9 +81,9 @@ func checkAcountExist(c *gin.Context) {
 	email := c.Param("email")
 	email = strings.ReplaceAll(email, "/", "")
 
-	var student Student
+	var student Students
 	query := `SELECT * FROM Student WHERE email = ?`
-	err := db.QueryRow(query, email).Scan(&student.StudentID, &student.Email, &student.Name)
+	err := db.QueryRow(query, email).Scan(&student.ID, &student.Email, &student.Name)
 	if err != nil {
 		c.JSON(404, gin.H{
 			"exist": false,
@@ -77,7 +96,7 @@ func checkAcountExist(c *gin.Context) {
 }
 
 func createStudent(c *gin.Context) {
-    var student Student
+    var student Students
 
     // クエリパラメーターからEmailとNameを取得
     email := c.Query("Email")
@@ -85,20 +104,23 @@ func createStudent(c *gin.Context) {
 
     // UUIDを生成
     for {
-        student.StudentID = uuid.New()
-        if !isUUIDExists(student.StudentID) {
+        student.ID = uuid.New()
+        if !isUUIDExists(student.ID) {
             break
         }
     }
 
     // データベースに生徒を追加
     query := `INSERT INTO Student (StudentID, Email, Name) VALUES (?, ?, ?)`
-    if _, err := db.Exec(query, student.StudentID, email, name); err != nil {
+    if _, err := db.Exec(query, student.ID, email, name); err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"message": "failed to create student"})
         return
     }
 
     c.JSON(http.StatusOK, gin.H{"message": "student created successfully"})
+}
+
+func getParticipatingClass(c *gin.Context) {
 }
 
 func isUUIDExists(id uuid.UUID) bool {
