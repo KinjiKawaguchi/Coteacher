@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -49,7 +48,7 @@ func main() {
 	// Build router & define routes
 	router := gin.Default()
 	router.Use(CORSMiddleware()) // CORSミドルウェアの追加
-	router.GET("/Student/CheckAcountExist/:email", checkAcountExist)
+	router.GET("/Student/CheckAcountExist", checkAcountExist)
   	router.POST("/Student/Create", createStudent) // ルーティングを変更
 	router.GET("/StudentClass/GetParticipatingClass", getParticipatingClasses)
 	// Run the router
@@ -72,8 +71,7 @@ func CORSMiddleware() gin.HandlerFunc {
 }
 
 func checkAcountExist(c *gin.Context) {
-	email := c.Param("email")
-	email = strings.ReplaceAll(email, "/", "")
+    email := c.Query("Email")
 
 	var student Student
 	query := `SELECT * FROM Students WHERE Email = ?`
@@ -116,6 +114,7 @@ func createStudent(c *gin.Context) {
 
 func getParticipatingClasses(c *gin.Context) {
 	studentID := c.Query("StudentID")
+	
 	var classes []Class
 	query := `SELECT * FROM Classes WHERE ID IN (SELECT ClassID FROM StudentClasses WHERE StudentID = ?)`
 	rows, err := db.Query(query, studentID)
