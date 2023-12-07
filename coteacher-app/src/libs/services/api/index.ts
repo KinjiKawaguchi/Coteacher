@@ -30,7 +30,7 @@ async function createStudent(name: string) {
   try {
     const data = await response.json();
     console.log(data);
-    return data;
+    return response;
   } catch (error) {
     console.error('Error parsing JSON:', error);
   }
