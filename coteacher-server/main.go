@@ -76,7 +76,7 @@ func checkAcountExist(c *gin.Context) {
 	email = strings.ReplaceAll(email, "/", "")
 
 	var student Student
-	query := `SELECT * FROM Students WHERE email = ?`
+	query := `SELECT * FROM Students WHERE Email = ?`
 	err := db.QueryRow(query, email).Scan(&student.ID, &student.Email, &student.Name)
 	if err != nil {
 		c.JSON(404, gin.H{
@@ -105,7 +105,7 @@ func createStudent(c *gin.Context) {
     }
 
     // データベースに生徒を追加
-    query := `INSERT INTO Students (StudentID, Email, Name) VALUES (?, ?, ?)`
+    query := `INSERT INTO Students (ID, Email, Name) VALUES (?, ?, ?)`
     if _, err := db.Exec(query, student.ID, email, name); err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"message": "failed to create student"})
         return
@@ -139,7 +139,7 @@ func getParticipatingClasses(c *gin.Context) {
 
 func isUUIDExists(id uuid.UUID) bool {
     var tempID uuid.UUID
-    query := `SELECT StudentID FROM Students WHERE StudentID = ?`
+    query := `SELECT ID FROM Students WHERE ID = ?`
     err := db.QueryRow(query, id).Scan(&tempID)
     return err == nil
 }
