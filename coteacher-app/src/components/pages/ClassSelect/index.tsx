@@ -1,7 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ChakraProvider, Center, Container, HStack } from '@chakra-ui/react';
+import {
+  ChakraProvider,
+  Center,
+  Container,
+  HStack,
+  Text,
+} from '@chakra-ui/react';
 import theme from '@/theme';
 import ClassBox from './ClassBox';
 import withAuthAndAccountCheck from '@/libs/utils/HOC/withAccountCheck';
@@ -16,26 +22,28 @@ type Class = {
 const ClassSelectView = () => {
   const [classes, setClasses] = useState<Class[]>([]);
 
+  const fetchClasses = async () => {
+    const { classes: resClasses } = await getParticipatingClass();
+    setClasses(resClasses || []);
+  };
+
   useEffect(() => {
-    const fetchClasses = async () => {
-      const res = await getParticipatingClass();
-      if (res && res.classes) {
-        setClasses(res.classes);
-      }
-    };
     fetchClasses();
   }, []);
+
+  const memoizedClasses = React.useMemo(() => classes, [classes]);
 
   return (
     <ChakraProvider theme={theme}>
       <Center py={5}>
         <Container>
           <HStack spacing={4} wrap="wrap" justify="center">
-            {classes.map(cls => (
+            {memoizedClasses.map(cls => (
               <ClassBox key={cls.ID} name={cls.Name} />
             ))}
             <ClassBox key="new-class" name="" />
           </HStack>
+          {!memoizedClasses.length && <Text>Loading...</Text>}
         </Container>
       </Center>
     </ChakraProvider>

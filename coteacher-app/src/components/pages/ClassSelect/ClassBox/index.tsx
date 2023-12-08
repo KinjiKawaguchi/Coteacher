@@ -6,16 +6,15 @@ interface ClassBoxProps {
   name: string;
 }
 
-const ClassBox: React.FC<ClassBoxProps> = ({ name }) => {
-  const bgColor = useColorModeValue('gray.100', 'gray.600');
-  const textColor = useColorModeValue('gray.800', 'white');
-  name = name === '' ? '+' : name;
+const ClassBox = ({ name }: ClassBoxProps) => {
+  const bg = useColorModeValue('gray.100', 'gray.600');
+  const text = useColorModeValue('gray.800', 'white');
 
   return (
     <Box
       p={4}
-      w={['150px', '200px']} // 幅を固定
-      bg={bgColor}
+      w={['150px', '200px']}
+      bg={bg}
       boxShadow="md"
       borderRadius="lg"
       m={2}
@@ -23,9 +22,9 @@ const ClassBox: React.FC<ClassBoxProps> = ({ name }) => {
       _hover={{ boxShadow: 'lg', transform: 'scale(1.05)' }}
       role="group"
     >
-      <FaBook size="24" color={textColor} aria-hidden="true" />
-      <Text fontSize={['md', 'lg']} fontWeight="bold" color={textColor}>
-        {name}
+      <FaBook size="24" color={text} aria-hidden="true" />
+      <Text fontSize={['md', 'lg']} fontWeight="bold" color={text}>
+        {name || '+'}
       </Text>
     </Box>
   );
