@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/libs/utils/auth/FirebaseConfig';
+import { checkStudentExist } from '@/libs/services/api';
 
 function Callback() {
   const router = useRouter();
@@ -15,12 +16,17 @@ function Callback() {
       const email = window.localStorage.getItem('login-email');
       if (email) {
         signInWithEmailLink(auth, email, window.location.href)
-          .then(() => {
+          .then(async () => {
             window.localStorage.setItem('email', email);
             window.localStorage.removeItem('login-email');
-            router.push('/RegisterStudent');
+            const isStudentExists = await checkStudentExist(email);
+            if (isStudentExists) {
+              router.push('/ClassSelect');
+            } else {
+              router.push('/RegisterStudent');
+            }
           })
-          .catch((error) => {
+          .catch(error => {
             console.error('Error signing in with email link', error);
           })
           .finally(() => {
@@ -33,7 +39,7 @@ function Callback() {
     } else {
       setIsLoading(false);
     }
-  }, []);
+  }, [router]); // Include the 'router' dependency in the dependency array
 
   if (isLoading) {
     return <div>読込中...</div>; // 直接「読込中」と表示

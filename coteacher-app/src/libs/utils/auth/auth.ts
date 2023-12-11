@@ -1,7 +1,7 @@
-import { getAuth, sendSignInLinkToEmail } from 'firebase/auth';
+import { sendSignInLinkToEmail } from 'firebase/auth';
 import toast from '@/libs/utils/toast/index';
 import { LOGIN_LINK_URL } from '@/constants';
-import '@/libs/utils/auth/FirebaseConfig';
+import { auth } from '@/libs/utils/auth/FirebaseConfig';
 
 export const sendEmailLink = async (email: string) => {
   const actionCodeSettings = {
@@ -10,7 +10,6 @@ export const sendEmailLink = async (email: string) => {
   };
 
   try {
-    const auth = getAuth();
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
     window.localStorage.setItem('login-email', email);
     toast({

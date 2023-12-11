@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from 'react';
+import React, { useState, ChangeEvent, KeyboardEvent, FC } from 'react';
 import { useRouter } from 'next/navigation';
 import withAuth from '@/libs/utils/HOC/withAuth';
 import theme from '@/theme';
@@ -12,33 +12,38 @@ import {
   VStack,
   Flex,
   Input,
+  Spinner,
 } from '@chakra-ui/react';
 
-function RegisterStudentView() {
-  const [name, setName] = React.useState('');
+const RegisterStudentView: FC = () => {
+  const [name, setName] = useState<string>('');
+  const [isRegistering, setIsRegistering] = useState<boolean>(false);
+  const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const navigator = useRouter();
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' && !isRegistered) {
       handleRegister();
     }
   };
 
   const handleRegister = async () => {
-    if (name.length >= 4) {
+    if (name.length >= 4 && !isRegistered) {
       try {
-        console.log(name);
+        setIsRegistering(true);
         const res = await createStudent(name);
-        if (res.status === 200) {
-          console.log(res);
+        if (res && res.ok) {
+          setIsRegistered(true);
           navigator.push('/ClassSelect');
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
+      } finally {
+        setIsRegistering(false);
       }
     }
   };
@@ -53,12 +58,19 @@ function RegisterStudentView() {
             value={name}
             onChange={handleNameChange}
             onKeyDown={handleKeyDown}
+            disabled={isRegistered}
           />
         </Flex>
-        <Button onClick={handleRegister}>登録</Button>
+        {isRegistering ? (
+          <Spinner />
+        ) : (
+          <Button onClick={handleRegister} disabled={isRegistered}>
+            登録
+          </Button>
+        )}
       </VStack>
     </ChakraProvider>
   );
-}
+};
 
 export default withAuth(RegisterStudentView);

@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -16,9 +15,21 @@ import (
 var db *sql.DB
 
 type Student struct {
-	StudentID uuid.UUID
+	ID uuid.UUID
 	Email     string
 	Name      string
+}
+
+type Teacher struct {
+	ID uuid.UUID
+	Email     string
+	Name      string
+}
+
+type Class struct {
+	ID uuid.UUID
+	Name string
+	TeacherID uuid.UUID
 }
 
 func main() {
@@ -37,8 +48,9 @@ func main() {
 	// Build router & define routes
 	router := gin.Default()
 	router.Use(CORSMiddleware()) // CORSミドルウェアの追加
-	router.GET("/Student/CheckAcountExist/:email", checkAcountExist)
-  router.POST("/Student/Create", createStudent) // ルーティングを変更
+	router.GET("/Student/CheckAcountExist", checkAcountExist)
+  	router.POST("/Student/Create", createStudent) // ルーティングを変更
+	router.GET("/StudentClass/GetParticipatingClass", getParticipatingClasses)
 	// Run the router
 	router.Run()
 }
@@ -59,12 +71,11 @@ func CORSMiddleware() gin.HandlerFunc {
 }
 
 func checkAcountExist(c *gin.Context) {
-	email := c.Param("email")
-	email = strings.ReplaceAll(email, "/", "")
+    email := c.Query("Email")
 
 	var student Student
-	query := `SELECT * FROM Student WHERE email = ?`
-	err := db.QueryRow(query, email).Scan(&student.StudentID, &student.Email, &student.Name)
+	query := `SELECT * FROM Students WHERE Email = ?`
+	err := db.QueryRow(query, email).Scan(&student.ID, &student.Email, &student.Name)
 	if err != nil {
 		c.JSON(404, gin.H{
 			"exist": false,
@@ -85,15 +96,15 @@ func createStudent(c *gin.Context) {
 
     // UUIDを生成
     for {
-        student.StudentID = uuid.New()
-        if !isUUIDExists(student.StudentID) {
+        student.ID = uuid.New()
+        if !isUUIDExists(student.ID) {
             break
         }
     }
 
     // データベースに生徒を追加
-    query := `INSERT INTO Student (StudentID, Email, Name) VALUES (?, ?, ?)`
-    if _, err := db.Exec(query, student.StudentID, email, name); err != nil {
+    query := `INSERT INTO Students (ID, Email, Name) VALUES (?, ?, ?)`
+    if _, err := db.Exec(query, student.ID, email, name); err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"message": "failed to create student"})
         return
     }
@@ -101,9 +112,33 @@ func createStudent(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{"message": "student created successfully"})
 }
 
+func getParticipatingClasses(c *gin.Context) {
+	studentID := c.Query("StudentID")
+	
+	var classes []Class
+	query := `SELECT * FROM Classes WHERE ID IN (SELECT ClassID FROM StudentClasses WHERE StudentID = ?)`
+	rows, err := db.Query(query, studentID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "failed to get participating class"})
+		return
+	} else {
+		// デバッグ出力
+		for rows.Next() {
+			var class Class
+			err := rows.Scan(&class.ID, &class.Name, &class.TeacherID)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "failed to scan class"})
+				return
+			}
+			classes = append(classes, class)
+		}
+		c.JSON(http.StatusOK, gin.H{"classes": classes})
+	}
+}
+
 func isUUIDExists(id uuid.UUID) bool {
     var tempID uuid.UUID
-    query := `SELECT StudentID FROM Student WHERE StudentID = ?`
+    query := `SELECT ID FROM Students WHERE ID = ?`
     err := db.QueryRow(query, id).Scan(&tempID)
     return err == nil
 }
