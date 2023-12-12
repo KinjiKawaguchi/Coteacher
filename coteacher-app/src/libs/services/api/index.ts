@@ -1,7 +1,7 @@
 async function checkStudentExist(email: string) {
   // const API_URL = process.env.API_URL!;
   const response = await fetch(
-    `https://api-image-pgfe7sqiia-an.a.run.app/Student/CheckAcountExist?Email=${email}`,
+    `https://api-image-pgfe7sqiia-an.a.run.app/Student/CheckAccountExist?Email=${email}`,
     {
       method: 'GET',
     }
