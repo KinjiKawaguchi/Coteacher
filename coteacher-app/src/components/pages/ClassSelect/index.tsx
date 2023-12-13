@@ -7,11 +7,14 @@ import {
   Container,
   HStack,
   Text,
+  useDisclosure,
+  Modal,
 } from '@chakra-ui/react';
 import theme from '@/theme';
 import ClassBox from './ClassBox';
 import withAuthAndAccountCheck from '@/libs/utils/HOC/withAccountCheck';
 import { getParticipatingClass } from '@/libs/services/api';
+import ParticipateClass from '@/components/modal/ParticipateClass';
 
 type Class = {
   ID: string;
@@ -33,6 +36,8 @@ const ClassSelectView = () => {
 
   const memoizedClasses = React.useMemo(() => classes, [classes]);
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <ChakraProvider theme={theme}>
       <Center py={5}>
@@ -41,7 +46,10 @@ const ClassSelectView = () => {
             {memoizedClasses.map(cls => (
               <ClassBox key={cls.ID} name={cls.Name} />
             ))}
-            <ClassBox key="new-class" name="" />
+            <ClassBox key="new-class" name="" onClick={onOpen} />{' '}
+            <Modal isOpen={isOpen} onClose={onClose} isCentered>
+              <ParticipateClass onClose={onClose} />
+            </Modal>
           </HStack>
           {!memoizedClasses.length && <Text>Loading...</Text>}
         </Container>
