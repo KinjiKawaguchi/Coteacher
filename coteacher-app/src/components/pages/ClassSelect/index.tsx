@@ -48,7 +48,7 @@ const ClassSelectView = () => {
             ))}
             <ClassBox key="new-class" name="" onClick={onOpen} />{' '}
             <Modal isOpen={isOpen} onClose={onClose} isCentered>
-              <ParticipateClass onClose={onClose} />
+              <ParticipateClass onClose={onClose} fetchClasses={fetchClasses} />
             </Modal>
           </HStack>
           {!memoizedClasses.length && <Text>Loading...</Text>}
