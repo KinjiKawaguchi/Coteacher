@@ -12,7 +12,6 @@ import StudentAuth from '@/components/modal/StudentAuth';
 import app_icon from '@/images/app-icon.svg';
 import theme from '@/theme';
 import { useRouter } from 'next/navigation';
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 type AuthSectionProps = {
   isAuthenticated: boolean;

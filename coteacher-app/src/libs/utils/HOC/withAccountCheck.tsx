@@ -1,42 +1,59 @@
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { auth } from '@/libs/utils/auth/FirebaseConfig'; // Firebase設定のインポート
-import { checkStudentExist } from '@/libs/services/api'; // アカウント確認APIのインポート
+import { useRouter } from 'next/router'; // Corrected import
+import { auth } from '@/libs/utils/auth/FirebaseConfig';
+import { checkStudentExist } from '@/libs/services/api';
+import { Spinner } from '@chakra-ui/react'; // Chakra UI Spinner import
 
-const withAuthAndAccountCheck: (
-  Component: React.FC<any>
-) => React.FC<any> = Component => {
-  const WithAuthAndAccountCheck: React.FC<any> = props => {
+const withAuthAndAccountCheck = <P extends object>(
+  Component: React.ComponentType<P>
+): React.FC<P> => {
+  const WithAuthAndAccountCheck: React.FC<P> = props => {
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null); // Error state
     const router = useRouter();
 
     useEffect(() => {
       const unsubscribe = auth.onAuthStateChanged(async user => {
         if (user) {
-          // ユーザーがログインしている場合の処理
           if (user.email) {
-            const isStudentExists = await checkStudentExist(user.email);
-            if (!isStudentExists) {
-              router.push('/RegisterStudent');
-            } else {
+            try {
+              const isStudentExists = await checkStudentExist(user.email);
+              if (!isStudentExists) {
+                router.push('/RegisterStudent');
+              } else {
+                setIsLoading(false);
+              }
+            } catch (err) {
+              console.error(err);
+              setError(
+                err instanceof Error ? err.message : 'An error occurred'
+              );
               setIsLoading(false);
             }
-          } else {
-            // ユーザーがログインしていない場合の処理
-            router.push('/');
           }
+        } else {
+          router.push('/');
+          setIsLoading(false);
         }
       });
 
-      // コンポーネントのアンマウント時にリスナーを解除
       return () => unsubscribe();
     }, [router]);
 
     if (isLoading) {
-      return <div>Loading...</div>;
+      return (
+        <div>
+          <Spinner /> {/* Chakra UI Spinner */}
+          <p>Loading...</p>
+        </div>
+      );
     }
 
-    return <Component {...props} />;
+    if (error) {
+      return <div>Error: {error}</div>; // Error display
+    }
+
+    return <Component {...(props as P)} />;
   };
 
   WithAuthAndAccountCheck.displayName = `withAuthAndAccountCheck(${
