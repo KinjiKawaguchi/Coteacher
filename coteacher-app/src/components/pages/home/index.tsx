@@ -43,7 +43,7 @@ const HomeView = () => {
       <Container maxWidth="container.sm">
         <VStack spacing={8} textAlign="center">
           <AuthSection
-            isAuthenticated={true}
+            isAuthenticated={isAuthenticated}
             onOpen={onOpen}
             isOpen={isOpen}
             onClose={onClose}
