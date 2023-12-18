@@ -1,6 +1,6 @@
 import { ChakraProvider, Flex, HStack } from '@chakra-ui/react';
 import React from 'react';
-import UserCard from '@/components/ui/userCard';
+import UserCard from '@/components/elements/UserCard';
 import theme from '@/theme'; // Import custom theme
 
 const UserHeader = () => {

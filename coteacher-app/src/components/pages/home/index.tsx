@@ -8,7 +8,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import theme from '@/theme'; // Import custom theme
-import LargeWithAppLinksAndSocial from '@/components/footer';
+import LargeWithAppLinksAndSocial from '@/components/layout/footer';
 import AuthSection from '@/components/pages/home/AuthSection';
 import { auth } from '@/libs/utils/auth/FirebaseConfig'; // Import Firebase config
 
