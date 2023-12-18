@@ -14,3 +14,14 @@ func IsUUIDExists(db *sql.DB, tableName string, id uuid.UUID) bool {
 	err := db.QueryRow(query, id).Scan(&tempID)
 	return err == nil
 }
+
+func GenerateUUID(db *sql.DB, tableName string) uuid.UUID {
+	var id uuid.UUID
+	for {
+		id = uuid.New()
+		if !IsUUIDExists(db, tableName, id) {
+			break
+		}
+	}
+	return id
+}

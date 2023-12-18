@@ -11,8 +11,8 @@ func SetupRouter(router *gin.Engine, handler *handlers.Handler) {
 	router.Use(handlers.CORSMiddleware())
 
 	// 生徒関連のルート
-	router.GET("/Student/CheckAccountExist", handler.CheckAcountExist)
-	router.POST("/Student/Create", handler.CreateStudent)
-	router.GET("/StudentClass/GetParticipatingClass", handler.GetParticipatingClasses)
-	router.GET("/StudentClass/ParticipateClass", handler.ParticipateClass)
+	router.GET("/User/Get", handler.GetUser)
+	router.POST("/User/Create", handler.CreateUser)
+	router.GET("/StudentClass/GetList", handler.GetParticipatingClasses)
+	router.GET("/StudentClass/Create", handler.ParticipateClass)
 }
