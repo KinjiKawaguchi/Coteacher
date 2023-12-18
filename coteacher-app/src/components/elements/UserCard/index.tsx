@@ -60,10 +60,10 @@ const UserCard = () => {
         <PopoverContent>
           <Button
             onClick={() => {
-              localStorage.clear();
               auth.signOut();
+              setIsUserPresent(false);
+              localStorage.clear();
               router.push('/');
-              window.location.reload();
             }}
           >
             Logout
