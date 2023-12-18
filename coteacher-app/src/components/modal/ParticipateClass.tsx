@@ -57,7 +57,7 @@ export default function ParticipateClass({
         // Error toasts
         let toastStatus = 'error';
         let toastTitle = 'Error';
-        let toastDescription = res.error;
+        const toastDescription = res.error;
 
         if (res.status === 404) {
           toastTitle = '無効なコードです。';

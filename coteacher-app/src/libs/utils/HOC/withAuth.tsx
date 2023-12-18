@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { auth } from '@/libs/utils/auth/FirebaseConfig'; // Firebase設定のインポート
-import { checkStudentExist } from '@/libs/services/api'; // アカウント確認APIのインポート
+import { useRouter } from 'next/navigation'; // Corrected import
+import { auth } from '@/libs/utils/auth/FirebaseConfig'; // Firebase configuration import
+import { checkStudentExist } from '@/libs/services/api'; // Account check API import
 
-const withAuth: (Component: React.FC<any>) => React.FC<any> = (Component) => {
-  const WithAuthComponent: React.FC<any> = (props) => {
+// Define a type for the component props if known, or use generics for flexibility
+const withAuth = <P extends object>(
+  Component: React.ComponentType<P>
+): React.FC<P> => {
+  const WithAuthComponent: React.FC<P> = props => {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
-      const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      const unsubscribe = auth.onAuthStateChanged(async user => {
         if (user?.email) {
           if (await checkStudentExist(user.email)) {
             router.push('/ClassSelect');
@@ -21,7 +24,7 @@ const withAuth: (Component: React.FC<any>) => React.FC<any> = (Component) => {
         }
       });
 
-      // コンポーネントのアンマウント時にリスナーを解除
+      // Unsubscribe the listener when the component unmounts
       return () => unsubscribe();
     }, [router]);
 
@@ -29,11 +32,11 @@ const withAuth: (Component: React.FC<any>) => React.FC<any> = (Component) => {
       return <div>Loading...</div>;
     }
 
-    return <Component {...props} />;
+    return <Component {...(props as P)} />;
   };
 
   WithAuthComponent.displayName = `withAuth(${
-    Component.displayName || Component.name
+    Component.displayName || Component.name || 'Component'
   })`;
 
   return WithAuthComponent;

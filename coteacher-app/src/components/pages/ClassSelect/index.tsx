@@ -3,10 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import {
   ChakraProvider,
-  Center,
   Container,
   HStack,
-  Text,
   useDisclosure,
   Modal,
 } from '@chakra-ui/react';
@@ -15,6 +13,7 @@ import ClassBox from './ClassBox';
 import withAuthAndAccountCheck from '@/libs/utils/HOC/withAccountCheck';
 import { getParticipatingClass } from '@/libs/services/api';
 import ParticipateClass from '@/components/modal/ParticipateClass';
+import UserHeader from '@/components/ui/userHeader';
 
 type Class = {
   ID: string;
@@ -40,20 +39,18 @@ const ClassSelectView = () => {
 
   return (
     <ChakraProvider theme={theme}>
-      <Center py={5}>
-        <Container>
-          <HStack spacing={4} wrap="wrap" justify="center">
-            {memoizedClasses.map(cls => (
-              <ClassBox key={cls.ID} name={cls.Name} />
-            ))}
-            <ClassBox key="new-class" name="" onClick={onOpen} />{' '}
-            <Modal isOpen={isOpen} onClose={onClose} isCentered>
-              <ParticipateClass onClose={onClose} fetchClasses={fetchClasses} />
-            </Modal>
-          </HStack>
-          {!memoizedClasses.length && <Text>Loading...</Text>}
-        </Container>
-      </Center>
+      <Container maxWidth="container.sm">
+        <UserHeader />
+        <HStack spacing={4} wrap="wrap" justify="center">
+          {memoizedClasses.map(cls => (
+            <ClassBox key={cls.ID} name={cls.Name} />
+          ))}
+          <ClassBox key="new-class" name="" onClick={onOpen} />{' '}
+          <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <ParticipateClass onClose={onClose} fetchClasses={fetchClasses} />
+          </Modal>
+        </HStack>
+      </Container>
     </ChakraProvider>
   );
 };
