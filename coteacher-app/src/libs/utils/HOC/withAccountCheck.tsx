@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router'; // Corrected import
+import { useRouter } from 'next/navigation'; // Corrected import
 import { auth } from '@/libs/utils/auth/FirebaseConfig';
 import { checkStudentExist } from '@/libs/services/api';
 import { Spinner } from '@chakra-ui/react'; // Chakra UI Spinner import

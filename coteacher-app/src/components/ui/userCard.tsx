@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import default_user_icon from '@/images/default-avatar-profile-icon.jpg';
 import {
@@ -12,24 +13,36 @@ import {
   Portal,
 } from '@chakra-ui/react';
 import { auth } from '@/libs/utils/auth/FirebaseConfig';
-//router
 import { useRouter } from 'next/navigation';
 
 const UserCard = () => {
   const [userType, setUserType] = useState('');
   const [userName, setUserName] = useState('');
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isUserPresent, setIsUserPresent] = useState(false); // New state variable
   const router = useRouter();
 
   useEffect(() => {
-    setUserType(localStorage.getItem('UserType') || 'Guest');
-    setUserName(localStorage.getItem('UserName') || 'User');
+    if (typeof window !== 'undefined') {
+      const userID = localStorage.getItem('UserID');
+      if (userID === null) {
+        setIsUserPresent(false);
+        return;
+      }
+
+      setIsUserPresent(true);
+      setUserType(localStorage.getItem('UserType') || 'Guest');
+      setUserName(localStorage.getItem('UserName') || 'User');
+    }
   }, []);
 
   const displayName = `[${userType}] ${userName}`;
 
   const handleTogglePopover = () => setIsPopoverOpen(!isPopoverOpen);
 
+  if (!isUserPresent) {
+    return null; // Or return some fallback UI if needed
+  }
   return (
     <Popover isOpen={isPopoverOpen} onClose={() => setIsPopoverOpen(false)}>
       <PopoverTrigger>
@@ -50,6 +63,7 @@ const UserCard = () => {
               localStorage.clear();
               auth.signOut();
               router.push('/');
+              window.location.reload();
             }}
           >
             Logout

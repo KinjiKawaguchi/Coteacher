@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router'; // Corrected import
+import { useRouter } from 'next/navigation'; // Corrected import
 import { auth } from '@/libs/utils/auth/FirebaseConfig'; // Firebase configuration import
 import { checkStudentExist } from '@/libs/services/api'; // Account check API import
 
