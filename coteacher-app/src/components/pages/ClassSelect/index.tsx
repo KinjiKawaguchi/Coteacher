@@ -12,8 +12,8 @@ import theme from '@/theme';
 import ClassBox from './ClassBox';
 import withAuthAndAccountCheck from '@/libs/utils/HOC/withAccountCheck';
 import { getParticipatingClass } from '@/libs/services/api';
-import ParticipateClass from '@/components/modal/ParticipateClass';
-import UserHeader from '@/components/ui/userHeader';
+import ParticipateClass from '@/components/layout/modal/ParticipateClass';
+import UserHeader from '@/components/layout/header/UserHeader';
 
 type Class = {
   ID: string;

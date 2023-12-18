@@ -8,7 +8,7 @@ import {
   Image,
   Modal,
 } from '@chakra-ui/react';
-import StudentAuth from '@/components/modal/StudentAuth';
+import StudentAuth from '@/components/layout/modal/StudentAuth';
 import app_icon from '@/images/app-icon.svg';
 import theme from '@/theme';
 import { useRouter } from 'next/navigation';
