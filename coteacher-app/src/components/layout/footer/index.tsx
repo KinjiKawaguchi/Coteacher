@@ -10,7 +10,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { FaTwitter, FaGithub } from 'react-icons/fa';
-import UserCard from '@/components/ui/userCard';
+import UserCard from '@/components/elements/UserCard';
 
 const SocialButton = ({
   children,
