@@ -4,7 +4,7 @@ import "github.com/google/uuid"
 
 type User struct {
 	ID 	 uuid.UUID
-	Email    string
-	Name     string
+	Name    string
+	Email     string
 	UserType string
 }

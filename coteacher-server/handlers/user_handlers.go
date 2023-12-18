@@ -15,7 +15,7 @@ func (h *Handler) GetUser(c *gin.Context) {
 
 	var user models.User
 	query := `SELECT * FROM Users WHERE Email = ?`
-	err := h.DB.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.Name, &user.UserType)
+	err := h.DB.QueryRow(query, email).Scan(&user.ID, &user.Name, &user.Email, &user.UserType)
 
 	// SQLエラーの適切な処理
 	if err != nil {
@@ -49,7 +49,7 @@ func (h *Handler) CreateUser(c *gin.Context) {
 
 	// ユーザが既に存在するか確認
 	query := `SELECT * FROM Users WHERE Email = ?`
-	err := h.DB.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.Name, &user.UserType)
+	err := h.DB.QueryRow(query, email).Scan(&user.ID, &user.Name, &user.Email, &user.UserType)
 	if err == nil {
 		c.JSON(http.StatusConflict, gin.H{"message": "user already exists"})
 		return
