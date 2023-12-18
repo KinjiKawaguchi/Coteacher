@@ -1,21 +1,29 @@
 async function checkStudentExist(email: string) {
-  // const API_URL = process.env.API_URL!;
   const response = await fetch(
-    `https://api-image-pgfe7sqiia-an.a.run.app/Student/CheckAccountExist?Email=${email}`,
+    `https://api-image-pgfe7sqiia-an.a.run.app/User/Get?Email=${email}`,
     {
       method: 'GET',
     }
   );
   const data = await response.json();
-  console.log(data.exist);
-  return data.exist;
+  if (response.ok) {
+    localStorage.setItem('UserID', data.user.ID);
+    localStorage.setItem('UserEmail', data.user.Email);
+    localStorage.setItem('UserName', data.user.Name);
+    localStorage.setItem('UserType', data.user.UserType);
+    console.log(localStorage.getItem('UserID'));
+    return true;
+  } else {
+    // For error cases, include the status code and error message
+    return false;
+  }
 }
 
 async function createStudent(name: string) {
   const email = window.localStorage.getItem('email');
   // POSTリクエストに変更
   const response = await fetch(
-    `https://api-image-pgfe7sqiia-an.a.run.app/Student/Create?Email=${email}&Name=${name}`,
+    `https://api-image-pgfe7sqiia-an.a.run.app/User/Create?Email=${email}&Name=${name}&UserType=Student`,
     {
       method: 'POST',
     }
@@ -30,6 +38,11 @@ async function createStudent(name: string) {
   try {
     const data = await response.json();
     console.log(data);
+    localStorage.setItem('UserID', data.user.ID);
+    localStorage.setItem('UserEmail', data.user.Email);
+    localStorage.setItem('UserName', data.user.Name);
+    localStorage.setItem('UserType', data.user.UserType);
+    console.log(localStorage.getItem('UserID'));
     return response;
   } catch (error) {
     console.error('Error parsing JSON:', error);
@@ -37,11 +50,10 @@ async function createStudent(name: string) {
 }
 
 async function getParticipatingClass() {
-  // const StudentID = window.localStorage.getItem('StudentID');
-  const StudentID = 'e08397af-2d13-4814-b671-9831bb2e395b';
+  const StudentID = localStorage.getItem('UserID');
 
   const response = await fetch(
-    `https://api-image-pgfe7sqiia-an.a.run.app/StudentClass/GetParticipatingClass?StudentID=${StudentID}`,
+    `https://api-image-pgfe7sqiia-an.a.run.app/StudentClass/GetList?StudentID=${StudentID}`,
     {
       method: 'GET',
     }
@@ -49,7 +61,7 @@ async function getParticipatingClass() {
 
   if (!response.ok) {
     console.error('Response error:', response.status);
-    return;
+    return null;
   }
 
   try {
@@ -57,16 +69,16 @@ async function getParticipatingClass() {
     console.log(data);
     return data;
   } catch (error) {
-    console.error('Error parsing JSON:', error);
+    return null;
   }
 }
 
 async function participateClass(invitationCode: string) {
-  const StudentID = 'e08397af-2d13-4814-b671-9831bb2e395b';
+  const StudentID = localStorage.getItem('UserID');
 
   try {
     const response = await fetch(
-      `https://api-image-pgfe7sqiia-an.a.run.app/StudentClass/ParticipateClass?StudentID=${StudentID}&InvitationCode=${invitationCode}`,
+      `https://api-image-pgfe7sqiia-an.a.run.app/StudentClass/Create?StudentID=${StudentID}&InvitationCode=${invitationCode}`,
       {
         method: 'GET',
       }
@@ -83,8 +95,10 @@ async function participateClass(invitationCode: string) {
         error: data.message || 'An error occurred',
       };
     }
-  } catch (error: any) {
-    return { status: 'network-error', error: error.message || 'Network error' };
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Network error';
+    return { status: 'network-error', error: errorMessage };
   }
 }
 
