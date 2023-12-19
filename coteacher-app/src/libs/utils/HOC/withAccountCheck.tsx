@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // Corrected import
 import { auth } from '@/libs/utils/auth/FirebaseConfig';
-import { checkStudentExist } from '@/libs/services/api';
+import { checkUserExist } from '@/libs/services/api';
 import { Spinner } from '@chakra-ui/react'; // Chakra UI Spinner import
 
 const withAuthAndAccountCheck = <P extends object>(
@@ -17,9 +17,9 @@ const withAuthAndAccountCheck = <P extends object>(
         if (user) {
           if (user.email) {
             try {
-              const isStudentExists = await checkStudentExist(user.email);
-              if (!isStudentExists) {
-                router.push('/RegisterStudent');
+              const isUserExists = await checkUserExist(user.email);
+              if (!isUserExists) {
+                router.push('/UserRegister');
               } else {
                 setIsLoading(false);
               }

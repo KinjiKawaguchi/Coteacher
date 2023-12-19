@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/libs/utils/auth/FirebaseConfig';
-import { checkStudentExist } from '@/libs/services/api';
+import { checkUserExist } from '@/libs/services/api';
 
 function Callback() {
   const router = useRouter();
@@ -19,11 +19,11 @@ function Callback() {
           .then(async () => {
             window.localStorage.setItem('email', email);
             window.localStorage.removeItem('login-email');
-            const isStudentExists = await checkStudentExist(email);
-            if (isStudentExists) {
+            const isUserExists = await checkUserExist(email);
+            if (isUserExists) {
               router.push('/ClassSelect');
             } else {
-              router.push('/RegisterStudent');
+              router.push('/UserRegister');
             }
           })
           .catch(error => {

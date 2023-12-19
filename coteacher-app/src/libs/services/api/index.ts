@@ -1,12 +1,29 @@
-async function checkStudentExist(email: string) {
+async function getUser(email: string) {
   const response = await fetch(
     `https://api-image-pgfe7sqiia-an.a.run.app/User/Get?Email=${email}`,
     {
       method: 'GET',
     }
   );
-  const data = await response.json();
-  if (response.ok) {
+
+  if (!response.ok) {
+    console.error('Response error:', response.status);
+    return null;
+  }
+
+  try {
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error parsing JSON:', error);
+    return null;
+  }
+}
+
+async function checkUserExist(email: string) {
+  const data = await getUser(email!);
+  if (data.user.UserType === 'Teacher' || data.user.UserType === 'Student') {
     localStorage.setItem('UserID', data.user.ID);
     localStorage.setItem('UserEmail', data.user.Email);
     localStorage.setItem('UserName', data.user.Name);
@@ -14,7 +31,40 @@ async function checkStudentExist(email: string) {
     console.log(localStorage.getItem('UserID'));
     return true;
   } else {
-    // For error cases, include the status code and error message
+    return false;
+  }
+}
+
+async function checkStudentExist(email: string) {
+  const data = await getUser(email!);
+  if(!data) {
+    return false;
+  }
+  if (data.user.UserType === 'Student') {
+    localStorage.setItem('UserID', data.user.ID);
+    localStorage.setItem('UserEmail', data.user.Email);
+    localStorage.setItem('UserName', data.user.Name);
+    localStorage.setItem('UserType', data.user.UserType);
+    console.log(localStorage.getItem('UserID'));
+    return true;
+  } else {
+    return false;
+  }
+}
+
+async function checkTeacherExist(email: string) {
+  const data = await getUser(email!);
+  if(!data) {
+    return false;
+  }
+  if (data.user.UserType === 'Teacher') {
+    localStorage.setItem('UserID', data.user.ID);
+    localStorage.setItem('UserEmail', data.user.Email);
+    localStorage.setItem('UserName', data.user.Name);
+    localStorage.setItem('UserType', data.user.UserType);
+    console.log(localStorage.getItem('UserID'));
+    return true;
+  } else {
     return false;
   }
 }
@@ -103,6 +153,9 @@ async function participateClass(invitationCode: string) {
 }
 
 export {
+  getUser,
+  checkUserExist,
+  checkTeacherExist,
   checkStudentExist,
   createStudent,
   getParticipatingClass,

@@ -3,7 +3,7 @@ import toast from '@/libs/utils/toast/index';
 import { LOGIN_LINK_URL } from '@/constants';
 import { auth } from '@/libs/utils/auth/FirebaseConfig';
 
-export const sendEmailLink = async (email: string) => {
+export const sendEmailLink = async (email: string,userType: string) => {
   const actionCodeSettings = {
     url: LOGIN_LINK_URL,
     handleCodeInApp: true,
@@ -12,6 +12,7 @@ export const sendEmailLink = async (email: string) => {
   try {
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
     window.localStorage.setItem('login-email', email);
+    window.localStorage.setItem('login-userType', userType);
     toast({
       status: 'success',
       title: 'メールを送信しました',
