@@ -25,7 +25,6 @@ const IntroductionText = () => (
 );
 
 const HomeView = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -44,10 +43,7 @@ const HomeView = () => {
         <VStack spacing={8} textAlign="center">
           <AuthSection
             isAuthenticated={isAuthenticated}
-            onOpen={onOpen}
-            isOpen={isOpen}
-            onClose={onClose}
-          />
+         />
           <IntroductionText />
         </VStack>
       </Container>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ChakraProvider,
   Button,
@@ -9,15 +9,13 @@ import {
   Modal,
 } from '@chakra-ui/react';
 import StudentAuth from '@/components/layout/modal/StudentAuth';
+import TeacherAuth from '@/components/layout/modal/TeacherAuth';
 import app_icon from '@/images/app-icon.svg';
 import theme from '@/theme';
 import { useRouter } from 'next/navigation';
 
 type AuthSectionProps = {
   isAuthenticated: boolean;
-  onOpen: () => void;
-  onClose: () => void;
-  isOpen: boolean;
 };
 
 // ボタンのプロパティの型定義
@@ -41,11 +39,16 @@ const LoginButton: React.FC<LoginButtonProps> = ({ children, onClick }) => (
 
 const AuthSection: React.FC<AuthSectionProps> = ({
   isAuthenticated,
-  onOpen,
-  onClose,
-  isOpen,
 }) => {
   const router = useRouter();
+  const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
+  const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
+
+  const handleTeacherModalOpen = () => setIsTeacherModalOpen(true);
+  const handleTeacherModalClose = () => setIsTeacherModalOpen(false);
+
+  const handleStudentModalOpen = () => setIsStudentModalOpen(true);
+  const handleStudentModalClose = () => setIsStudentModalOpen(false);
 
   const navClassSelect = () => {
     router.push('/ClassSelect');
@@ -61,10 +64,13 @@ const AuthSection: React.FC<AuthSectionProps> = ({
             <LoginButton onClick={navClassSelect}>ダッシュボード</LoginButton>
           ) : (
             <>
-              <LoginButton>先生ログイン</LoginButton>
-              <LoginButton onClick={onOpen}>生徒ログイン</LoginButton>
-              <Modal isOpen={isOpen} onClose={onClose} isCentered>
-                <StudentAuth onClose={onClose} />
+              <LoginButton onClick={handleTeacherModalOpen}>先生ログイン</LoginButton>
+                <Modal isOpen={isTeacherModalOpen} onClose={handleTeacherModalClose} isCentered>
+                  <TeacherAuth onClose={handleTeacherModalClose} />
+                </Modal>
+              <LoginButton onClick={handleStudentModalOpen}>生徒ログイン</LoginButton>
+              <Modal isOpen={isStudentModalOpen} onClose={handleStudentModalClose} isCentered>
+                <StudentAuth onClose={handleStudentModalClose} />
               </Modal>
             </>
           )}

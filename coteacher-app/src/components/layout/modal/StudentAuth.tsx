@@ -42,7 +42,7 @@ export default function StudentAuth({ onClose }: StudentAuthProps) {
       });
       return;
     }
-    await sendEmailLink(email);
+    await sendEmailLink(email, 'Student');
   };
 
   return (
