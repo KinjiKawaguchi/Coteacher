@@ -21,7 +21,7 @@ type Class = {
   TeacherID: string;
 };
 
-const ClassSelectView = () => {
+const StudentDashBoard = () => {
   const [classes, setClasses] = useState<Class[]>([]);
 
   const fetchClasses = async () => {
@@ -55,4 +55,4 @@ const ClassSelectView = () => {
   );
 };
 
-export default withAuthAndAccountCheck(ClassSelectView);
+export default withAuthAndAccountCheck(StudentDashBoard);
