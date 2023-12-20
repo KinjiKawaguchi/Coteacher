@@ -38,7 +38,7 @@ const RegisterStudentView: FC = () => {
         const res = await createStudent(name);
         if (res && res.ok) {
           setIsRegistered(true);
-          navigator.push('/DashBoard');
+          navigator.push('/Classes');
         }
       } catch (error) {
         console.error(error);

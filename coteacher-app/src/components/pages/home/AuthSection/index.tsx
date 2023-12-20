@@ -48,8 +48,8 @@ const AuthSection: React.FC<AuthSectionProps> = ({ isAuthenticated }) => {
   const handleStudentModalOpen = () => setIsStudentModalOpen(true);
   const handleStudentModalClose = () => setIsStudentModalOpen(false);
 
-  const navDashBoard = () => {
-    router.push('/DashBoard');
+  const navClasses = () => {
+    router.push('/Classes');
   };
 
   return (
@@ -59,7 +59,7 @@ const AuthSection: React.FC<AuthSectionProps> = ({ isAuthenticated }) => {
           <Image src={app_icon.src} alt="logo" boxSize="200px" />
           <Text fontSize="4xl">あなたの先生</Text>
           {isAuthenticated ? (
-            <LoginButton onClick={navDashBoard}>ダッシュボード</LoginButton>
+            <LoginButton onClick={navClasses}>ダッシュボード</LoginButton>
           ) : (
             <>
               <LoginButton onClick={handleTeacherModalOpen}>

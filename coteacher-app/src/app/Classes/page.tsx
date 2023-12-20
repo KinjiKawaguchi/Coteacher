@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import StudentDashBoard from '@/components/pages/DashBoard/StudentDashBoard'; // Corrected import if needed
-import TeacherDashBoard from '@/components/pages/DashBoard/TeacherDashBoard';
+import StudentDashBoard from '@/components/pages/Classes/StudentDashBoard'; // Corrected import if needed
+import TeacherDashBoard from '@/components/pages/Classes/TeacherDashBoard';
 
 export default function DashBoard() {
   const [userType, setUserType] = useState('');
