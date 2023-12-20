@@ -37,7 +37,7 @@ async function checkUserExist(email: string) {
 
 async function checkStudentExist(email: string) {
   const data = await getUser(email!);
-  if(!data) {
+  if (!data) {
     return false;
   }
   if (data.user.UserType === 'Student') {
@@ -54,7 +54,7 @@ async function checkStudentExist(email: string) {
 
 async function checkTeacherExist(email: string) {
   const data = await getUser(email!);
-  if(!data) {
+  if (!data) {
     return false;
   }
   if (data.user.UserType === 'Teacher') {
@@ -152,6 +152,57 @@ async function participateClass(invitationCode: string) {
   }
 }
 
+async function CreateClassRequest(className: string) {
+  const TeacherID = localStorage.getItem('UserID');
+
+  try {
+    const response = await fetch(
+      `https://api-image-pgfe7sqiia-an.a.run.app/Class/Create?TeacherID=${TeacherID}&ClassName=${className}`,
+      {
+        method: 'POST',
+      }
+    );
+
+    const data = await response.json(); // Always parse the JSON response
+
+    if (response.ok) {
+      return { status: response.status, message: data.message };
+    } else {
+      // For error cases, include the status code and error message
+      return {
+        status: response.status,
+        error: data.message || 'An error occurred',
+      };
+    }
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Network error';
+    return { status: 'network-error', error: errorMessage };
+  }
+}
+
+async function getOwnClass() {
+  const TeacherID = localStorage.getItem('UserID');
+
+  try {
+    const response = await fetch(
+      `https://api-image-pgfe7sqiia-an.a.run.app/Class/GetList?TeacherID=${TeacherID}`,
+      {
+        method: 'GET',
+      }
+    );
+    const data = await response.json();
+
+    if (response.ok) {
+      return data;
+    }
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Network error';
+    return { status: 'network-error', error: errorMessage };
+  }
+}
+
 export {
   getUser,
   checkUserExist,
@@ -159,5 +210,7 @@ export {
   checkStudentExist,
   createStudent,
   getParticipatingClass,
+  CreateClassRequest,
   participateClass,
+  getOwnClass
 };
