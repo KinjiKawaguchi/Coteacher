@@ -6,7 +6,7 @@ import TeacherDashBoard from '@/components/pages/DashBoard/TeacherDashBoard';
 export default function DashBoard() {
   const [userType, setUserType] = useState('');
 
-  useEffect(() => {;
+  useEffect(() => {
     // Check if running in a browser environment
     if (typeof window !== 'undefined') {
       setUserType(localStorage.getItem('UserType') || '');

@@ -56,41 +56,41 @@ export default function TeacherAuth({ onClose }: TeacherAuthProps) {
     }
   };
 
-    return (
-      <>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>先生ログイン</ModalHeader>
-          <ModalCloseButton onClick={onClose} />
-          <ModalBody>
-            <VStack spacing={8} textAlign="center">
-              入力したメールアドレスにログインリンクを送信します
-              <Alert status="info">
-                <AlertIcon />
-                現在、あなたの先生では先生アカウントの新規登録を受け付けておりません。
-              </Alert>
-              <Input
-                placeholder="example@example.com"
-                value={email}
-                onChange={handleEmailChange}
-                onKeyDown={handleKeyDown}
-              />
-            </VStack>
-          </ModalBody>
-          <ModalFooter>
-            <Flex w="100%" justifyContent="center">
-              <Button
-                colorScheme="teal"
-                size="lg"
-                borderRadius="30px"
-                variant="outline"
-                onClick={handleSendEmailLink}
-              >
-                ログインリンクを送信
-              </Button>
-            </Flex>
-          </ModalFooter>
-        </ModalContent>
-      </>
-    );
+  return (
+    <>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>先生ログイン</ModalHeader>
+        <ModalCloseButton onClick={onClose} />
+        <ModalBody>
+          <VStack spacing={8} textAlign="center">
+            入力したメールアドレスにログインリンクを送信します
+            <Alert status="info">
+              <AlertIcon />
+              現在、あなたの先生では先生アカウントの新規登録を受け付けておりません。
+            </Alert>
+            <Input
+              placeholder="example@example.com"
+              value={email}
+              onChange={handleEmailChange}
+              onKeyDown={handleKeyDown}
+            />
+          </VStack>
+        </ModalBody>
+        <ModalFooter>
+          <Flex w="100%" justifyContent="center">
+            <Button
+              colorScheme="teal"
+              size="lg"
+              borderRadius="30px"
+              variant="outline"
+              onClick={handleSendEmailLink}
+            >
+              ログインリンクを送信
+            </Button>
+          </Flex>
+        </ModalFooter>
+      </ModalContent>
+    </>
+  );
 }

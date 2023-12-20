@@ -37,9 +37,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({ children, onClick }) => (
   </Button>
 );
 
-const AuthSection: React.FC<AuthSectionProps> = ({
-  isAuthenticated,
-}) => {
+const AuthSection: React.FC<AuthSectionProps> = ({ isAuthenticated }) => {
   const router = useRouter();
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
@@ -64,12 +62,24 @@ const AuthSection: React.FC<AuthSectionProps> = ({
             <LoginButton onClick={navDashBoard}>ダッシュボード</LoginButton>
           ) : (
             <>
-              <LoginButton onClick={handleTeacherModalOpen}>先生ログイン</LoginButton>
-                <Modal isOpen={isTeacherModalOpen} onClose={handleTeacherModalClose} isCentered>
-                  <TeacherAuth onClose={handleTeacherModalClose} />
-                </Modal>
-              <LoginButton onClick={handleStudentModalOpen}>生徒ログイン</LoginButton>
-              <Modal isOpen={isStudentModalOpen} onClose={handleStudentModalClose} isCentered>
+              <LoginButton onClick={handleTeacherModalOpen}>
+                先生ログイン
+              </LoginButton>
+              <Modal
+                isOpen={isTeacherModalOpen}
+                onClose={handleTeacherModalClose}
+                isCentered
+              >
+                <TeacherAuth onClose={handleTeacherModalClose} />
+              </Modal>
+              <LoginButton onClick={handleStudentModalOpen}>
+                生徒ログイン
+              </LoginButton>
+              <Modal
+                isOpen={isStudentModalOpen}
+                onClose={handleStudentModalClose}
+                isCentered
+              >
                 <StudentAuth onClose={handleStudentModalClose} />
               </Modal>
             </>

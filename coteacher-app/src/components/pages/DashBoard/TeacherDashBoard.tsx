@@ -27,7 +27,7 @@ const TeacherDashBoard = () => {
   const fetchClasses = async () => {
     const { classes: resClasses } = await getOwnClass();
     setClasses(resClasses || []);
-  }
+  };
 
   useEffect(() => {
     fetchClasses();

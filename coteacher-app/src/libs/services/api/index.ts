@@ -212,5 +212,5 @@ export {
   getParticipatingClass,
   CreateClassRequest,
   participateClass,
-  getOwnClass
+  getOwnClass,
 };

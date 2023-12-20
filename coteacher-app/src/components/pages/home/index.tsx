@@ -1,12 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import {
-  ChakraProvider,
-  Text,
-  VStack,
-  Container,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { ChakraProvider, Text, VStack, Container } from '@chakra-ui/react';
 import theme from '@/theme'; // Import custom theme
 import LargeWithAppLinksAndSocial from '@/components/layout/footer';
 import AuthSection from '@/components/pages/home/AuthSection';
@@ -41,9 +35,7 @@ const HomeView = () => {
     <ChakraProvider theme={theme}>
       <Container maxWidth="container.sm">
         <VStack spacing={8} textAlign="center">
-          <AuthSection
-            isAuthenticated={isAuthenticated}
-         />
+          <AuthSection isAuthenticated={isAuthenticated} />
           <IntroductionText />
         </VStack>
       </Container>
