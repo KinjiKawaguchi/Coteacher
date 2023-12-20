@@ -15,4 +15,7 @@ func SetupRouter(router *gin.Engine, handler *handlers.Handler) {
 	router.POST("/User/Create", handler.CreateUser)
 	router.GET("/StudentClass/GetList", handler.GetParticipatingClasses)
 	router.GET("/StudentClass/Create", handler.ParticipateClass)
+
+  router.POST("/Class/Create", handler.CreateClass)
+	router.GET("/Class/GetList", handler.GetClass)
 }
