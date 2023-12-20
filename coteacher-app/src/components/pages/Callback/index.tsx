@@ -21,7 +21,7 @@ function Callback() {
             window.localStorage.removeItem('login-email');
             const isUserExists = await checkUserExist(email);
             if (isUserExists) {
-              router.push('/ClassSelect');
+              router.push('/DashBoard');
             } else {
               router.push('/UserRegister');
             }

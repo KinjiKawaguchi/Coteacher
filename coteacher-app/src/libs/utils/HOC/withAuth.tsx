@@ -15,7 +15,7 @@ const withAuth = <P extends object>(
       const unsubscribe = auth.onAuthStateChanged(async user => {
         if (user?.email) {
           if (await checkUserExist(user.email)) {
-            router.push('/ClassSelect');
+            router.push('/DashBoard');
           }
           setIsLoading(false);
         } else {

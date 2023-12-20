@@ -11,9 +11,9 @@ import {
 import theme from '@/theme';
 import ClassBox from './ClassBox';
 import withAuthAndAccountCheck from '@/libs/utils/HOC/withAccountCheck';
-import { getParticipatingClass } from '@/libs/services/api';
-import ParticipateClass from '@/components/layout/modal/ParticipateClass';
+import { getOwnClass } from '@/libs/services/api';
 import UserHeader from '@/components/layout/header/UserHeader';
+import CreateClass from '@/components/layout/modal/CreateClass';
 
 type Class = {
   ID: string;
@@ -21,13 +21,13 @@ type Class = {
   TeacherID: string;
 };
 
-const ClassSelectView = () => {
+const TeacherDashBoard = () => {
   const [classes, setClasses] = useState<Class[]>([]);
 
   const fetchClasses = async () => {
-    const { classes: resClasses } = await getParticipatingClass();
+    const { classes: resClasses } = await getOwnClass();
     setClasses(resClasses || []);
-  };
+  }
 
   useEffect(() => {
     fetchClasses();
@@ -47,7 +47,7 @@ const ClassSelectView = () => {
           ))}
           <ClassBox key="new-class" name="" onClick={onOpen} />{' '}
           <Modal isOpen={isOpen} onClose={onClose} isCentered>
-            <ParticipateClass onClose={onClose} fetchClasses={fetchClasses} />
+            <CreateClass onClose={onClose} fetchClasses={fetchClasses} />
           </Modal>
         </HStack>
       </Container>
@@ -55,4 +55,4 @@ const ClassSelectView = () => {
   );
 };
 
-export default withAuthAndAccountCheck(ClassSelectView);
+export default withAuthAndAccountCheck(TeacherDashBoard);
