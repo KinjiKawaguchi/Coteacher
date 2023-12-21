@@ -203,6 +203,51 @@ async function getOwnClass() {
   }
 }
 
+async function checkAccesable(classID: string) {
+  const userID = localStorage.getItem('UserID');
+
+  try {
+    const response = await fetch(
+      `https://api-image-pgfe7sqiia-an.a.run.app/StudentClass/GetList&UserID=${userID}`,
+      {
+        method: 'GET',
+      }
+    );
+    const data = await response.json();
+
+    if (response.ok) {
+      if (data.classID === classID) {
+        return true;
+      }
+    }
+  } catch (error: unknown) {
+    return false;
+  }
+}
+
+async function checkEditable(classID: string) {
+  const userID = localStorage.getItem('UserID');
+
+  try {
+    const response = await fetch(
+      `https://api-image-pgfe7sqiia-an.a.run.app/Class/Get?ClassID=${classID}`,
+      {
+        method: 'GET',
+      }
+    );
+    const data = await response.json();
+
+    if (response.ok) {
+      if (data.teacherID === userID) {
+        return true;
+      }
+    }
+    return false;
+  } catch (error: unknown) {
+    return false;
+  }
+}
+
 export {
   getUser,
   checkUserExist,
@@ -213,4 +258,6 @@ export {
   CreateClassRequest,
   participateClass,
   getOwnClass,
+  checkAccesable,
+  checkEditable,
 };

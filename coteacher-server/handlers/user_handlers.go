@@ -10,7 +10,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) GetUser(c *gin.Context) {
+func (h *Handler) GetUserByID(c *gin.Context) {
+	ID := c.Query("ID")
+
+	var user models.User
+	query := `SELECT * FROM Users WHERE ID = ?`
+	err := h.DB.QueryRow(query, ID).Scan(&user.ID, &user.Name, &user.Email, &user.UserType)
+
+	// SQLエラーの適切な処理
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// ユーザーが見つからない場合
+			c.JSON(http.StatusNotFound, gin.H{"message": "user not found"})
+		} else {
+			// その他のデータベースエラー
+			log.Printf("Error fetching user: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error fetching user"})
+		}
+		return
+	}
+	// ユーザーが見つかった場合
+	c.JSON(http.StatusOK, gin.H{"user": user})
+}
+
+func (h *Handler) GetUserByEmail(c *gin.Context) {
 	email := c.Query("Email")
 
 	var user models.User
