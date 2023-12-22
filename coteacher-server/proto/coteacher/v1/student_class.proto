@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package coteacher.v1;
+
+import "coteacher/v1/resources.proto";
+
+message CreateStudentClassRequest {
+  string student_id = 1;
+  string class_id = 2;
+}
+
+message CreateStudentClassResponse {
+  string student_id = 1;
+  string class_id = 2;
+}
+
+message GetStudentListByClassIDRequest {
+  string class_id = 1;
+}
+
+message GetStudentListByClassIDResponse {
+  repeated User students = 1;
+}
+
+message GetClassListByStudentIDRequest {
+  string student_id = 1;
+}
+
+message GetClassListByStudentIDResponse {
+  repeated Class classes = 1;
+}
+
+message DeleteStudentClassRequest {
+  string student_id = 1;
+  string class_id = 2;
+}
+
+message DeleteStudentClassResponse {
+  string student_id = 1;
+  string class_id = 2;
+}
+
+service CoTeacherService {
+  rpc GetStudentListByClassID(GetStudentListByClassIDRequest) returns (GetStudentListByClassIDResponse);
+  rpc GetClassListByStudentID(GetClassListByStudentIDRequest) returns (GetClassListByStudentIDResponse);
+  rpc CreateStudentClass(CreateStudentClassRequest) returns (CreateStudentClassResponse);
+  rpc DeleteStudentClass(DeleteStudentClassRequest) returns (DeleteStudentClassResponse);
+}
