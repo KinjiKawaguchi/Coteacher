@@ -5,6 +5,7 @@ package class
 import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/google/uuid"
 )
 
 const (
@@ -14,47 +15,50 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// EdgeUsers holds the string denoting the users edge name in mutations.
-	EdgeUsers = "users"
-	// EdgeClassInvitationCodes holds the string denoting the class_invitation_codes edge name in mutations.
-	EdgeClassInvitationCodes = "class_invitation_codes"
-	// EdgeStudentClasses holds the string denoting the student_classes edge name in mutations.
-	EdgeStudentClasses = "student_classes"
+	// FieldTeacherID holds the string denoting the teacher_id field in the database.
+	FieldTeacherID = "teacher_id"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
+	// EdgeTeacher holds the string denoting the teacher edge name in mutations.
+	EdgeTeacher = "teacher"
+	// EdgeClassStudents holds the string denoting the classstudents edge name in mutations.
+	EdgeClassStudents = "classStudents"
+	// EdgeInvitationCodes holds the string denoting the invitationcodes edge name in mutations.
+	EdgeInvitationCodes = "invitationCodes"
 	// Table holds the table name of the class in the database.
 	Table = "classes"
-	// UsersTable is the table that holds the users relation/edge.
-	UsersTable = "users"
-	// UsersInverseTable is the table name for the User entity.
-	// It exists in this package in order to avoid circular dependency with the "user" package.
-	UsersInverseTable = "users"
-	// UsersColumn is the table column denoting the users relation/edge.
-	UsersColumn = "class_users"
-	// ClassInvitationCodesTable is the table that holds the class_invitation_codes relation/edge.
-	ClassInvitationCodesTable = "class_invitation_codes"
-	// ClassInvitationCodesInverseTable is the table name for the ClassInvitationCode entity.
-	// It exists in this package in order to avoid circular dependency with the "classinvitationcode" package.
-	ClassInvitationCodesInverseTable = "class_invitation_codes"
-	// ClassInvitationCodesColumn is the table column denoting the class_invitation_codes relation/edge.
-	ClassInvitationCodesColumn = "class_class_invitation_codes"
-	// StudentClassesTable is the table that holds the student_classes relation/edge.
-	StudentClassesTable = "student_classes"
-	// StudentClassesInverseTable is the table name for the StudentClass entity.
+	// TeacherTable is the table that holds the teacher relation/edge.
+	TeacherTable = "classes"
+	// TeacherInverseTable is the table name for the Teacher entity.
+	// It exists in this package in order to avoid circular dependency with the "teacher" package.
+	TeacherInverseTable = "teachers"
+	// TeacherColumn is the table column denoting the teacher relation/edge.
+	TeacherColumn = "teacher_id"
+	// ClassStudentsTable is the table that holds the classStudents relation/edge.
+	ClassStudentsTable = "student_classes"
+	// ClassStudentsInverseTable is the table name for the StudentClass entity.
 	// It exists in this package in order to avoid circular dependency with the "studentclass" package.
-	StudentClassesInverseTable = "student_classes"
-	// StudentClassesColumn is the table column denoting the student_classes relation/edge.
-	StudentClassesColumn = "class_student_classes"
+	ClassStudentsInverseTable = "student_classes"
+	// ClassStudentsColumn is the table column denoting the classStudents relation/edge.
+	ClassStudentsColumn = "class_id"
+	// InvitationCodesTable is the table that holds the invitationCodes relation/edge.
+	InvitationCodesTable = "class_invitation_codes"
+	// InvitationCodesInverseTable is the table name for the ClassInvitationCode entity.
+	// It exists in this package in order to avoid circular dependency with the "classinvitationcode" package.
+	InvitationCodesInverseTable = "class_invitation_codes"
+	// InvitationCodesColumn is the table column denoting the invitationCodes relation/edge.
+	InvitationCodesColumn = "class_id"
 )
 
 // Columns holds all SQL columns for class fields.
 var Columns = []string{
 	FieldID,
 	FieldName,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "classes"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"user_classes",
+	FieldTeacherID,
+	FieldCreatedAt,
+	FieldUpdatedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -64,13 +68,15 @@ func ValidColumn(column string) bool {
 			return true
 		}
 	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
-			return true
-		}
-	}
 	return false
 }
+
+var (
+	// NameValidator is a validator for the "name" field. It is called by the builders before save.
+	NameValidator func(string) error
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
+)
 
 // OrderOption defines the ordering options for the Class queries.
 type OrderOption func(*sql.Selector)
@@ -85,65 +91,73 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
-// ByUsersCount orders the results by users count.
-func ByUsersCount(opts ...sql.OrderTermOption) OrderOption {
+// ByTeacherID orders the results by the teacher_id field.
+func ByTeacherID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTeacherID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByTeacherField orders the results by teacher field.
+func ByTeacherField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newUsersStep(), opts...)
+		sqlgraph.OrderByNeighborTerms(s, newTeacherStep(), sql.OrderByField(field, opts...))
 	}
 }
 
-// ByUsers orders the results by users terms.
-func ByUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByClassStudentsCount orders the results by classStudents count.
+func ByClassStudentsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newUsersStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborsCount(s, newClassStudentsStep(), opts...)
 	}
 }
 
-// ByClassInvitationCodesCount orders the results by class_invitation_codes count.
-func ByClassInvitationCodesCount(opts ...sql.OrderTermOption) OrderOption {
+// ByClassStudents orders the results by classStudents terms.
+func ByClassStudents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newClassInvitationCodesStep(), opts...)
+		sqlgraph.OrderByNeighborTerms(s, newClassStudentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
-// ByClassInvitationCodes orders the results by class_invitation_codes terms.
-func ByClassInvitationCodes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByInvitationCodesCount orders the results by invitationCodes count.
+func ByInvitationCodesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newClassInvitationCodesStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborsCount(s, newInvitationCodesStep(), opts...)
 	}
 }
 
-// ByStudentClassesCount orders the results by student_classes count.
-func ByStudentClassesCount(opts ...sql.OrderTermOption) OrderOption {
+// ByInvitationCodes orders the results by invitationCodes terms.
+func ByInvitationCodes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newStudentClassesStep(), opts...)
+		sqlgraph.OrderByNeighborTerms(s, newInvitationCodesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-
-// ByStudentClasses orders the results by student_classes terms.
-func ByStudentClasses(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newStudentClassesStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-func newUsersStep() *sqlgraph.Step {
+func newTeacherStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(UsersInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, UsersTable, UsersColumn),
+		sqlgraph.To(TeacherInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, TeacherTable, TeacherColumn),
 	)
 }
-func newClassInvitationCodesStep() *sqlgraph.Step {
+func newClassStudentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ClassInvitationCodesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ClassInvitationCodesTable, ClassInvitationCodesColumn),
+		sqlgraph.To(ClassStudentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ClassStudentsTable, ClassStudentsColumn),
 	)
 }
-func newStudentClassesStep() *sqlgraph.Step {
+func newInvitationCodesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(StudentClassesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, StudentClassesTable, StudentClassesColumn),
+		sqlgraph.To(InvitationCodesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, InvitationCodesTable, InvitationCodesColumn),
 	)
 }

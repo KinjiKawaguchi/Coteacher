@@ -4,14 +4,16 @@ package ent
 
 import (
 	"context"
-	"coteacher/domain/repository/ent/class"
-	"coteacher/domain/repository/ent/studentclass"
+	"coteacher/domain/repository/ent/student"
+	"coteacher/domain/repository/ent/teacher"
 	"coteacher/domain/repository/ent/user"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -33,46 +35,68 @@ func (uc *UserCreate) SetEmail(s string) *UserCreate {
 	return uc
 }
 
-// SetUserType sets the "UserType" field.
-func (uc *UserCreate) SetUserType(ut user.UserType) *UserCreate {
-	uc.mutation.SetUserType(ut)
+// SetCreatedAt sets the "created_at" field.
+func (uc *UserCreate) SetCreatedAt(t time.Time) *UserCreate {
+	uc.mutation.SetCreatedAt(t)
+	return uc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (uc *UserCreate) SetUpdatedAt(t time.Time) *UserCreate {
+	uc.mutation.SetUpdatedAt(t)
 	return uc
 }
 
 // SetID sets the "id" field.
-func (uc *UserCreate) SetID(s string) *UserCreate {
-	uc.mutation.SetID(s)
+func (uc *UserCreate) SetID(u uuid.UUID) *UserCreate {
+	uc.mutation.SetID(u)
 	return uc
 }
 
-// AddStudentClassIDs adds the "student_classes" edge to the StudentClass entity by IDs.
-func (uc *UserCreate) AddStudentClassIDs(ids ...int) *UserCreate {
-	uc.mutation.AddStudentClassIDs(ids...)
-	return uc
-}
-
-// AddStudentClasses adds the "student_classes" edges to the StudentClass entity.
-func (uc *UserCreate) AddStudentClasses(s ...*StudentClass) *UserCreate {
-	ids := make([]int, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// SetNillableID sets the "id" field if the given value is not nil.
+func (uc *UserCreate) SetNillableID(u *uuid.UUID) *UserCreate {
+	if u != nil {
+		uc.SetID(*u)
 	}
-	return uc.AddStudentClassIDs(ids...)
-}
-
-// AddClassIDs adds the "classes" edge to the Class entity by IDs.
-func (uc *UserCreate) AddClassIDs(ids ...string) *UserCreate {
-	uc.mutation.AddClassIDs(ids...)
 	return uc
 }
 
-// AddClasses adds the "classes" edges to the Class entity.
-func (uc *UserCreate) AddClasses(c ...*Class) *UserCreate {
-	ids := make([]string, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// SetTeacherID sets the "teacher" edge to the Teacher entity by ID.
+func (uc *UserCreate) SetTeacherID(id uuid.UUID) *UserCreate {
+	uc.mutation.SetTeacherID(id)
+	return uc
+}
+
+// SetNillableTeacherID sets the "teacher" edge to the Teacher entity by ID if the given value is not nil.
+func (uc *UserCreate) SetNillableTeacherID(id *uuid.UUID) *UserCreate {
+	if id != nil {
+		uc = uc.SetTeacherID(*id)
 	}
-	return uc.AddClassIDs(ids...)
+	return uc
+}
+
+// SetTeacher sets the "teacher" edge to the Teacher entity.
+func (uc *UserCreate) SetTeacher(t *Teacher) *UserCreate {
+	return uc.SetTeacherID(t.ID)
+}
+
+// SetStudentID sets the "student" edge to the Student entity by ID.
+func (uc *UserCreate) SetStudentID(id uuid.UUID) *UserCreate {
+	uc.mutation.SetStudentID(id)
+	return uc
+}
+
+// SetNillableStudentID sets the "student" edge to the Student entity by ID if the given value is not nil.
+func (uc *UserCreate) SetNillableStudentID(id *uuid.UUID) *UserCreate {
+	if id != nil {
+		uc = uc.SetStudentID(*id)
+	}
+	return uc
+}
+
+// SetStudent sets the "student" edge to the Student entity.
+func (uc *UserCreate) SetStudent(s *Student) *UserCreate {
+	return uc.SetStudentID(s.ID)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -82,6 +106,7 @@ func (uc *UserCreate) Mutation() *UserMutation {
 
 // Save creates the User in the database.
 func (uc *UserCreate) Save(ctx context.Context) (*User, error) {
+	uc.defaults()
 	return withHooks(ctx, uc.sqlSave, uc.mutation, uc.hooks)
 }
 
@@ -107,21 +132,37 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (uc *UserCreate) defaults() {
+	if _, ok := uc.mutation.ID(); !ok {
+		v := user.DefaultID()
+		uc.mutation.SetID(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "User.name"`)}
 	}
+	if v, ok := uc.mutation.Name(); ok {
+		if err := user.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
+		}
+	}
 	if _, ok := uc.mutation.Email(); !ok {
 		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "User.email"`)}
 	}
-	if _, ok := uc.mutation.UserType(); !ok {
-		return &ValidationError{Name: "UserType", err: errors.New(`ent: missing required field "User.UserType"`)}
-	}
-	if v, ok := uc.mutation.UserType(); ok {
-		if err := user.UserTypeValidator(v); err != nil {
-			return &ValidationError{Name: "UserType", err: fmt.Errorf(`ent: validator failed for field "User.UserType": %w`, err)}
+	if v, ok := uc.mutation.Email(); ok {
+		if err := user.EmailValidator(v); err != nil {
+			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
 		}
+	}
+	if _, ok := uc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
+	}
+	if _, ok := uc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
 	}
 	return nil
 }
@@ -138,10 +179,10 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected User.ID type: %T", _spec.ID.Value)
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
 		}
 	}
 	uc.mutation.id = &_node.ID
@@ -152,11 +193,11 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	var (
 		_node = &User{config: uc.config}
-		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
+		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID))
 	)
 	if id, ok := uc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := uc.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
@@ -166,19 +207,23 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 		_node.Email = value
 	}
-	if value, ok := uc.mutation.UserType(); ok {
-		_spec.SetField(user.FieldUserType, field.TypeEnum, value)
-		_node.UserType = value
+	if value, ok := uc.mutation.CreatedAt(); ok {
+		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
 	}
-	if nodes := uc.mutation.StudentClassesIDs(); len(nodes) > 0 {
+	if value, ok := uc.mutation.UpdatedAt(); ok {
+		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
+	if nodes := uc.mutation.TeacherIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   user.StudentClassesTable,
-			Columns: []string{user.StudentClassesColumn},
+			Table:   user.TeacherTable,
+			Columns: []string{user.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(studentclass.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -186,15 +231,15 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := uc.mutation.ClassesIDs(); len(nodes) > 0 {
+	if nodes := uc.mutation.StudentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   user.ClassesTable,
-			Columns: []string{user.ClassesColumn},
+			Table:   user.StudentTable,
+			Columns: []string{user.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -223,6 +268,7 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 	for i := range ucb.builders {
 		func(i int, root context.Context) {
 			builder := ucb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserMutation)
 				if !ok {

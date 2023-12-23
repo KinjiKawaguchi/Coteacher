@@ -8,61 +8,57 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id string) predicate.ClassInvitationCode {
+func ID(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id string) predicate.ClassInvitationCode {
+func IDEQ(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id string) predicate.ClassInvitationCode {
+func IDNEQ(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...string) predicate.ClassInvitationCode {
+func IDIn(ids ...uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...string) predicate.ClassInvitationCode {
+func IDNotIn(ids ...uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id string) predicate.ClassInvitationCode {
+func IDGT(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id string) predicate.ClassInvitationCode {
+func IDGTE(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id string) predicate.ClassInvitationCode {
+func IDLT(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id string) predicate.ClassInvitationCode {
+func IDLTE(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldLTE(FieldID, id))
 }
 
-// IDEqualFold applies the EqualFold predicate on the ID field.
-func IDEqualFold(id string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldEqualFold(FieldID, id))
-}
-
-// IDContainsFold applies the ContainsFold predicate on the ID field.
-func IDContainsFold(id string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldContainsFold(FieldID, id))
+// ClassID applies equality check predicate on the "class_id" field. It's identical to ClassIDEQ.
+func ClassID(v uuid.UUID) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldEQ(FieldClassID, v))
 }
 
 // InvitationCode applies equality check predicate on the "invitation_code" field. It's identical to InvitationCodeEQ.
@@ -78,6 +74,36 @@ func ExpirationDate(v time.Time) predicate.ClassInvitationCode {
 // IsActive applies equality check predicate on the "is_active" field. It's identical to IsActiveEQ.
 func IsActive(v bool) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldEQ(FieldIsActive, v))
+}
+
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// ClassIDEQ applies the EQ predicate on the "class_id" field.
+func ClassIDEQ(v uuid.UUID) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldEQ(FieldClassID, v))
+}
+
+// ClassIDNEQ applies the NEQ predicate on the "class_id" field.
+func ClassIDNEQ(v uuid.UUID) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldNEQ(FieldClassID, v))
+}
+
+// ClassIDIn applies the In predicate on the "class_id" field.
+func ClassIDIn(vs ...uuid.UUID) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldIn(FieldClassID, vs...))
+}
+
+// ClassIDNotIn applies the NotIn predicate on the "class_id" field.
+func ClassIDNotIn(vs ...uuid.UUID) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldNotIn(FieldClassID, vs...))
 }
 
 // InvitationCodeEQ applies the EQ predicate on the "invitation_code" field.
@@ -185,6 +211,16 @@ func ExpirationDateLTE(v time.Time) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldLTE(FieldExpirationDate, v))
 }
 
+// ExpirationDateIsNil applies the IsNil predicate on the "expiration_date" field.
+func ExpirationDateIsNil() predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldIsNull(FieldExpirationDate))
+}
+
+// ExpirationDateNotNil applies the NotNil predicate on the "expiration_date" field.
+func ExpirationDateNotNil() predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldNotNull(FieldExpirationDate))
+}
+
 // IsActiveEQ applies the EQ predicate on the "is_active" field.
 func IsActiveEQ(v bool) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldEQ(FieldIsActive, v))
@@ -193,6 +229,86 @@ func IsActiveEQ(v bool) predicate.ClassInvitationCode {
 // IsActiveNEQ applies the NEQ predicate on the "is_active" field.
 func IsActiveNEQ(v bool) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldNEQ(FieldIsActive, v))
+}
+
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldNEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldNEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldNotIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldGT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldGTE(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldLT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.ClassInvitationCode {
+	return predicate.ClassInvitationCode(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // HasClass applies the HasEdge predicate on the "class" edge.

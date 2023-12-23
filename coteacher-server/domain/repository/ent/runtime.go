@@ -2,8 +2,51 @@
 
 package ent
 
+import (
+	"coteacher/domain/repository/ent/class"
+	"coteacher/domain/repository/ent/classinvitationcode"
+	"coteacher/domain/repository/ent/schema"
+	"coteacher/domain/repository/ent/user"
+
+	"github.com/google/uuid"
+)
+
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	classFields := schema.Class{}.Fields()
+	_ = classFields
+	// classDescName is the schema descriptor for name field.
+	classDescName := classFields[1].Descriptor()
+	// class.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	class.NameValidator = classDescName.Validators[0].(func(string) error)
+	// classDescID is the schema descriptor for id field.
+	classDescID := classFields[0].Descriptor()
+	// class.DefaultID holds the default value on creation for the id field.
+	class.DefaultID = classDescID.Default.(func() uuid.UUID)
+	classinvitationcodeFields := schema.ClassInvitationCode{}.Fields()
+	_ = classinvitationcodeFields
+	// classinvitationcodeDescInvitationCode is the schema descriptor for invitation_code field.
+	classinvitationcodeDescInvitationCode := classinvitationcodeFields[2].Descriptor()
+	// classinvitationcode.InvitationCodeValidator is a validator for the "invitation_code" field. It is called by the builders before save.
+	classinvitationcode.InvitationCodeValidator = classinvitationcodeDescInvitationCode.Validators[0].(func(string) error)
+	// classinvitationcodeDescID is the schema descriptor for id field.
+	classinvitationcodeDescID := classinvitationcodeFields[0].Descriptor()
+	// classinvitationcode.DefaultID holds the default value on creation for the id field.
+	classinvitationcode.DefaultID = classinvitationcodeDescID.Default.(func() uuid.UUID)
+	userFields := schema.User{}.Fields()
+	_ = userFields
+	// userDescName is the schema descriptor for name field.
+	userDescName := userFields[1].Descriptor()
+	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	user.NameValidator = userDescName.Validators[0].(func(string) error)
+	// userDescEmail is the schema descriptor for email field.
+	userDescEmail := userFields[2].Descriptor()
+	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	user.EmailValidator = userDescEmail.Validators[0].(func(string) error)
+	// userDescID is the schema descriptor for id field.
+	userDescID := userFields[0].Descriptor()
+	// user.DefaultID holds the default value on creation for the id field.
+	user.DefaultID = userDescID.Default.(func() uuid.UUID)
 }

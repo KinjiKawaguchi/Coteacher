@@ -6,26 +6,26 @@ import (
 	"context"
 	"coteacher/domain/repository/ent/class"
 	"coteacher/domain/repository/ent/predicate"
+	"coteacher/domain/repository/ent/student"
 	"coteacher/domain/repository/ent/studentclass"
-	"coteacher/domain/repository/ent/user"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // StudentClassQuery is the builder for querying StudentClass entities.
 type StudentClassQuery struct {
 	config
-	ctx        *QueryContext
-	order      []studentclass.OrderOption
-	inters     []Interceptor
-	predicates []predicate.StudentClass
-	withClass  *ClassQuery
-	withUser   *UserQuery
-	withFKs    bool
+	ctx         *QueryContext
+	order       []studentclass.OrderOption
+	inters      []Interceptor
+	predicates  []predicate.StudentClass
+	withStudent *StudentQuery
+	withClass   *ClassQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -62,6 +62,28 @@ func (scq *StudentClassQuery) Order(o ...studentclass.OrderOption) *StudentClass
 	return scq
 }
 
+// QueryStudent chains the current query on the "student" edge.
+func (scq *StudentClassQuery) QueryStudent() *StudentQuery {
+	query := (&StudentClient{config: scq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := scq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := scq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(studentclass.Table, studentclass.FieldID, selector),
+			sqlgraph.To(student.Table, student.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, studentclass.StudentTable, studentclass.StudentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(scq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryClass chains the current query on the "class" edge.
 func (scq *StudentClassQuery) QueryClass() *ClassQuery {
 	query := (&ClassClient{config: scq.config}).Query()
@@ -77,28 +99,6 @@ func (scq *StudentClassQuery) QueryClass() *ClassQuery {
 			sqlgraph.From(studentclass.Table, studentclass.FieldID, selector),
 			sqlgraph.To(class.Table, class.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, studentclass.ClassTable, studentclass.ClassColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(scq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryUser chains the current query on the "user" edge.
-func (scq *StudentClassQuery) QueryUser() *UserQuery {
-	query := (&UserClient{config: scq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := scq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := scq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(studentclass.Table, studentclass.FieldID, selector),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, studentclass.UserTable, studentclass.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(scq.driver.Dialect(), step)
 		return fromU, nil
@@ -293,17 +293,28 @@ func (scq *StudentClassQuery) Clone() *StudentClassQuery {
 		return nil
 	}
 	return &StudentClassQuery{
-		config:     scq.config,
-		ctx:        scq.ctx.Clone(),
-		order:      append([]studentclass.OrderOption{}, scq.order...),
-		inters:     append([]Interceptor{}, scq.inters...),
-		predicates: append([]predicate.StudentClass{}, scq.predicates...),
-		withClass:  scq.withClass.Clone(),
-		withUser:   scq.withUser.Clone(),
+		config:      scq.config,
+		ctx:         scq.ctx.Clone(),
+		order:       append([]studentclass.OrderOption{}, scq.order...),
+		inters:      append([]Interceptor{}, scq.inters...),
+		predicates:  append([]predicate.StudentClass{}, scq.predicates...),
+		withStudent: scq.withStudent.Clone(),
+		withClass:   scq.withClass.Clone(),
 		// clone intermediate query.
 		sql:  scq.sql.Clone(),
 		path: scq.path,
 	}
+}
+
+// WithStudent tells the query-builder to eager-load the nodes that are connected to
+// the "student" edge. The optional arguments are used to configure the query builder of the edge.
+func (scq *StudentClassQuery) WithStudent(opts ...func(*StudentQuery)) *StudentClassQuery {
+	query := (&StudentClient{config: scq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	scq.withStudent = query
+	return scq
 }
 
 // WithClass tells the query-builder to eager-load the nodes that are connected to
@@ -317,19 +328,20 @@ func (scq *StudentClassQuery) WithClass(opts ...func(*ClassQuery)) *StudentClass
 	return scq
 }
 
-// WithUser tells the query-builder to eager-load the nodes that are connected to
-// the "user" edge. The optional arguments are used to configure the query builder of the edge.
-func (scq *StudentClassQuery) WithUser(opts ...func(*UserQuery)) *StudentClassQuery {
-	query := (&UserClient{config: scq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	scq.withUser = query
-	return scq
-}
-
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		StudentID uuid.UUID `json:"student_id,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.StudentClass.Query().
+//		GroupBy(studentclass.FieldStudentID).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (scq *StudentClassQuery) GroupBy(field string, fields ...string) *StudentClassGroupBy {
 	scq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &StudentClassGroupBy{build: scq}
@@ -341,6 +353,16 @@ func (scq *StudentClassQuery) GroupBy(field string, fields ...string) *StudentCl
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		StudentID uuid.UUID `json:"student_id,omitempty"`
+//	}
+//
+//	client.StudentClass.Query().
+//		Select(studentclass.FieldStudentID).
+//		Scan(ctx, &v)
 func (scq *StudentClassQuery) Select(fields ...string) *StudentClassSelect {
 	scq.ctx.Fields = append(scq.ctx.Fields, fields...)
 	sbuild := &StudentClassSelect{StudentClassQuery: scq}
@@ -383,19 +405,12 @@ func (scq *StudentClassQuery) prepareQuery(ctx context.Context) error {
 func (scq *StudentClassQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*StudentClass, error) {
 	var (
 		nodes       = []*StudentClass{}
-		withFKs     = scq.withFKs
 		_spec       = scq.querySpec()
 		loadedTypes = [2]bool{
+			scq.withStudent != nil,
 			scq.withClass != nil,
-			scq.withUser != nil,
 		}
 	)
-	if scq.withClass != nil || scq.withUser != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, studentclass.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*StudentClass).scanValues(nil, columns)
 	}
@@ -414,29 +429,55 @@ func (scq *StudentClassQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := scq.withStudent; query != nil {
+		if err := scq.loadStudent(ctx, query, nodes, nil,
+			func(n *StudentClass, e *Student) { n.Edges.Student = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := scq.withClass; query != nil {
 		if err := scq.loadClass(ctx, query, nodes, nil,
 			func(n *StudentClass, e *Class) { n.Edges.Class = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := scq.withUser; query != nil {
-		if err := scq.loadUser(ctx, query, nodes, nil,
-			func(n *StudentClass, e *User) { n.Edges.User = e }); err != nil {
-			return nil, err
-		}
-	}
 	return nodes, nil
 }
 
-func (scq *StudentClassQuery) loadClass(ctx context.Context, query *ClassQuery, nodes []*StudentClass, init func(*StudentClass), assign func(*StudentClass, *Class)) error {
-	ids := make([]string, 0, len(nodes))
-	nodeids := make(map[string][]*StudentClass)
+func (scq *StudentClassQuery) loadStudent(ctx context.Context, query *StudentQuery, nodes []*StudentClass, init func(*StudentClass), assign func(*StudentClass, *Student)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*StudentClass)
 	for i := range nodes {
-		if nodes[i].class_student_classes == nil {
-			continue
+		fk := nodes[i].StudentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
 		}
-		fk := *nodes[i].class_student_classes
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(student.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "student_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (scq *StudentClassQuery) loadClass(ctx context.Context, query *ClassQuery, nodes []*StudentClass, init func(*StudentClass), assign func(*StudentClass, *Class)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*StudentClass)
+	for i := range nodes {
+		fk := nodes[i].ClassID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -453,39 +494,7 @@ func (scq *StudentClassQuery) loadClass(ctx context.Context, query *ClassQuery, 
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "class_student_classes" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (scq *StudentClassQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*StudentClass, init func(*StudentClass), assign func(*StudentClass, *User)) error {
-	ids := make([]string, 0, len(nodes))
-	nodeids := make(map[string][]*StudentClass)
-	for i := range nodes {
-		if nodes[i].user_student_classes == nil {
-			continue
-		}
-		fk := *nodes[i].user_student_classes
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(user.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_student_classes" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "class_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -518,6 +527,12 @@ func (scq *StudentClassQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != studentclass.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if scq.withStudent != nil {
+			_spec.Node.AddColumnOnce(studentclass.FieldStudentID)
+		}
+		if scq.withClass != nil {
+			_spec.Node.AddColumnOnce(studentclass.FieldClassID)
 		}
 	}
 	if ps := scq.predicates; len(ps) > 0 {

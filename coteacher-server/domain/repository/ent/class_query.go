@@ -8,7 +8,7 @@ import (
 	"coteacher/domain/repository/ent/classinvitationcode"
 	"coteacher/domain/repository/ent/predicate"
 	"coteacher/domain/repository/ent/studentclass"
-	"coteacher/domain/repository/ent/user"
+	"coteacher/domain/repository/ent/teacher"
 	"database/sql/driver"
 	"fmt"
 	"math"
@@ -16,19 +16,19 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // ClassQuery is the builder for querying Class entities.
 type ClassQuery struct {
 	config
-	ctx                      *QueryContext
-	order                    []class.OrderOption
-	inters                   []Interceptor
-	predicates               []predicate.Class
-	withUsers                *UserQuery
-	withClassInvitationCodes *ClassInvitationCodeQuery
-	withStudentClasses       *StudentClassQuery
-	withFKs                  bool
+	ctx                 *QueryContext
+	order               []class.OrderOption
+	inters              []Interceptor
+	predicates          []predicate.Class
+	withTeacher         *TeacherQuery
+	withClassStudents   *StudentClassQuery
+	withInvitationCodes *ClassInvitationCodeQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -65,9 +65,9 @@ func (cq *ClassQuery) Order(o ...class.OrderOption) *ClassQuery {
 	return cq
 }
 
-// QueryUsers chains the current query on the "users" edge.
-func (cq *ClassQuery) QueryUsers() *UserQuery {
-	query := (&UserClient{config: cq.config}).Query()
+// QueryTeacher chains the current query on the "teacher" edge.
+func (cq *ClassQuery) QueryTeacher() *TeacherQuery {
+	query := (&TeacherClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -78,8 +78,8 @@ func (cq *ClassQuery) QueryUsers() *UserQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(class.Table, class.FieldID, selector),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, class.UsersTable, class.UsersColumn),
+			sqlgraph.To(teacher.Table, teacher.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, class.TeacherTable, class.TeacherColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -87,30 +87,8 @@ func (cq *ClassQuery) QueryUsers() *UserQuery {
 	return query
 }
 
-// QueryClassInvitationCodes chains the current query on the "class_invitation_codes" edge.
-func (cq *ClassQuery) QueryClassInvitationCodes() *ClassInvitationCodeQuery {
-	query := (&ClassInvitationCodeClient{config: cq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := cq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(class.Table, class.FieldID, selector),
-			sqlgraph.To(classinvitationcode.Table, classinvitationcode.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, class.ClassInvitationCodesTable, class.ClassInvitationCodesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryStudentClasses chains the current query on the "student_classes" edge.
-func (cq *ClassQuery) QueryStudentClasses() *StudentClassQuery {
+// QueryClassStudents chains the current query on the "classStudents" edge.
+func (cq *ClassQuery) QueryClassStudents() *StudentClassQuery {
 	query := (&StudentClassClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
@@ -123,7 +101,29 @@ func (cq *ClassQuery) QueryStudentClasses() *StudentClassQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(class.Table, class.FieldID, selector),
 			sqlgraph.To(studentclass.Table, studentclass.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, class.StudentClassesTable, class.StudentClassesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, class.ClassStudentsTable, class.ClassStudentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryInvitationCodes chains the current query on the "invitationCodes" edge.
+func (cq *ClassQuery) QueryInvitationCodes() *ClassInvitationCodeQuery {
+	query := (&ClassInvitationCodeClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(class.Table, class.FieldID, selector),
+			sqlgraph.To(classinvitationcode.Table, classinvitationcode.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, class.InvitationCodesTable, class.InvitationCodesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -155,8 +155,8 @@ func (cq *ClassQuery) FirstX(ctx context.Context) *Class {
 
 // FirstID returns the first Class ID from the query.
 // Returns a *NotFoundError when no Class ID was found.
-func (cq *ClassQuery) FirstID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (cq *ClassQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -168,7 +168,7 @@ func (cq *ClassQuery) FirstID(ctx context.Context) (id string, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cq *ClassQuery) FirstIDX(ctx context.Context) string {
+func (cq *ClassQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := cq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -206,8 +206,8 @@ func (cq *ClassQuery) OnlyX(ctx context.Context) *Class {
 // OnlyID is like Only, but returns the only Class ID in the query.
 // Returns a *NotSingularError when more than one Class ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (cq *ClassQuery) OnlyID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (cq *ClassQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -223,7 +223,7 @@ func (cq *ClassQuery) OnlyID(ctx context.Context) (id string, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cq *ClassQuery) OnlyIDX(ctx context.Context) string {
+func (cq *ClassQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := cq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -251,7 +251,7 @@ func (cq *ClassQuery) AllX(ctx context.Context) []*Class {
 }
 
 // IDs executes the query and returns a list of Class IDs.
-func (cq *ClassQuery) IDs(ctx context.Context) (ids []string, err error) {
+func (cq *ClassQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 	if cq.ctx.Unique == nil && cq.path != nil {
 		cq.Unique(true)
 	}
@@ -263,7 +263,7 @@ func (cq *ClassQuery) IDs(ctx context.Context) (ids []string, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cq *ClassQuery) IDsX(ctx context.Context) []string {
+func (cq *ClassQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := cq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -318,50 +318,50 @@ func (cq *ClassQuery) Clone() *ClassQuery {
 		return nil
 	}
 	return &ClassQuery{
-		config:                   cq.config,
-		ctx:                      cq.ctx.Clone(),
-		order:                    append([]class.OrderOption{}, cq.order...),
-		inters:                   append([]Interceptor{}, cq.inters...),
-		predicates:               append([]predicate.Class{}, cq.predicates...),
-		withUsers:                cq.withUsers.Clone(),
-		withClassInvitationCodes: cq.withClassInvitationCodes.Clone(),
-		withStudentClasses:       cq.withStudentClasses.Clone(),
+		config:              cq.config,
+		ctx:                 cq.ctx.Clone(),
+		order:               append([]class.OrderOption{}, cq.order...),
+		inters:              append([]Interceptor{}, cq.inters...),
+		predicates:          append([]predicate.Class{}, cq.predicates...),
+		withTeacher:         cq.withTeacher.Clone(),
+		withClassStudents:   cq.withClassStudents.Clone(),
+		withInvitationCodes: cq.withInvitationCodes.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
 	}
 }
 
-// WithUsers tells the query-builder to eager-load the nodes that are connected to
-// the "users" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *ClassQuery) WithUsers(opts ...func(*UserQuery)) *ClassQuery {
-	query := (&UserClient{config: cq.config}).Query()
+// WithTeacher tells the query-builder to eager-load the nodes that are connected to
+// the "teacher" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ClassQuery) WithTeacher(opts ...func(*TeacherQuery)) *ClassQuery {
+	query := (&TeacherClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	cq.withUsers = query
+	cq.withTeacher = query
 	return cq
 }
 
-// WithClassInvitationCodes tells the query-builder to eager-load the nodes that are connected to
-// the "class_invitation_codes" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *ClassQuery) WithClassInvitationCodes(opts ...func(*ClassInvitationCodeQuery)) *ClassQuery {
-	query := (&ClassInvitationCodeClient{config: cq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	cq.withClassInvitationCodes = query
-	return cq
-}
-
-// WithStudentClasses tells the query-builder to eager-load the nodes that are connected to
-// the "student_classes" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *ClassQuery) WithStudentClasses(opts ...func(*StudentClassQuery)) *ClassQuery {
+// WithClassStudents tells the query-builder to eager-load the nodes that are connected to
+// the "classStudents" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ClassQuery) WithClassStudents(opts ...func(*StudentClassQuery)) *ClassQuery {
 	query := (&StudentClassClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	cq.withStudentClasses = query
+	cq.withClassStudents = query
+	return cq
+}
+
+// WithInvitationCodes tells the query-builder to eager-load the nodes that are connected to
+// the "invitationCodes" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ClassQuery) WithInvitationCodes(opts ...func(*ClassInvitationCodeQuery)) *ClassQuery {
+	query := (&ClassInvitationCodeClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withInvitationCodes = query
 	return cq
 }
 
@@ -442,17 +442,13 @@ func (cq *ClassQuery) prepareQuery(ctx context.Context) error {
 func (cq *ClassQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Class, error) {
 	var (
 		nodes       = []*Class{}
-		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
 		loadedTypes = [3]bool{
-			cq.withUsers != nil,
-			cq.withClassInvitationCodes != nil,
-			cq.withStudentClasses != nil,
+			cq.withTeacher != nil,
+			cq.withClassStudents != nil,
+			cq.withInvitationCodes != nil,
 		}
 	)
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, class.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Class).scanValues(nil, columns)
 	}
@@ -471,66 +467,61 @@ func (cq *ClassQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Class,
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := cq.withUsers; query != nil {
-		if err := cq.loadUsers(ctx, query, nodes,
-			func(n *Class) { n.Edges.Users = []*User{} },
-			func(n *Class, e *User) { n.Edges.Users = append(n.Edges.Users, e) }); err != nil {
+	if query := cq.withTeacher; query != nil {
+		if err := cq.loadTeacher(ctx, query, nodes, nil,
+			func(n *Class, e *Teacher) { n.Edges.Teacher = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := cq.withClassInvitationCodes; query != nil {
-		if err := cq.loadClassInvitationCodes(ctx, query, nodes,
-			func(n *Class) { n.Edges.ClassInvitationCodes = []*ClassInvitationCode{} },
-			func(n *Class, e *ClassInvitationCode) {
-				n.Edges.ClassInvitationCodes = append(n.Edges.ClassInvitationCodes, e)
-			}); err != nil {
+	if query := cq.withClassStudents; query != nil {
+		if err := cq.loadClassStudents(ctx, query, nodes,
+			func(n *Class) { n.Edges.ClassStudents = []*StudentClass{} },
+			func(n *Class, e *StudentClass) { n.Edges.ClassStudents = append(n.Edges.ClassStudents, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := cq.withStudentClasses; query != nil {
-		if err := cq.loadStudentClasses(ctx, query, nodes,
-			func(n *Class) { n.Edges.StudentClasses = []*StudentClass{} },
-			func(n *Class, e *StudentClass) { n.Edges.StudentClasses = append(n.Edges.StudentClasses, e) }); err != nil {
+	if query := cq.withInvitationCodes; query != nil {
+		if err := cq.loadInvitationCodes(ctx, query, nodes,
+			func(n *Class) { n.Edges.InvitationCodes = []*ClassInvitationCode{} },
+			func(n *Class, e *ClassInvitationCode) { n.Edges.InvitationCodes = append(n.Edges.InvitationCodes, e) }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (cq *ClassQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*Class, init func(*Class), assign func(*Class, *User)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[string]*Class)
+func (cq *ClassQuery) loadTeacher(ctx context.Context, query *TeacherQuery, nodes []*Class, init func(*Class), assign func(*Class, *Teacher)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*Class)
 	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
+		fk := nodes[i].TeacherID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
 		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	query.withFKs = true
-	query.Where(predicate.User(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(class.UsersColumn), fks...))
-	}))
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(teacher.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.class_users
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "class_users" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "class_users" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "teacher_id" returned %v`, n.ID)
 		}
-		assign(node, n)
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
 	}
 	return nil
 }
-func (cq *ClassQuery) loadClassInvitationCodes(ctx context.Context, query *ClassInvitationCodeQuery, nodes []*Class, init func(*Class), assign func(*Class, *ClassInvitationCode)) error {
+func (cq *ClassQuery) loadClassStudents(ctx context.Context, query *StudentClassQuery, nodes []*Class, init func(*Class), assign func(*Class, *StudentClass)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[string]*Class)
+	nodeids := make(map[uuid.UUID]*Class)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -538,53 +529,51 @@ func (cq *ClassQuery) loadClassInvitationCodes(ctx context.Context, query *Class
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
-	query.Where(predicate.ClassInvitationCode(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(class.ClassInvitationCodesColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(studentclass.FieldClassID)
 	}
-	for _, n := range neighbors {
-		fk := n.class_class_invitation_codes
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "class_class_invitation_codes" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "class_class_invitation_codes" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (cq *ClassQuery) loadStudentClasses(ctx context.Context, query *StudentClassQuery, nodes []*Class, init func(*Class), assign func(*Class, *StudentClass)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[string]*Class)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.withFKs = true
 	query.Where(predicate.StudentClass(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(class.StudentClassesColumn), fks...))
+		s.Where(sql.InValues(s.C(class.ClassStudentsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.class_student_classes
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "class_student_classes" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.ClassID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "class_student_classes" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "class_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (cq *ClassQuery) loadInvitationCodes(ctx context.Context, query *ClassInvitationCodeQuery, nodes []*Class, init func(*Class), assign func(*Class, *ClassInvitationCode)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Class)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(classinvitationcode.FieldClassID)
+	}
+	query.Where(predicate.ClassInvitationCode(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(class.InvitationCodesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ClassID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "class_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -601,7 +590,7 @@ func (cq *ClassQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (cq *ClassQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(class.Table, class.Columns, sqlgraph.NewFieldSpec(class.FieldID, field.TypeString))
+	_spec := sqlgraph.NewQuerySpec(class.Table, class.Columns, sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID))
 	_spec.From = cq.sql
 	if unique := cq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -615,6 +604,9 @@ func (cq *ClassQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != class.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if cq.withTeacher != nil {
+			_spec.Node.AddColumnOnce(class.FieldTeacherID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {

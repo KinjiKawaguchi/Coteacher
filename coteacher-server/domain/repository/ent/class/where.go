@@ -4,69 +4,76 @@ package class
 
 import (
 	"coteacher/domain/repository/ent/predicate"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id string) predicate.Class {
+func ID(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id string) predicate.Class {
+func IDEQ(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id string) predicate.Class {
+func IDNEQ(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...string) predicate.Class {
+func IDIn(ids ...uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...string) predicate.Class {
+func IDNotIn(ids ...uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id string) predicate.Class {
+func IDGT(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id string) predicate.Class {
+func IDGTE(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id string) predicate.Class {
+func IDLT(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id string) predicate.Class {
+func IDLTE(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldLTE(FieldID, id))
-}
-
-// IDEqualFold applies the EqualFold predicate on the ID field.
-func IDEqualFold(id string) predicate.Class {
-	return predicate.Class(sql.FieldEqualFold(FieldID, id))
-}
-
-// IDContainsFold applies the ContainsFold predicate on the ID field.
-func IDContainsFold(id string) predicate.Class {
-	return predicate.Class(sql.FieldContainsFold(FieldID, id))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Class {
 	return predicate.Class(sql.FieldEQ(FieldName, v))
+}
+
+// TeacherID applies equality check predicate on the "teacher_id" field. It's identical to TeacherIDEQ.
+func TeacherID(v uuid.UUID) predicate.Class {
+	return predicate.Class(sql.FieldEQ(FieldTeacherID, v))
+}
+
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -134,21 +141,121 @@ func NameContainsFold(v string) predicate.Class {
 	return predicate.Class(sql.FieldContainsFold(FieldName, v))
 }
 
-// HasUsers applies the HasEdge predicate on the "users" edge.
-func HasUsers() predicate.Class {
+// TeacherIDEQ applies the EQ predicate on the "teacher_id" field.
+func TeacherIDEQ(v uuid.UUID) predicate.Class {
+	return predicate.Class(sql.FieldEQ(FieldTeacherID, v))
+}
+
+// TeacherIDNEQ applies the NEQ predicate on the "teacher_id" field.
+func TeacherIDNEQ(v uuid.UUID) predicate.Class {
+	return predicate.Class(sql.FieldNEQ(FieldTeacherID, v))
+}
+
+// TeacherIDIn applies the In predicate on the "teacher_id" field.
+func TeacherIDIn(vs ...uuid.UUID) predicate.Class {
+	return predicate.Class(sql.FieldIn(FieldTeacherID, vs...))
+}
+
+// TeacherIDNotIn applies the NotIn predicate on the "teacher_id" field.
+func TeacherIDNotIn(vs ...uuid.UUID) predicate.Class {
+	return predicate.Class(sql.FieldNotIn(FieldTeacherID, vs...))
+}
+
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldNEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.Class {
+	return predicate.Class(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.Class {
+	return predicate.Class(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldNEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.Class {
+	return predicate.Class(sql.FieldIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.Class {
+	return predicate.Class(sql.FieldNotIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldGT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldGTE(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldLT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.Class {
+	return predicate.Class(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// HasTeacher applies the HasEdge predicate on the "teacher" edge.
+func HasTeacher() predicate.Class {
 	return predicate.Class(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, UsersTable, UsersColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, TeacherTable, TeacherColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasUsersWith applies the HasEdge predicate on the "users" edge with a given conditions (other predicates).
-func HasUsersWith(preds ...predicate.User) predicate.Class {
+// HasTeacherWith applies the HasEdge predicate on the "teacher" edge with a given conditions (other predicates).
+func HasTeacherWith(preds ...predicate.Teacher) predicate.Class {
 	return predicate.Class(func(s *sql.Selector) {
-		step := newUsersStep()
+		step := newTeacherStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -157,21 +264,21 @@ func HasUsersWith(preds ...predicate.User) predicate.Class {
 	})
 }
 
-// HasClassInvitationCodes applies the HasEdge predicate on the "class_invitation_codes" edge.
-func HasClassInvitationCodes() predicate.Class {
+// HasClassStudents applies the HasEdge predicate on the "classStudents" edge.
+func HasClassStudents() predicate.Class {
 	return predicate.Class(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ClassInvitationCodesTable, ClassInvitationCodesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, ClassStudentsTable, ClassStudentsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasClassInvitationCodesWith applies the HasEdge predicate on the "class_invitation_codes" edge with a given conditions (other predicates).
-func HasClassInvitationCodesWith(preds ...predicate.ClassInvitationCode) predicate.Class {
+// HasClassStudentsWith applies the HasEdge predicate on the "classStudents" edge with a given conditions (other predicates).
+func HasClassStudentsWith(preds ...predicate.StudentClass) predicate.Class {
 	return predicate.Class(func(s *sql.Selector) {
-		step := newClassInvitationCodesStep()
+		step := newClassStudentsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -180,21 +287,21 @@ func HasClassInvitationCodesWith(preds ...predicate.ClassInvitationCode) predica
 	})
 }
 
-// HasStudentClasses applies the HasEdge predicate on the "student_classes" edge.
-func HasStudentClasses() predicate.Class {
+// HasInvitationCodes applies the HasEdge predicate on the "invitationCodes" edge.
+func HasInvitationCodes() predicate.Class {
 	return predicate.Class(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, StudentClassesTable, StudentClassesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, InvitationCodesTable, InvitationCodesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasStudentClassesWith applies the HasEdge predicate on the "student_classes" edge with a given conditions (other predicates).
-func HasStudentClassesWith(preds ...predicate.StudentClass) predicate.Class {
+// HasInvitationCodesWith applies the HasEdge predicate on the "invitationCodes" edge with a given conditions (other predicates).
+func HasInvitationCodesWith(preds ...predicate.ClassInvitationCode) predicate.Class {
 	return predicate.Class(func(s *sql.Selector) {
-		step := newStudentClassesStep()
+		step := newInvitationCodesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -6,14 +6,16 @@ import (
 	"context"
 	"coteacher/domain/repository/ent/class"
 	"coteacher/domain/repository/ent/predicate"
+	"coteacher/domain/repository/ent/student"
 	"coteacher/domain/repository/ent/studentclass"
-	"coteacher/domain/repository/ent/user"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // StudentClassUpdate is the builder for updating StudentClass entities.
@@ -29,18 +31,65 @@ func (scu *StudentClassUpdate) Where(ps ...predicate.StudentClass) *StudentClass
 	return scu
 }
 
-// SetClassID sets the "class" edge to the Class entity by ID.
-func (scu *StudentClassUpdate) SetClassID(id string) *StudentClassUpdate {
-	scu.mutation.SetClassID(id)
+// SetStudentID sets the "student_id" field.
+func (scu *StudentClassUpdate) SetStudentID(u uuid.UUID) *StudentClassUpdate {
+	scu.mutation.SetStudentID(u)
 	return scu
 }
 
-// SetNillableClassID sets the "class" edge to the Class entity by ID if the given value is not nil.
-func (scu *StudentClassUpdate) SetNillableClassID(id *string) *StudentClassUpdate {
-	if id != nil {
-		scu = scu.SetClassID(*id)
+// SetNillableStudentID sets the "student_id" field if the given value is not nil.
+func (scu *StudentClassUpdate) SetNillableStudentID(u *uuid.UUID) *StudentClassUpdate {
+	if u != nil {
+		scu.SetStudentID(*u)
 	}
 	return scu
+}
+
+// SetClassID sets the "class_id" field.
+func (scu *StudentClassUpdate) SetClassID(u uuid.UUID) *StudentClassUpdate {
+	scu.mutation.SetClassID(u)
+	return scu
+}
+
+// SetNillableClassID sets the "class_id" field if the given value is not nil.
+func (scu *StudentClassUpdate) SetNillableClassID(u *uuid.UUID) *StudentClassUpdate {
+	if u != nil {
+		scu.SetClassID(*u)
+	}
+	return scu
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (scu *StudentClassUpdate) SetCreatedAt(t time.Time) *StudentClassUpdate {
+	scu.mutation.SetCreatedAt(t)
+	return scu
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (scu *StudentClassUpdate) SetNillableCreatedAt(t *time.Time) *StudentClassUpdate {
+	if t != nil {
+		scu.SetCreatedAt(*t)
+	}
+	return scu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (scu *StudentClassUpdate) SetUpdatedAt(t time.Time) *StudentClassUpdate {
+	scu.mutation.SetUpdatedAt(t)
+	return scu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (scu *StudentClassUpdate) SetNillableUpdatedAt(t *time.Time) *StudentClassUpdate {
+	if t != nil {
+		scu.SetUpdatedAt(*t)
+	}
+	return scu
+}
+
+// SetStudent sets the "student" edge to the Student entity.
+func (scu *StudentClassUpdate) SetStudent(s *Student) *StudentClassUpdate {
+	return scu.SetStudentID(s.ID)
 }
 
 // SetClass sets the "class" edge to the Class entity.
@@ -48,39 +97,20 @@ func (scu *StudentClassUpdate) SetClass(c *Class) *StudentClassUpdate {
 	return scu.SetClassID(c.ID)
 }
 
-// SetUserID sets the "user" edge to the User entity by ID.
-func (scu *StudentClassUpdate) SetUserID(id string) *StudentClassUpdate {
-	scu.mutation.SetUserID(id)
-	return scu
-}
-
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (scu *StudentClassUpdate) SetNillableUserID(id *string) *StudentClassUpdate {
-	if id != nil {
-		scu = scu.SetUserID(*id)
-	}
-	return scu
-}
-
-// SetUser sets the "user" edge to the User entity.
-func (scu *StudentClassUpdate) SetUser(u *User) *StudentClassUpdate {
-	return scu.SetUserID(u.ID)
-}
-
 // Mutation returns the StudentClassMutation object of the builder.
 func (scu *StudentClassUpdate) Mutation() *StudentClassMutation {
 	return scu.mutation
 }
 
-// ClearClass clears the "class" edge to the Class entity.
-func (scu *StudentClassUpdate) ClearClass() *StudentClassUpdate {
-	scu.mutation.ClearClass()
+// ClearStudent clears the "student" edge to the Student entity.
+func (scu *StudentClassUpdate) ClearStudent() *StudentClassUpdate {
+	scu.mutation.ClearStudent()
 	return scu
 }
 
-// ClearUser clears the "user" edge to the User entity.
-func (scu *StudentClassUpdate) ClearUser() *StudentClassUpdate {
-	scu.mutation.ClearUser()
+// ClearClass clears the "class" edge to the Class entity.
+func (scu *StudentClassUpdate) ClearClass() *StudentClassUpdate {
+	scu.mutation.ClearClass()
 	return scu
 }
 
@@ -111,7 +141,21 @@ func (scu *StudentClassUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (scu *StudentClassUpdate) check() error {
+	if _, ok := scu.mutation.StudentID(); scu.mutation.StudentCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "StudentClass.student"`)
+	}
+	if _, ok := scu.mutation.ClassID(); scu.mutation.ClassCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "StudentClass.class"`)
+	}
+	return nil
+}
+
 func (scu *StudentClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := scu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(studentclass.Table, studentclass.Columns, sqlgraph.NewFieldSpec(studentclass.FieldID, field.TypeInt))
 	if ps := scu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -119,6 +163,41 @@ func (scu *StudentClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := scu.mutation.CreatedAt(); ok {
+		_spec.SetField(studentclass.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := scu.mutation.UpdatedAt(); ok {
+		_spec.SetField(studentclass.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if scu.mutation.StudentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   studentclass.StudentTable,
+			Columns: []string{studentclass.StudentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := scu.mutation.StudentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   studentclass.StudentTable,
+			Columns: []string{studentclass.StudentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if scu.mutation.ClassCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -128,7 +207,7 @@ func (scu *StudentClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{studentclass.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -141,36 +220,7 @@ func (scu *StudentClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{studentclass.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if scu.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   studentclass.UserTable,
-			Columns: []string{studentclass.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := scu.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   studentclass.UserTable,
-			Columns: []string{studentclass.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -198,18 +248,65 @@ type StudentClassUpdateOne struct {
 	mutation *StudentClassMutation
 }
 
-// SetClassID sets the "class" edge to the Class entity by ID.
-func (scuo *StudentClassUpdateOne) SetClassID(id string) *StudentClassUpdateOne {
-	scuo.mutation.SetClassID(id)
+// SetStudentID sets the "student_id" field.
+func (scuo *StudentClassUpdateOne) SetStudentID(u uuid.UUID) *StudentClassUpdateOne {
+	scuo.mutation.SetStudentID(u)
 	return scuo
 }
 
-// SetNillableClassID sets the "class" edge to the Class entity by ID if the given value is not nil.
-func (scuo *StudentClassUpdateOne) SetNillableClassID(id *string) *StudentClassUpdateOne {
-	if id != nil {
-		scuo = scuo.SetClassID(*id)
+// SetNillableStudentID sets the "student_id" field if the given value is not nil.
+func (scuo *StudentClassUpdateOne) SetNillableStudentID(u *uuid.UUID) *StudentClassUpdateOne {
+	if u != nil {
+		scuo.SetStudentID(*u)
 	}
 	return scuo
+}
+
+// SetClassID sets the "class_id" field.
+func (scuo *StudentClassUpdateOne) SetClassID(u uuid.UUID) *StudentClassUpdateOne {
+	scuo.mutation.SetClassID(u)
+	return scuo
+}
+
+// SetNillableClassID sets the "class_id" field if the given value is not nil.
+func (scuo *StudentClassUpdateOne) SetNillableClassID(u *uuid.UUID) *StudentClassUpdateOne {
+	if u != nil {
+		scuo.SetClassID(*u)
+	}
+	return scuo
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (scuo *StudentClassUpdateOne) SetCreatedAt(t time.Time) *StudentClassUpdateOne {
+	scuo.mutation.SetCreatedAt(t)
+	return scuo
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (scuo *StudentClassUpdateOne) SetNillableCreatedAt(t *time.Time) *StudentClassUpdateOne {
+	if t != nil {
+		scuo.SetCreatedAt(*t)
+	}
+	return scuo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (scuo *StudentClassUpdateOne) SetUpdatedAt(t time.Time) *StudentClassUpdateOne {
+	scuo.mutation.SetUpdatedAt(t)
+	return scuo
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (scuo *StudentClassUpdateOne) SetNillableUpdatedAt(t *time.Time) *StudentClassUpdateOne {
+	if t != nil {
+		scuo.SetUpdatedAt(*t)
+	}
+	return scuo
+}
+
+// SetStudent sets the "student" edge to the Student entity.
+func (scuo *StudentClassUpdateOne) SetStudent(s *Student) *StudentClassUpdateOne {
+	return scuo.SetStudentID(s.ID)
 }
 
 // SetClass sets the "class" edge to the Class entity.
@@ -217,39 +314,20 @@ func (scuo *StudentClassUpdateOne) SetClass(c *Class) *StudentClassUpdateOne {
 	return scuo.SetClassID(c.ID)
 }
 
-// SetUserID sets the "user" edge to the User entity by ID.
-func (scuo *StudentClassUpdateOne) SetUserID(id string) *StudentClassUpdateOne {
-	scuo.mutation.SetUserID(id)
-	return scuo
-}
-
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (scuo *StudentClassUpdateOne) SetNillableUserID(id *string) *StudentClassUpdateOne {
-	if id != nil {
-		scuo = scuo.SetUserID(*id)
-	}
-	return scuo
-}
-
-// SetUser sets the "user" edge to the User entity.
-func (scuo *StudentClassUpdateOne) SetUser(u *User) *StudentClassUpdateOne {
-	return scuo.SetUserID(u.ID)
-}
-
 // Mutation returns the StudentClassMutation object of the builder.
 func (scuo *StudentClassUpdateOne) Mutation() *StudentClassMutation {
 	return scuo.mutation
 }
 
-// ClearClass clears the "class" edge to the Class entity.
-func (scuo *StudentClassUpdateOne) ClearClass() *StudentClassUpdateOne {
-	scuo.mutation.ClearClass()
+// ClearStudent clears the "student" edge to the Student entity.
+func (scuo *StudentClassUpdateOne) ClearStudent() *StudentClassUpdateOne {
+	scuo.mutation.ClearStudent()
 	return scuo
 }
 
-// ClearUser clears the "user" edge to the User entity.
-func (scuo *StudentClassUpdateOne) ClearUser() *StudentClassUpdateOne {
-	scuo.mutation.ClearUser()
+// ClearClass clears the "class" edge to the Class entity.
+func (scuo *StudentClassUpdateOne) ClearClass() *StudentClassUpdateOne {
+	scuo.mutation.ClearClass()
 	return scuo
 }
 
@@ -293,7 +371,21 @@ func (scuo *StudentClassUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (scuo *StudentClassUpdateOne) check() error {
+	if _, ok := scuo.mutation.StudentID(); scuo.mutation.StudentCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "StudentClass.student"`)
+	}
+	if _, ok := scuo.mutation.ClassID(); scuo.mutation.ClassCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "StudentClass.class"`)
+	}
+	return nil
+}
+
 func (scuo *StudentClassUpdateOne) sqlSave(ctx context.Context) (_node *StudentClass, err error) {
+	if err := scuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(studentclass.Table, studentclass.Columns, sqlgraph.NewFieldSpec(studentclass.FieldID, field.TypeInt))
 	id, ok := scuo.mutation.ID()
 	if !ok {
@@ -319,6 +411,41 @@ func (scuo *StudentClassUpdateOne) sqlSave(ctx context.Context) (_node *StudentC
 			}
 		}
 	}
+	if value, ok := scuo.mutation.CreatedAt(); ok {
+		_spec.SetField(studentclass.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := scuo.mutation.UpdatedAt(); ok {
+		_spec.SetField(studentclass.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if scuo.mutation.StudentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   studentclass.StudentTable,
+			Columns: []string{studentclass.StudentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := scuo.mutation.StudentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   studentclass.StudentTable,
+			Columns: []string{studentclass.StudentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if scuo.mutation.ClassCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -327,7 +454,7 @@ func (scuo *StudentClassUpdateOne) sqlSave(ctx context.Context) (_node *StudentC
 			Columns: []string{studentclass.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -340,36 +467,7 @@ func (scuo *StudentClassUpdateOne) sqlSave(ctx context.Context) (_node *StudentC
 			Columns: []string{studentclass.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if scuo.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   studentclass.UserTable,
-			Columns: []string{studentclass.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := scuo.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   studentclass.UserTable,
-			Columns: []string{studentclass.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

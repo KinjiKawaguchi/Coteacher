@@ -5,12 +5,15 @@ package ent
 import (
 	"context"
 	"coteacher/domain/repository/ent/class"
+	"coteacher/domain/repository/ent/student"
 	"coteacher/domain/repository/ent/studentclass"
-	"coteacher/domain/repository/ent/user"
+	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // StudentClassCreate is the builder for creating a StudentClass entity.
@@ -20,42 +23,38 @@ type StudentClassCreate struct {
 	hooks    []Hook
 }
 
-// SetClassID sets the "class" edge to the Class entity by ID.
-func (scc *StudentClassCreate) SetClassID(id string) *StudentClassCreate {
-	scc.mutation.SetClassID(id)
+// SetStudentID sets the "student_id" field.
+func (scc *StudentClassCreate) SetStudentID(u uuid.UUID) *StudentClassCreate {
+	scc.mutation.SetStudentID(u)
 	return scc
 }
 
-// SetNillableClassID sets the "class" edge to the Class entity by ID if the given value is not nil.
-func (scc *StudentClassCreate) SetNillableClassID(id *string) *StudentClassCreate {
-	if id != nil {
-		scc = scc.SetClassID(*id)
-	}
+// SetClassID sets the "class_id" field.
+func (scc *StudentClassCreate) SetClassID(u uuid.UUID) *StudentClassCreate {
+	scc.mutation.SetClassID(u)
 	return scc
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (scc *StudentClassCreate) SetCreatedAt(t time.Time) *StudentClassCreate {
+	scc.mutation.SetCreatedAt(t)
+	return scc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (scc *StudentClassCreate) SetUpdatedAt(t time.Time) *StudentClassCreate {
+	scc.mutation.SetUpdatedAt(t)
+	return scc
+}
+
+// SetStudent sets the "student" edge to the Student entity.
+func (scc *StudentClassCreate) SetStudent(s *Student) *StudentClassCreate {
+	return scc.SetStudentID(s.ID)
 }
 
 // SetClass sets the "class" edge to the Class entity.
 func (scc *StudentClassCreate) SetClass(c *Class) *StudentClassCreate {
 	return scc.SetClassID(c.ID)
-}
-
-// SetUserID sets the "user" edge to the User entity by ID.
-func (scc *StudentClassCreate) SetUserID(id string) *StudentClassCreate {
-	scc.mutation.SetUserID(id)
-	return scc
-}
-
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (scc *StudentClassCreate) SetNillableUserID(id *string) *StudentClassCreate {
-	if id != nil {
-		scc = scc.SetUserID(*id)
-	}
-	return scc
-}
-
-// SetUser sets the "user" edge to the User entity.
-func (scc *StudentClassCreate) SetUser(u *User) *StudentClassCreate {
-	return scc.SetUserID(u.ID)
 }
 
 // Mutation returns the StudentClassMutation object of the builder.
@@ -92,6 +91,24 @@ func (scc *StudentClassCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (scc *StudentClassCreate) check() error {
+	if _, ok := scc.mutation.StudentID(); !ok {
+		return &ValidationError{Name: "student_id", err: errors.New(`ent: missing required field "StudentClass.student_id"`)}
+	}
+	if _, ok := scc.mutation.ClassID(); !ok {
+		return &ValidationError{Name: "class_id", err: errors.New(`ent: missing required field "StudentClass.class_id"`)}
+	}
+	if _, ok := scc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "StudentClass.created_at"`)}
+	}
+	if _, ok := scc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "StudentClass.updated_at"`)}
+	}
+	if _, ok := scc.mutation.StudentID(); !ok {
+		return &ValidationError{Name: "student", err: errors.New(`ent: missing required edge "StudentClass.student"`)}
+	}
+	if _, ok := scc.mutation.ClassID(); !ok {
+		return &ValidationError{Name: "class", err: errors.New(`ent: missing required edge "StudentClass.class"`)}
+	}
 	return nil
 }
 
@@ -118,6 +135,31 @@ func (scc *StudentClassCreate) createSpec() (*StudentClass, *sqlgraph.CreateSpec
 		_node = &StudentClass{config: scc.config}
 		_spec = sqlgraph.NewCreateSpec(studentclass.Table, sqlgraph.NewFieldSpec(studentclass.FieldID, field.TypeInt))
 	)
+	if value, ok := scc.mutation.CreatedAt(); ok {
+		_spec.SetField(studentclass.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := scc.mutation.UpdatedAt(); ok {
+		_spec.SetField(studentclass.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
+	if nodes := scc.mutation.StudentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   studentclass.StudentTable,
+			Columns: []string{studentclass.StudentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StudentID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := scc.mutation.ClassIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -126,30 +168,13 @@ func (scc *StudentClassCreate) createSpec() (*StudentClass, *sqlgraph.CreateSpec
 			Columns: []string{studentclass.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.class_student_classes = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := scc.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   studentclass.UserTable,
-			Columns: []string{studentclass.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.user_student_classes = &nodes[0]
+		_node.ClassID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

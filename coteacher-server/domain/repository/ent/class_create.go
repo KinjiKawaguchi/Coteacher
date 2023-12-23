@@ -7,12 +7,14 @@ import (
 	"coteacher/domain/repository/ent/class"
 	"coteacher/domain/repository/ent/classinvitationcode"
 	"coteacher/domain/repository/ent/studentclass"
-	"coteacher/domain/repository/ent/user"
+	"coteacher/domain/repository/ent/teacher"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // ClassCreate is the builder for creating a Class entity.
@@ -28,55 +30,71 @@ func (cc *ClassCreate) SetName(s string) *ClassCreate {
 	return cc
 }
 
+// SetTeacherID sets the "teacher_id" field.
+func (cc *ClassCreate) SetTeacherID(u uuid.UUID) *ClassCreate {
+	cc.mutation.SetTeacherID(u)
+	return cc
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (cc *ClassCreate) SetCreatedAt(t time.Time) *ClassCreate {
+	cc.mutation.SetCreatedAt(t)
+	return cc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (cc *ClassCreate) SetUpdatedAt(t time.Time) *ClassCreate {
+	cc.mutation.SetUpdatedAt(t)
+	return cc
+}
+
 // SetID sets the "id" field.
-func (cc *ClassCreate) SetID(s string) *ClassCreate {
-	cc.mutation.SetID(s)
+func (cc *ClassCreate) SetID(u uuid.UUID) *ClassCreate {
+	cc.mutation.SetID(u)
 	return cc
 }
 
-// AddUserIDs adds the "users" edge to the User entity by IDs.
-func (cc *ClassCreate) AddUserIDs(ids ...string) *ClassCreate {
-	cc.mutation.AddUserIDs(ids...)
-	return cc
-}
-
-// AddUsers adds the "users" edges to the User entity.
-func (cc *ClassCreate) AddUsers(u ...*User) *ClassCreate {
-	ids := make([]string, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableID sets the "id" field if the given value is not nil.
+func (cc *ClassCreate) SetNillableID(u *uuid.UUID) *ClassCreate {
+	if u != nil {
+		cc.SetID(*u)
 	}
-	return cc.AddUserIDs(ids...)
-}
-
-// AddClassInvitationCodeIDs adds the "class_invitation_codes" edge to the ClassInvitationCode entity by IDs.
-func (cc *ClassCreate) AddClassInvitationCodeIDs(ids ...string) *ClassCreate {
-	cc.mutation.AddClassInvitationCodeIDs(ids...)
 	return cc
 }
 
-// AddClassInvitationCodes adds the "class_invitation_codes" edges to the ClassInvitationCode entity.
-func (cc *ClassCreate) AddClassInvitationCodes(c ...*ClassInvitationCode) *ClassCreate {
-	ids := make([]string, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cc.AddClassInvitationCodeIDs(ids...)
+// SetTeacher sets the "teacher" edge to the Teacher entity.
+func (cc *ClassCreate) SetTeacher(t *Teacher) *ClassCreate {
+	return cc.SetTeacherID(t.ID)
 }
 
-// AddStudentClassIDs adds the "student_classes" edge to the StudentClass entity by IDs.
-func (cc *ClassCreate) AddStudentClassIDs(ids ...int) *ClassCreate {
-	cc.mutation.AddStudentClassIDs(ids...)
+// AddClassStudentIDs adds the "classStudents" edge to the StudentClass entity by IDs.
+func (cc *ClassCreate) AddClassStudentIDs(ids ...int) *ClassCreate {
+	cc.mutation.AddClassStudentIDs(ids...)
 	return cc
 }
 
-// AddStudentClasses adds the "student_classes" edges to the StudentClass entity.
-func (cc *ClassCreate) AddStudentClasses(s ...*StudentClass) *ClassCreate {
+// AddClassStudents adds the "classStudents" edges to the StudentClass entity.
+func (cc *ClassCreate) AddClassStudents(s ...*StudentClass) *ClassCreate {
 	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return cc.AddStudentClassIDs(ids...)
+	return cc.AddClassStudentIDs(ids...)
+}
+
+// AddInvitationCodeIDs adds the "invitationCodes" edge to the ClassInvitationCode entity by IDs.
+func (cc *ClassCreate) AddInvitationCodeIDs(ids ...uuid.UUID) *ClassCreate {
+	cc.mutation.AddInvitationCodeIDs(ids...)
+	return cc
+}
+
+// AddInvitationCodes adds the "invitationCodes" edges to the ClassInvitationCode entity.
+func (cc *ClassCreate) AddInvitationCodes(c ...*ClassInvitationCode) *ClassCreate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cc.AddInvitationCodeIDs(ids...)
 }
 
 // Mutation returns the ClassMutation object of the builder.
@@ -86,6 +104,7 @@ func (cc *ClassCreate) Mutation() *ClassMutation {
 
 // Save creates the Class in the database.
 func (cc *ClassCreate) Save(ctx context.Context) (*Class, error) {
+	cc.defaults()
 	return withHooks(ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
 
@@ -111,10 +130,35 @@ func (cc *ClassCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (cc *ClassCreate) defaults() {
+	if _, ok := cc.mutation.ID(); !ok {
+		v := class.DefaultID()
+		cc.mutation.SetID(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (cc *ClassCreate) check() error {
 	if _, ok := cc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Class.name"`)}
+	}
+	if v, ok := cc.mutation.Name(); ok {
+		if err := class.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Class.name": %w`, err)}
+		}
+	}
+	if _, ok := cc.mutation.TeacherID(); !ok {
+		return &ValidationError{Name: "teacher_id", err: errors.New(`ent: missing required field "Class.teacher_id"`)}
+	}
+	if _, ok := cc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Class.created_at"`)}
+	}
+	if _, ok := cc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Class.updated_at"`)}
+	}
+	if _, ok := cc.mutation.TeacherID(); !ok {
+		return &ValidationError{Name: "teacher", err: errors.New(`ent: missing required edge "Class.teacher"`)}
 	}
 	return nil
 }
@@ -131,10 +175,10 @@ func (cc *ClassCreate) sqlSave(ctx context.Context) (*Class, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected Class.ID type: %T", _spec.ID.Value)
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
 		}
 	}
 	cc.mutation.id = &_node.ID
@@ -145,57 +189,66 @@ func (cc *ClassCreate) sqlSave(ctx context.Context) (*Class, error) {
 func (cc *ClassCreate) createSpec() (*Class, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Class{config: cc.config}
-		_spec = sqlgraph.NewCreateSpec(class.Table, sqlgraph.NewFieldSpec(class.FieldID, field.TypeString))
+		_spec = sqlgraph.NewCreateSpec(class.Table, sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID))
 	)
 	if id, ok := cc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := cc.mutation.Name(); ok {
 		_spec.SetField(class.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if nodes := cc.mutation.UsersIDs(); len(nodes) > 0 {
+	if value, ok := cc.mutation.CreatedAt(); ok {
+		_spec.SetField(class.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := cc.mutation.UpdatedAt(); ok {
+		_spec.SetField(class.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
+	if nodes := cc.mutation.TeacherIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   class.UsersTable,
-			Columns: []string{class.UsersColumn},
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   class.TeacherTable,
+			Columns: []string{class.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.TeacherID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := cc.mutation.ClassInvitationCodesIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.ClassStudentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   class.ClassInvitationCodesTable,
-			Columns: []string{class.ClassInvitationCodesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cc.mutation.StudentClassesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   class.StudentClassesTable,
-			Columns: []string{class.StudentClassesColumn},
+			Table:   class.ClassStudentsTable,
+			Columns: []string{class.ClassStudentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(studentclass.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.InvitationCodesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.InvitationCodesTable,
+			Columns: []string{class.InvitationCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -224,6 +277,7 @@ func (ccb *ClassCreateBulk) Save(ctx context.Context) ([]*Class, error) {
 	for i := range ccb.builders {
 		func(i int, root context.Context) {
 			builder := ccb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ClassMutation)
 				if !ok {

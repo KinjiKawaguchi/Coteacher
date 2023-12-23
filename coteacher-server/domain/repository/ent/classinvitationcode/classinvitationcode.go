@@ -5,6 +5,7 @@ package classinvitationcode
 import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/google/uuid"
 )
 
 const (
@@ -12,12 +13,18 @@ const (
 	Label = "class_invitation_code"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldClassID holds the string denoting the class_id field in the database.
+	FieldClassID = "class_id"
 	// FieldInvitationCode holds the string denoting the invitation_code field in the database.
 	FieldInvitationCode = "invitation_code"
 	// FieldExpirationDate holds the string denoting the expiration_date field in the database.
 	FieldExpirationDate = "expiration_date"
 	// FieldIsActive holds the string denoting the is_active field in the database.
 	FieldIsActive = "is_active"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// EdgeClass holds the string denoting the class edge name in mutations.
 	EdgeClass = "class"
 	// Table holds the table name of the classinvitationcode in the database.
@@ -28,21 +35,18 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "class" package.
 	ClassInverseTable = "classes"
 	// ClassColumn is the table column denoting the class relation/edge.
-	ClassColumn = "class_class_invitation_codes"
+	ClassColumn = "class_id"
 )
 
 // Columns holds all SQL columns for classinvitationcode fields.
 var Columns = []string{
 	FieldID,
+	FieldClassID,
 	FieldInvitationCode,
 	FieldExpirationDate,
 	FieldIsActive,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "class_invitation_codes"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"class_class_invitation_codes",
+	FieldCreatedAt,
+	FieldUpdatedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -52,13 +56,15 @@ func ValidColumn(column string) bool {
 			return true
 		}
 	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
-			return true
-		}
-	}
 	return false
 }
+
+var (
+	// InvitationCodeValidator is a validator for the "invitation_code" field. It is called by the builders before save.
+	InvitationCodeValidator func(string) error
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
+)
 
 // OrderOption defines the ordering options for the ClassInvitationCode queries.
 type OrderOption func(*sql.Selector)
@@ -66,6 +72,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByClassID orders the results by the class_id field.
+func ByClassID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldClassID, opts...).ToFunc()
 }
 
 // ByInvitationCode orders the results by the invitation_code field.
@@ -81,6 +92,16 @@ func ByExpirationDate(opts ...sql.OrderTermOption) OrderOption {
 // ByIsActive orders the results by the is_active field.
 func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
 // ByClassField orders the results by class field.

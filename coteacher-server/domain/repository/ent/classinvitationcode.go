@@ -11,24 +11,30 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 )
 
 // ClassInvitationCode is the model entity for the ClassInvitationCode schema.
 type ClassInvitationCode struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID string `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
+	// ClassID holds the value of the "class_id" field.
+	ClassID uuid.UUID `json:"class_id,omitempty"`
 	// InvitationCode holds the value of the "invitation_code" field.
 	InvitationCode string `json:"invitation_code,omitempty"`
 	// ExpirationDate holds the value of the "expiration_date" field.
 	ExpirationDate time.Time `json:"expiration_date,omitempty"`
 	// IsActive holds the value of the "is_active" field.
 	IsActive bool `json:"is_active,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ClassInvitationCodeQuery when eager-loading is set.
-	Edges                        ClassInvitationCodeEdges `json:"edges"`
-	class_class_invitation_codes *string
-	selectValues                 sql.SelectValues
+	Edges        ClassInvitationCodeEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // ClassInvitationCodeEdges holds the relations/edges for other nodes in the graph.
@@ -60,12 +66,12 @@ func (*ClassInvitationCode) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case classinvitationcode.FieldIsActive:
 			values[i] = new(sql.NullBool)
-		case classinvitationcode.FieldID, classinvitationcode.FieldInvitationCode:
+		case classinvitationcode.FieldInvitationCode:
 			values[i] = new(sql.NullString)
-		case classinvitationcode.FieldExpirationDate:
+		case classinvitationcode.FieldExpirationDate, classinvitationcode.FieldCreatedAt, classinvitationcode.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case classinvitationcode.ForeignKeys[0]: // class_class_invitation_codes
-			values[i] = new(sql.NullString)
+		case classinvitationcode.FieldID, classinvitationcode.FieldClassID:
+			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -82,10 +88,16 @@ func (cic *ClassInvitationCode) assignValues(columns []string, values []any) err
 	for i := range columns {
 		switch columns[i] {
 		case classinvitationcode.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				cic.ID = value.String
+			} else if value != nil {
+				cic.ID = *value
+			}
+		case classinvitationcode.FieldClassID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field class_id", values[i])
+			} else if value != nil {
+				cic.ClassID = *value
 			}
 		case classinvitationcode.FieldInvitationCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -105,12 +117,17 @@ func (cic *ClassInvitationCode) assignValues(columns []string, values []any) err
 			} else if value.Valid {
 				cic.IsActive = value.Bool
 			}
-		case classinvitationcode.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field class_class_invitation_codes", values[i])
+		case classinvitationcode.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				cic.class_class_invitation_codes = new(string)
-				*cic.class_class_invitation_codes = value.String
+				cic.CreatedAt = value.Time
+			}
+		case classinvitationcode.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				cic.UpdatedAt = value.Time
 			}
 		default:
 			cic.selectValues.Set(columns[i], values[i])
@@ -153,6 +170,9 @@ func (cic *ClassInvitationCode) String() string {
 	var builder strings.Builder
 	builder.WriteString("ClassInvitationCode(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", cic.ID))
+	builder.WriteString("class_id=")
+	builder.WriteString(fmt.Sprintf("%v", cic.ClassID))
+	builder.WriteString(", ")
 	builder.WriteString("invitation_code=")
 	builder.WriteString(cic.InvitationCode)
 	builder.WriteString(", ")
@@ -161,6 +181,12 @@ func (cic *ClassInvitationCode) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_active=")
 	builder.WriteString(fmt.Sprintf("%v", cic.IsActive))
+	builder.WriteString(", ")
+	builder.WriteString("created_at=")
+	builder.WriteString(cic.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(cic.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

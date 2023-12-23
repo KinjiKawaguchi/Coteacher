@@ -4,65 +4,77 @@ package ent
 
 import (
 	"coteacher/domain/repository/ent/class"
+	"coteacher/domain/repository/ent/teacher"
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 )
 
 // Class is the model entity for the Class schema.
 type Class struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID string `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// TeacherID holds the value of the "teacher_id" field.
+	TeacherID uuid.UUID `json:"teacher_id,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ClassQuery when eager-loading is set.
 	Edges        ClassEdges `json:"edges"`
-	user_classes *string
 	selectValues sql.SelectValues
 }
 
 // ClassEdges holds the relations/edges for other nodes in the graph.
 type ClassEdges struct {
-	// Users holds the value of the users edge.
-	Users []*User `json:"users,omitempty"`
-	// ClassInvitationCodes holds the value of the class_invitation_codes edge.
-	ClassInvitationCodes []*ClassInvitationCode `json:"class_invitation_codes,omitempty"`
-	// StudentClasses holds the value of the student_classes edge.
-	StudentClasses []*StudentClass `json:"student_classes,omitempty"`
+	// Teacher holds the value of the teacher edge.
+	Teacher *Teacher `json:"teacher,omitempty"`
+	// ClassStudents holds the value of the classStudents edge.
+	ClassStudents []*StudentClass `json:"classStudents,omitempty"`
+	// InvitationCodes holds the value of the invitationCodes edge.
+	InvitationCodes []*ClassInvitationCode `json:"invitationCodes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [3]bool
 }
 
-// UsersOrErr returns the Users value or an error if the edge
-// was not loaded in eager-loading.
-func (e ClassEdges) UsersOrErr() ([]*User, error) {
+// TeacherOrErr returns the Teacher value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ClassEdges) TeacherOrErr() (*Teacher, error) {
 	if e.loadedTypes[0] {
-		return e.Users, nil
+		if e.Teacher == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: teacher.Label}
+		}
+		return e.Teacher, nil
 	}
-	return nil, &NotLoadedError{edge: "users"}
+	return nil, &NotLoadedError{edge: "teacher"}
 }
 
-// ClassInvitationCodesOrErr returns the ClassInvitationCodes value or an error if the edge
+// ClassStudentsOrErr returns the ClassStudents value or an error if the edge
 // was not loaded in eager-loading.
-func (e ClassEdges) ClassInvitationCodesOrErr() ([]*ClassInvitationCode, error) {
+func (e ClassEdges) ClassStudentsOrErr() ([]*StudentClass, error) {
 	if e.loadedTypes[1] {
-		return e.ClassInvitationCodes, nil
+		return e.ClassStudents, nil
 	}
-	return nil, &NotLoadedError{edge: "class_invitation_codes"}
+	return nil, &NotLoadedError{edge: "classStudents"}
 }
 
-// StudentClassesOrErr returns the StudentClasses value or an error if the edge
+// InvitationCodesOrErr returns the InvitationCodes value or an error if the edge
 // was not loaded in eager-loading.
-func (e ClassEdges) StudentClassesOrErr() ([]*StudentClass, error) {
+func (e ClassEdges) InvitationCodesOrErr() ([]*ClassInvitationCode, error) {
 	if e.loadedTypes[2] {
-		return e.StudentClasses, nil
+		return e.InvitationCodes, nil
 	}
-	return nil, &NotLoadedError{edge: "student_classes"}
+	return nil, &NotLoadedError{edge: "invitationCodes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -70,10 +82,12 @@ func (*Class) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case class.FieldID, class.FieldName:
+		case class.FieldName:
 			values[i] = new(sql.NullString)
-		case class.ForeignKeys[0]: // user_classes
-			values[i] = new(sql.NullString)
+		case class.FieldCreatedAt, class.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
+		case class.FieldID, class.FieldTeacherID:
+			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -90,10 +104,10 @@ func (c *Class) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case class.FieldID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				c.ID = value.String
+			} else if value != nil {
+				c.ID = *value
 			}
 		case class.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -101,12 +115,23 @@ func (c *Class) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Name = value.String
 			}
-		case class.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field user_classes", values[i])
+		case class.FieldTeacherID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field teacher_id", values[i])
+			} else if value != nil {
+				c.TeacherID = *value
+			}
+		case class.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				c.user_classes = new(string)
-				*c.user_classes = value.String
+				c.CreatedAt = value.Time
+			}
+		case class.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				c.UpdatedAt = value.Time
 			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
@@ -121,19 +146,19 @@ func (c *Class) Value(name string) (ent.Value, error) {
 	return c.selectValues.Get(name)
 }
 
-// QueryUsers queries the "users" edge of the Class entity.
-func (c *Class) QueryUsers() *UserQuery {
-	return NewClassClient(c.config).QueryUsers(c)
+// QueryTeacher queries the "teacher" edge of the Class entity.
+func (c *Class) QueryTeacher() *TeacherQuery {
+	return NewClassClient(c.config).QueryTeacher(c)
 }
 
-// QueryClassInvitationCodes queries the "class_invitation_codes" edge of the Class entity.
-func (c *Class) QueryClassInvitationCodes() *ClassInvitationCodeQuery {
-	return NewClassClient(c.config).QueryClassInvitationCodes(c)
+// QueryClassStudents queries the "classStudents" edge of the Class entity.
+func (c *Class) QueryClassStudents() *StudentClassQuery {
+	return NewClassClient(c.config).QueryClassStudents(c)
 }
 
-// QueryStudentClasses queries the "student_classes" edge of the Class entity.
-func (c *Class) QueryStudentClasses() *StudentClassQuery {
-	return NewClassClient(c.config).QueryStudentClasses(c)
+// QueryInvitationCodes queries the "invitationCodes" edge of the Class entity.
+func (c *Class) QueryInvitationCodes() *ClassInvitationCodeQuery {
+	return NewClassClient(c.config).QueryInvitationCodes(c)
 }
 
 // Update returns a builder for updating this Class.
@@ -161,6 +186,15 @@ func (c *Class) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", c.ID))
 	builder.WriteString("name=")
 	builder.WriteString(c.Name)
+	builder.WriteString(", ")
+	builder.WriteString("teacher_id=")
+	builder.WriteString(fmt.Sprintf("%v", c.TeacherID))
+	builder.WriteString(", ")
+	builder.WriteString("created_at=")
+	builder.WriteString(c.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(c.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

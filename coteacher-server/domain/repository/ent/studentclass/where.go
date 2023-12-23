@@ -4,9 +4,11 @@ package studentclass
 
 import (
 	"coteacher/domain/repository/ent/predicate"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
@@ -54,6 +56,169 @@ func IDLTE(id int) predicate.StudentClass {
 	return predicate.StudentClass(sql.FieldLTE(FieldID, id))
 }
 
+// StudentID applies equality check predicate on the "student_id" field. It's identical to StudentIDEQ.
+func StudentID(v uuid.UUID) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldEQ(FieldStudentID, v))
+}
+
+// ClassID applies equality check predicate on the "class_id" field. It's identical to ClassIDEQ.
+func ClassID(v uuid.UUID) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldEQ(FieldClassID, v))
+}
+
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// StudentIDEQ applies the EQ predicate on the "student_id" field.
+func StudentIDEQ(v uuid.UUID) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldEQ(FieldStudentID, v))
+}
+
+// StudentIDNEQ applies the NEQ predicate on the "student_id" field.
+func StudentIDNEQ(v uuid.UUID) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldNEQ(FieldStudentID, v))
+}
+
+// StudentIDIn applies the In predicate on the "student_id" field.
+func StudentIDIn(vs ...uuid.UUID) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldIn(FieldStudentID, vs...))
+}
+
+// StudentIDNotIn applies the NotIn predicate on the "student_id" field.
+func StudentIDNotIn(vs ...uuid.UUID) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldNotIn(FieldStudentID, vs...))
+}
+
+// ClassIDEQ applies the EQ predicate on the "class_id" field.
+func ClassIDEQ(v uuid.UUID) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldEQ(FieldClassID, v))
+}
+
+// ClassIDNEQ applies the NEQ predicate on the "class_id" field.
+func ClassIDNEQ(v uuid.UUID) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldNEQ(FieldClassID, v))
+}
+
+// ClassIDIn applies the In predicate on the "class_id" field.
+func ClassIDIn(vs ...uuid.UUID) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldIn(FieldClassID, vs...))
+}
+
+// ClassIDNotIn applies the NotIn predicate on the "class_id" field.
+func ClassIDNotIn(vs ...uuid.UUID) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldNotIn(FieldClassID, vs...))
+}
+
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldNEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldNEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldNotIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldGT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldGTE(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldLT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.StudentClass {
+	return predicate.StudentClass(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// HasStudent applies the HasEdge predicate on the "student" edge.
+func HasStudent() predicate.StudentClass {
+	return predicate.StudentClass(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, StudentTable, StudentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStudentWith applies the HasEdge predicate on the "student" edge with a given conditions (other predicates).
+func HasStudentWith(preds ...predicate.Student) predicate.StudentClass {
+	return predicate.StudentClass(func(s *sql.Selector) {
+		step := newStudentStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasClass applies the HasEdge predicate on the "class" edge.
 func HasClass() predicate.StudentClass {
 	return predicate.StudentClass(func(s *sql.Selector) {
@@ -69,29 +234,6 @@ func HasClass() predicate.StudentClass {
 func HasClassWith(preds ...predicate.Class) predicate.StudentClass {
 	return predicate.StudentClass(func(s *sql.Selector) {
 		step := newClassStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasUser applies the HasEdge predicate on the "user" edge.
-func HasUser() predicate.StudentClass {
-	return predicate.StudentClass(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasUserWith applies the HasEdge predicate on the "user" edge with a given conditions (other predicates).
-func HasUserWith(preds ...predicate.User) predicate.StudentClass {
-	return predicate.StudentClass(func(s *sql.Selector) {
-		step := newUserStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

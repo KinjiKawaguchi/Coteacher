@@ -1,7 +1,7 @@
 package main
 
 import (
-	"coteacher/internal/services" // gRPCサービスのパッケージ
+	"coteacher/usecase/user" // gRPCサービスのパッケージ
 	"database/sql"
 	"log"
 	"net"

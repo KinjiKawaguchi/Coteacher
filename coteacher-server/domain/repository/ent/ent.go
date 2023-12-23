@@ -6,7 +6,9 @@ import (
 	"context"
 	"coteacher/domain/repository/ent/class"
 	"coteacher/domain/repository/ent/classinvitationcode"
+	"coteacher/domain/repository/ent/student"
 	"coteacher/domain/repository/ent/studentclass"
+	"coteacher/domain/repository/ent/teacher"
 	"coteacher/domain/repository/ent/user"
 	"errors"
 	"fmt"
@@ -78,7 +80,9 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			class.Table:               class.ValidColumn,
 			classinvitationcode.Table: classinvitationcode.ValidColumn,
+			student.Table:             student.ValidColumn,
 			studentclass.Table:        studentclass.ValidColumn,
+			teacher.Table:             teacher.ValidColumn,
 			user.Table:                user.ValidColumn,
 		})
 	})
