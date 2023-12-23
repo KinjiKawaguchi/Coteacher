@@ -2,15 +2,29 @@ syntax = "proto3";
 
 package coteacher.v1;
 
+import "google/protobuf/timestamp.proto";
+
+// Base user message
 message User {
   string id = 1;
   string name = 2;
   string email = 3;
-  enum Role {
-    ROLE_UNSPECIFIED = 0;
-    ROLE_TEACHER = 1;
-    ROLE_STUDENT = 2;
+  oneof role {
+    Teacher teacher = 4;
+    Student student = 5;
   }
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+// Teacher message with a reference to the User ID
+message Teacher {
+  string id = 1; // This should match the User ID if it's a 1-to-1 relationship
+}
+
+// Student message with a reference to the User ID
+message Student {
+  string id = 1; // This should match the User ID if it's a 1-to-1 relationship
 }
 
 message ClassInvitationCode {
@@ -19,10 +33,14 @@ message ClassInvitationCode {
   string invitation_code = 3;
   string expiration_date = 4;
   bool is_active = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
 }
 
 message Class {
   string id = 1;
   string name = 2;
   string teacher_id = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
 }

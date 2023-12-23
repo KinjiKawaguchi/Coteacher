@@ -7,7 +7,10 @@ import "coteacher/v1/resources.proto";
 message CreateUserRequest {
   string name = 1;
   string email = 2;
-  User.Role role = 3;
+  oneof role {
+    Teacher teacher = 3;
+    Student student = 4;
+  }
 }
 
 message CreateUserResponse {
@@ -34,7 +37,10 @@ message UpdateUserRequest {
   string id = 1;
   string name = 2;
   string email = 3;
-  User.Role role = 4;
+  oneof role {
+    Teacher teacher = 4;
+    Student student = 5;
+  }
 }
 
 message UpdateUserResponse {
