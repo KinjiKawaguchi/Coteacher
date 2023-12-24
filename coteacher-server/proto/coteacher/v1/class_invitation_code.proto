@@ -3,10 +3,11 @@ syntax = "proto3";
 package coteacher.v1;
 
 import "coteacher/v1/resources.proto";
+import "google/protobuf/timestamp.proto";
 
 message CreateClassInvitationCodeRequest {
   string class_id = 1;
-  string expiration_date = 2;
+  google.protobuf.Timestamp expiration_date = 2;
 }
 
 message CreateClassInvitationCodeResponse {
