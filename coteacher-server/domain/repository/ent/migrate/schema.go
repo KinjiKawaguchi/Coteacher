@@ -10,11 +10,11 @@ import (
 var (
 	// ClassesColumns holds the columns for the "classes" table.
 	ClassesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "teacher_id", Type: field.TypeUUID},
+		{Name: "teacher_id", Type: field.TypeString},
 	}
 	// ClassesTable holds the schema information for the "classes" table.
 	ClassesTable = &schema.Table{
@@ -32,13 +32,13 @@ var (
 	}
 	// ClassInvitationCodesColumns holds the columns for the "class_invitation_codes" table.
 	ClassInvitationCodesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "invitation_code", Type: field.TypeString, Unique: true},
-		{Name: "expiration_date", Type: field.TypeTime, Nullable: true},
+		{Name: "expiration_date", Type: field.TypeTime},
 		{Name: "is_active", Type: field.TypeBool},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "class_id", Type: field.TypeUUID},
+		{Name: "class_id", Type: field.TypeString},
 	}
 	// ClassInvitationCodesTable holds the schema information for the "class_invitation_codes" table.
 	ClassInvitationCodesTable = &schema.Table{
@@ -56,8 +56,8 @@ var (
 	}
 	// StudentsColumns holds the columns for the "students" table.
 	StudentsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
-		{Name: "user_student", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "user_student", Type: field.TypeString, Unique: true},
 	}
 	// StudentsTable holds the schema information for the "students" table.
 	StudentsTable = &schema.Table{
@@ -78,8 +78,8 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "class_id", Type: field.TypeUUID},
-		{Name: "student_id", Type: field.TypeUUID},
+		{Name: "class_id", Type: field.TypeString},
+		{Name: "student_id", Type: field.TypeString},
 	}
 	// StudentClassesTable holds the schema information for the "student_classes" table.
 	StudentClassesTable = &schema.Table{
@@ -103,8 +103,8 @@ var (
 	}
 	// TeachersColumns holds the columns for the "teachers" table.
 	TeachersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
-		{Name: "user_teacher", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "user_teacher", Type: field.TypeString, Unique: true},
 	}
 	// TeachersTable holds the schema information for the "teachers" table.
 	TeachersTable = &schema.Table{
@@ -122,7 +122,7 @@ var (
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},

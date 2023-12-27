@@ -40,7 +40,7 @@ func (cicd *ClassInvitationCodeDelete) ExecX(ctx context.Context) int {
 }
 
 func (cicd *ClassInvitationCodeDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(classinvitationcode.Table, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewDeleteSpec(classinvitationcode.Table, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString))
 	if ps := cicd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

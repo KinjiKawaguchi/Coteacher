@@ -40,7 +40,7 @@ func (cd *ClassDelete) ExecX(ctx context.Context) int {
 }
 
 func (cd *ClassDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(class.Table, sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewDeleteSpec(class.Table, sqlgraph.NewFieldSpec(class.FieldID, field.TypeString))
 	if ps := cd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

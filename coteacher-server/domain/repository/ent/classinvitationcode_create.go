@@ -12,7 +12,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // ClassInvitationCodeCreate is the builder for creating a ClassInvitationCode entity.
@@ -23,8 +22,8 @@ type ClassInvitationCodeCreate struct {
 }
 
 // SetClassID sets the "class_id" field.
-func (cicc *ClassInvitationCodeCreate) SetClassID(u uuid.UUID) *ClassInvitationCodeCreate {
-	cicc.mutation.SetClassID(u)
+func (cicc *ClassInvitationCodeCreate) SetClassID(s string) *ClassInvitationCodeCreate {
+	cicc.mutation.SetClassID(s)
 	return cicc
 }
 
@@ -37,14 +36,6 @@ func (cicc *ClassInvitationCodeCreate) SetInvitationCode(s string) *ClassInvitat
 // SetExpirationDate sets the "expiration_date" field.
 func (cicc *ClassInvitationCodeCreate) SetExpirationDate(t time.Time) *ClassInvitationCodeCreate {
 	cicc.mutation.SetExpirationDate(t)
-	return cicc
-}
-
-// SetNillableExpirationDate sets the "expiration_date" field if the given value is not nil.
-func (cicc *ClassInvitationCodeCreate) SetNillableExpirationDate(t *time.Time) *ClassInvitationCodeCreate {
-	if t != nil {
-		cicc.SetExpirationDate(*t)
-	}
 	return cicc
 }
 
@@ -67,16 +58,8 @@ func (cicc *ClassInvitationCodeCreate) SetUpdatedAt(t time.Time) *ClassInvitatio
 }
 
 // SetID sets the "id" field.
-func (cicc *ClassInvitationCodeCreate) SetID(u uuid.UUID) *ClassInvitationCodeCreate {
-	cicc.mutation.SetID(u)
-	return cicc
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (cicc *ClassInvitationCodeCreate) SetNillableID(u *uuid.UUID) *ClassInvitationCodeCreate {
-	if u != nil {
-		cicc.SetID(*u)
-	}
+func (cicc *ClassInvitationCodeCreate) SetID(s string) *ClassInvitationCodeCreate {
+	cicc.mutation.SetID(s)
 	return cicc
 }
 
@@ -92,7 +75,6 @@ func (cicc *ClassInvitationCodeCreate) Mutation() *ClassInvitationCodeMutation {
 
 // Save creates the ClassInvitationCode in the database.
 func (cicc *ClassInvitationCodeCreate) Save(ctx context.Context) (*ClassInvitationCode, error) {
-	cicc.defaults()
 	return withHooks(ctx, cicc.sqlSave, cicc.mutation, cicc.hooks)
 }
 
@@ -118,14 +100,6 @@ func (cicc *ClassInvitationCodeCreate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (cicc *ClassInvitationCodeCreate) defaults() {
-	if _, ok := cicc.mutation.ID(); !ok {
-		v := classinvitationcode.DefaultID()
-		cicc.mutation.SetID(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (cicc *ClassInvitationCodeCreate) check() error {
 	if _, ok := cicc.mutation.ClassID(); !ok {
@@ -134,10 +108,8 @@ func (cicc *ClassInvitationCodeCreate) check() error {
 	if _, ok := cicc.mutation.InvitationCode(); !ok {
 		return &ValidationError{Name: "invitation_code", err: errors.New(`ent: missing required field "ClassInvitationCode.invitation_code"`)}
 	}
-	if v, ok := cicc.mutation.InvitationCode(); ok {
-		if err := classinvitationcode.InvitationCodeValidator(v); err != nil {
-			return &ValidationError{Name: "invitation_code", err: fmt.Errorf(`ent: validator failed for field "ClassInvitationCode.invitation_code": %w`, err)}
-		}
+	if _, ok := cicc.mutation.ExpirationDate(); !ok {
+		return &ValidationError{Name: "expiration_date", err: errors.New(`ent: missing required field "ClassInvitationCode.expiration_date"`)}
 	}
 	if _, ok := cicc.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "ClassInvitationCode.is_active"`)}
@@ -166,10 +138,10 @@ func (cicc *ClassInvitationCodeCreate) sqlSave(ctx context.Context) (*ClassInvit
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected ClassInvitationCode.ID type: %T", _spec.ID.Value)
 		}
 	}
 	cicc.mutation.id = &_node.ID
@@ -180,11 +152,11 @@ func (cicc *ClassInvitationCodeCreate) sqlSave(ctx context.Context) (*ClassInvit
 func (cicc *ClassInvitationCodeCreate) createSpec() (*ClassInvitationCode, *sqlgraph.CreateSpec) {
 	var (
 		_node = &ClassInvitationCode{config: cicc.config}
-		_spec = sqlgraph.NewCreateSpec(classinvitationcode.Table, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID))
+		_spec = sqlgraph.NewCreateSpec(classinvitationcode.Table, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString))
 	)
 	if id, ok := cicc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := cicc.mutation.InvitationCode(); ok {
 		_spec.SetField(classinvitationcode.FieldInvitationCode, field.TypeString, value)
@@ -214,7 +186,7 @@ func (cicc *ClassInvitationCodeCreate) createSpec() (*ClassInvitationCode, *sqlg
 			Columns: []string{classinvitationcode.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -244,7 +216,6 @@ func (ciccb *ClassInvitationCodeCreateBulk) Save(ctx context.Context) ([]*ClassI
 	for i := range ciccb.builders {
 		func(i int, root context.Context) {
 			builder := ciccb.builders[i]
-			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ClassInvitationCodeMutation)
 				if !ok {

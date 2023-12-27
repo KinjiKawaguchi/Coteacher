@@ -11,16 +11,15 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 )
 
 // ClassInvitationCode is the model entity for the ClassInvitationCode schema.
 type ClassInvitationCode struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// ClassID holds the value of the "class_id" field.
-	ClassID uuid.UUID `json:"class_id,omitempty"`
+	ClassID string `json:"class_id,omitempty"`
 	// InvitationCode holds the value of the "invitation_code" field.
 	InvitationCode string `json:"invitation_code,omitempty"`
 	// ExpirationDate holds the value of the "expiration_date" field.
@@ -66,12 +65,10 @@ func (*ClassInvitationCode) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case classinvitationcode.FieldIsActive:
 			values[i] = new(sql.NullBool)
-		case classinvitationcode.FieldInvitationCode:
+		case classinvitationcode.FieldID, classinvitationcode.FieldClassID, classinvitationcode.FieldInvitationCode:
 			values[i] = new(sql.NullString)
 		case classinvitationcode.FieldExpirationDate, classinvitationcode.FieldCreatedAt, classinvitationcode.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case classinvitationcode.FieldID, classinvitationcode.FieldClassID:
-			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -88,16 +85,16 @@ func (cic *ClassInvitationCode) assignValues(columns []string, values []any) err
 	for i := range columns {
 		switch columns[i] {
 		case classinvitationcode.FieldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				cic.ID = *value
+			} else if value.Valid {
+				cic.ID = value.String
 			}
 		case classinvitationcode.FieldClassID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field class_id", values[i])
-			} else if value != nil {
-				cic.ClassID = *value
+			} else if value.Valid {
+				cic.ClassID = value.String
 			}
 		case classinvitationcode.FieldInvitationCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -171,7 +168,7 @@ func (cic *ClassInvitationCode) String() string {
 	builder.WriteString("ClassInvitationCode(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", cic.ID))
 	builder.WriteString("class_id=")
-	builder.WriteString(fmt.Sprintf("%v", cic.ClassID))
+	builder.WriteString(cic.ClassID)
 	builder.WriteString(", ")
 	builder.WriteString("invitation_code=")
 	builder.WriteString(cic.InvitationCode)

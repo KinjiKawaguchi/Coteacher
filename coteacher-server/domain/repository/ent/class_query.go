@@ -16,7 +16,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // ClassQuery is the builder for querying Class entities.
@@ -155,8 +154,8 @@ func (cq *ClassQuery) FirstX(ctx context.Context) *Class {
 
 // FirstID returns the first Class ID from the query.
 // Returns a *NotFoundError when no Class ID was found.
-func (cq *ClassQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (cq *ClassQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -168,7 +167,7 @@ func (cq *ClassQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cq *ClassQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (cq *ClassQuery) FirstIDX(ctx context.Context) string {
 	id, err := cq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -206,8 +205,8 @@ func (cq *ClassQuery) OnlyX(ctx context.Context) *Class {
 // OnlyID is like Only, but returns the only Class ID in the query.
 // Returns a *NotSingularError when more than one Class ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (cq *ClassQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (cq *ClassQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -223,7 +222,7 @@ func (cq *ClassQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cq *ClassQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (cq *ClassQuery) OnlyIDX(ctx context.Context) string {
 	id, err := cq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -251,7 +250,7 @@ func (cq *ClassQuery) AllX(ctx context.Context) []*Class {
 }
 
 // IDs executes the query and returns a list of Class IDs.
-func (cq *ClassQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+func (cq *ClassQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if cq.ctx.Unique == nil && cq.path != nil {
 		cq.Unique(true)
 	}
@@ -263,7 +262,7 @@ func (cq *ClassQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cq *ClassQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (cq *ClassQuery) IDsX(ctx context.Context) []string {
 	ids, err := cq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -491,8 +490,8 @@ func (cq *ClassQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Class,
 }
 
 func (cq *ClassQuery) loadTeacher(ctx context.Context, query *TeacherQuery, nodes []*Class, init func(*Class), assign func(*Class, *Teacher)) error {
-	ids := make([]uuid.UUID, 0, len(nodes))
-	nodeids := make(map[uuid.UUID][]*Class)
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Class)
 	for i := range nodes {
 		fk := nodes[i].TeacherID
 		if _, ok := nodeids[fk]; !ok {
@@ -521,7 +520,7 @@ func (cq *ClassQuery) loadTeacher(ctx context.Context, query *TeacherQuery, node
 }
 func (cq *ClassQuery) loadClassStudents(ctx context.Context, query *StudentClassQuery, nodes []*Class, init func(*Class), assign func(*Class, *StudentClass)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*Class)
+	nodeids := make(map[string]*Class)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -551,7 +550,7 @@ func (cq *ClassQuery) loadClassStudents(ctx context.Context, query *StudentClass
 }
 func (cq *ClassQuery) loadInvitationCodes(ctx context.Context, query *ClassInvitationCodeQuery, nodes []*Class, init func(*Class), assign func(*Class, *ClassInvitationCode)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*Class)
+	nodeids := make(map[string]*Class)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -590,7 +589,7 @@ func (cq *ClassQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (cq *ClassQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(class.Table, class.Columns, sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewQuerySpec(class.Table, class.Columns, sqlgraph.NewFieldSpec(class.FieldID, field.TypeString))
 	_spec.From = cq.sql
 	if unique := cq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

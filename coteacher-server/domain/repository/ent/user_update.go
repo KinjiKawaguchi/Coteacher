@@ -15,7 +15,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -88,13 +87,13 @@ func (uu *UserUpdate) SetNillableUpdatedAt(t *time.Time) *UserUpdate {
 }
 
 // SetTeacherID sets the "teacher" edge to the Teacher entity by ID.
-func (uu *UserUpdate) SetTeacherID(id uuid.UUID) *UserUpdate {
+func (uu *UserUpdate) SetTeacherID(id string) *UserUpdate {
 	uu.mutation.SetTeacherID(id)
 	return uu
 }
 
 // SetNillableTeacherID sets the "teacher" edge to the Teacher entity by ID if the given value is not nil.
-func (uu *UserUpdate) SetNillableTeacherID(id *uuid.UUID) *UserUpdate {
+func (uu *UserUpdate) SetNillableTeacherID(id *string) *UserUpdate {
 	if id != nil {
 		uu = uu.SetTeacherID(*id)
 	}
@@ -107,13 +106,13 @@ func (uu *UserUpdate) SetTeacher(t *Teacher) *UserUpdate {
 }
 
 // SetStudentID sets the "student" edge to the Student entity by ID.
-func (uu *UserUpdate) SetStudentID(id uuid.UUID) *UserUpdate {
+func (uu *UserUpdate) SetStudentID(id string) *UserUpdate {
 	uu.mutation.SetStudentID(id)
 	return uu
 }
 
 // SetNillableStudentID sets the "student" edge to the Student entity by ID if the given value is not nil.
-func (uu *UserUpdate) SetNillableStudentID(id *uuid.UUID) *UserUpdate {
+func (uu *UserUpdate) SetNillableStudentID(id *string) *UserUpdate {
 	if id != nil {
 		uu = uu.SetStudentID(*id)
 	}
@@ -169,26 +168,8 @@ func (uu *UserUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (uu *UserUpdate) check() error {
-	if v, ok := uu.mutation.Name(); ok {
-		if err := user.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
-		}
-	}
-	if v, ok := uu.mutation.Email(); ok {
-		if err := user.EmailValidator(v); err != nil {
-			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := uu.check(); err != nil {
-		return n, err
-	}
-	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	if ps := uu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -216,7 +197,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -229,7 +210,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -245,7 +226,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -258,7 +239,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -343,13 +324,13 @@ func (uuo *UserUpdateOne) SetNillableUpdatedAt(t *time.Time) *UserUpdateOne {
 }
 
 // SetTeacherID sets the "teacher" edge to the Teacher entity by ID.
-func (uuo *UserUpdateOne) SetTeacherID(id uuid.UUID) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetTeacherID(id string) *UserUpdateOne {
 	uuo.mutation.SetTeacherID(id)
 	return uuo
 }
 
 // SetNillableTeacherID sets the "teacher" edge to the Teacher entity by ID if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableTeacherID(id *uuid.UUID) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetNillableTeacherID(id *string) *UserUpdateOne {
 	if id != nil {
 		uuo = uuo.SetTeacherID(*id)
 	}
@@ -362,13 +343,13 @@ func (uuo *UserUpdateOne) SetTeacher(t *Teacher) *UserUpdateOne {
 }
 
 // SetStudentID sets the "student" edge to the Student entity by ID.
-func (uuo *UserUpdateOne) SetStudentID(id uuid.UUID) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetStudentID(id string) *UserUpdateOne {
 	uuo.mutation.SetStudentID(id)
 	return uuo
 }
 
 // SetNillableStudentID sets the "student" edge to the Student entity by ID if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableStudentID(id *uuid.UUID) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetNillableStudentID(id *string) *UserUpdateOne {
 	if id != nil {
 		uuo = uuo.SetStudentID(*id)
 	}
@@ -437,26 +418,8 @@ func (uuo *UserUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (uuo *UserUpdateOne) check() error {
-	if v, ok := uuo.mutation.Name(); ok {
-		if err := user.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
-		}
-	}
-	if v, ok := uuo.mutation.Email(); ok {
-		if err := user.EmailValidator(v); err != nil {
-			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
-	if err := uuo.check(); err != nil {
-		return _node, err
-	}
-	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	id, ok := uuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "User.id" for update`)}
@@ -501,7 +464,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -514,7 +477,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -530,7 +493,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -543,7 +506,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

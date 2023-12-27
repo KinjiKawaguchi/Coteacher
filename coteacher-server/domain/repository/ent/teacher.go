@@ -10,18 +10,17 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 )
 
 // Teacher is the model entity for the Teacher schema.
 type Teacher struct {
 	config
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TeacherQuery when eager-loading is set.
 	Edges        TeacherEdges `json:"edges"`
-	user_teacher *uuid.UUID
+	user_teacher *string
 	selectValues sql.SelectValues
 }
 
@@ -64,9 +63,9 @@ func (*Teacher) scanValues(columns []string) ([]any, error) {
 	for i := range columns {
 		switch columns[i] {
 		case teacher.FieldID:
-			values[i] = new(uuid.UUID)
+			values[i] = new(sql.NullString)
 		case teacher.ForeignKeys[0]: // user_teacher
-			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -83,17 +82,17 @@ func (t *Teacher) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case teacher.FieldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				t.ID = *value
+			} else if value.Valid {
+				t.ID = value.String
 			}
 		case teacher.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field user_teacher", values[i])
 			} else if value.Valid {
-				t.user_teacher = new(uuid.UUID)
-				*t.user_teacher = *value.S.(*uuid.UUID)
+				t.user_teacher = new(string)
+				*t.user_teacher = value.String
 			}
 		default:
 			t.selectValues.Set(columns[i], values[i])

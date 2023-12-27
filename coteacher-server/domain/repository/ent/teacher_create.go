@@ -12,7 +12,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // TeacherCreate is the builder for creating a Teacher entity.
@@ -23,13 +22,13 @@ type TeacherCreate struct {
 }
 
 // SetID sets the "id" field.
-func (tc *TeacherCreate) SetID(u uuid.UUID) *TeacherCreate {
-	tc.mutation.SetID(u)
+func (tc *TeacherCreate) SetID(s string) *TeacherCreate {
+	tc.mutation.SetID(s)
 	return tc
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (tc *TeacherCreate) SetUserID(id uuid.UUID) *TeacherCreate {
+func (tc *TeacherCreate) SetUserID(id string) *TeacherCreate {
 	tc.mutation.SetUserID(id)
 	return tc
 }
@@ -40,14 +39,14 @@ func (tc *TeacherCreate) SetUser(u *User) *TeacherCreate {
 }
 
 // AddClassIDs adds the "classes" edge to the Class entity by IDs.
-func (tc *TeacherCreate) AddClassIDs(ids ...uuid.UUID) *TeacherCreate {
+func (tc *TeacherCreate) AddClassIDs(ids ...string) *TeacherCreate {
 	tc.mutation.AddClassIDs(ids...)
 	return tc
 }
 
 // AddClasses adds the "classes" edges to the Class entity.
 func (tc *TeacherCreate) AddClasses(c ...*Class) *TeacherCreate {
-	ids := make([]uuid.UUID, len(c))
+	ids := make([]string, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -106,10 +105,10 @@ func (tc *TeacherCreate) sqlSave(ctx context.Context) (*Teacher, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Teacher.ID type: %T", _spec.ID.Value)
 		}
 	}
 	tc.mutation.id = &_node.ID
@@ -120,11 +119,11 @@ func (tc *TeacherCreate) sqlSave(ctx context.Context) (*Teacher, error) {
 func (tc *TeacherCreate) createSpec() (*Teacher, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Teacher{config: tc.config}
-		_spec = sqlgraph.NewCreateSpec(teacher.Table, sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID))
+		_spec = sqlgraph.NewCreateSpec(teacher.Table, sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString))
 	)
 	if id, ok := tc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if nodes := tc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -134,7 +133,7 @@ func (tc *TeacherCreate) createSpec() (*Teacher, *sqlgraph.CreateSpec) {
 			Columns: []string{teacher.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -151,7 +150,7 @@ func (tc *TeacherCreate) createSpec() (*Teacher, *sqlgraph.CreateSpec) {
 			Columns: []string{teacher.ClassesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

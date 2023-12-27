@@ -15,7 +15,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // StudentClassUpdate is the builder for updating StudentClass entities.
@@ -32,29 +31,29 @@ func (scu *StudentClassUpdate) Where(ps ...predicate.StudentClass) *StudentClass
 }
 
 // SetStudentID sets the "student_id" field.
-func (scu *StudentClassUpdate) SetStudentID(u uuid.UUID) *StudentClassUpdate {
-	scu.mutation.SetStudentID(u)
+func (scu *StudentClassUpdate) SetStudentID(s string) *StudentClassUpdate {
+	scu.mutation.SetStudentID(s)
 	return scu
 }
 
 // SetNillableStudentID sets the "student_id" field if the given value is not nil.
-func (scu *StudentClassUpdate) SetNillableStudentID(u *uuid.UUID) *StudentClassUpdate {
-	if u != nil {
-		scu.SetStudentID(*u)
+func (scu *StudentClassUpdate) SetNillableStudentID(s *string) *StudentClassUpdate {
+	if s != nil {
+		scu.SetStudentID(*s)
 	}
 	return scu
 }
 
 // SetClassID sets the "class_id" field.
-func (scu *StudentClassUpdate) SetClassID(u uuid.UUID) *StudentClassUpdate {
-	scu.mutation.SetClassID(u)
+func (scu *StudentClassUpdate) SetClassID(s string) *StudentClassUpdate {
+	scu.mutation.SetClassID(s)
 	return scu
 }
 
 // SetNillableClassID sets the "class_id" field if the given value is not nil.
-func (scu *StudentClassUpdate) SetNillableClassID(u *uuid.UUID) *StudentClassUpdate {
-	if u != nil {
-		scu.SetClassID(*u)
+func (scu *StudentClassUpdate) SetNillableClassID(s *string) *StudentClassUpdate {
+	if s != nil {
+		scu.SetClassID(*s)
 	}
 	return scu
 }
@@ -178,7 +177,7 @@ func (scu *StudentClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{studentclass.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -191,7 +190,7 @@ func (scu *StudentClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{studentclass.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -207,7 +206,7 @@ func (scu *StudentClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{studentclass.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -220,7 +219,7 @@ func (scu *StudentClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{studentclass.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -249,29 +248,29 @@ type StudentClassUpdateOne struct {
 }
 
 // SetStudentID sets the "student_id" field.
-func (scuo *StudentClassUpdateOne) SetStudentID(u uuid.UUID) *StudentClassUpdateOne {
-	scuo.mutation.SetStudentID(u)
+func (scuo *StudentClassUpdateOne) SetStudentID(s string) *StudentClassUpdateOne {
+	scuo.mutation.SetStudentID(s)
 	return scuo
 }
 
 // SetNillableStudentID sets the "student_id" field if the given value is not nil.
-func (scuo *StudentClassUpdateOne) SetNillableStudentID(u *uuid.UUID) *StudentClassUpdateOne {
-	if u != nil {
-		scuo.SetStudentID(*u)
+func (scuo *StudentClassUpdateOne) SetNillableStudentID(s *string) *StudentClassUpdateOne {
+	if s != nil {
+		scuo.SetStudentID(*s)
 	}
 	return scuo
 }
 
 // SetClassID sets the "class_id" field.
-func (scuo *StudentClassUpdateOne) SetClassID(u uuid.UUID) *StudentClassUpdateOne {
-	scuo.mutation.SetClassID(u)
+func (scuo *StudentClassUpdateOne) SetClassID(s string) *StudentClassUpdateOne {
+	scuo.mutation.SetClassID(s)
 	return scuo
 }
 
 // SetNillableClassID sets the "class_id" field if the given value is not nil.
-func (scuo *StudentClassUpdateOne) SetNillableClassID(u *uuid.UUID) *StudentClassUpdateOne {
-	if u != nil {
-		scuo.SetClassID(*u)
+func (scuo *StudentClassUpdateOne) SetNillableClassID(s *string) *StudentClassUpdateOne {
+	if s != nil {
+		scuo.SetClassID(*s)
 	}
 	return scuo
 }
@@ -425,7 +424,7 @@ func (scuo *StudentClassUpdateOne) sqlSave(ctx context.Context) (_node *StudentC
 			Columns: []string{studentclass.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -438,7 +437,7 @@ func (scuo *StudentClassUpdateOne) sqlSave(ctx context.Context) (_node *StudentC
 			Columns: []string{studentclass.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -454,7 +453,7 @@ func (scuo *StudentClassUpdateOne) sqlSave(ctx context.Context) (_node *StudentC
 			Columns: []string{studentclass.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -467,7 +466,7 @@ func (scuo *StudentClassUpdateOne) sqlSave(ctx context.Context) (_node *StudentC
 			Columns: []string{studentclass.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

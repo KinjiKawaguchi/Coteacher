@@ -18,7 +18,6 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 )
 
 const (
@@ -43,18 +42,18 @@ type ClassMutation struct {
 	config
 	op                     Op
 	typ                    string
-	id                     *uuid.UUID
+	id                     *string
 	name                   *string
 	created_at             *time.Time
 	updated_at             *time.Time
 	clearedFields          map[string]struct{}
-	teacher                *uuid.UUID
+	teacher                *string
 	clearedteacher         bool
 	classStudents          map[int]struct{}
 	removedclassStudents   map[int]struct{}
 	clearedclassStudents   bool
-	invitationCodes        map[uuid.UUID]struct{}
-	removedinvitationCodes map[uuid.UUID]struct{}
+	invitationCodes        map[string]struct{}
+	removedinvitationCodes map[string]struct{}
 	clearedinvitationCodes bool
 	done                   bool
 	oldValue               func(context.Context) (*Class, error)
@@ -81,7 +80,7 @@ func newClassMutation(c config, op Op, opts ...classOption) *ClassMutation {
 }
 
 // withClassID sets the ID field of the mutation.
-func withClassID(id uuid.UUID) classOption {
+func withClassID(id string) classOption {
 	return func(m *ClassMutation) {
 		var (
 			err   error
@@ -133,13 +132,13 @@ func (m ClassMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Class entities.
-func (m *ClassMutation) SetID(id uuid.UUID) {
+func (m *ClassMutation) SetID(id string) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *ClassMutation) ID() (id uuid.UUID, exists bool) {
+func (m *ClassMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -150,12 +149,12 @@ func (m *ClassMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *ClassMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *ClassMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -202,12 +201,12 @@ func (m *ClassMutation) ResetName() {
 }
 
 // SetTeacherID sets the "teacher_id" field.
-func (m *ClassMutation) SetTeacherID(u uuid.UUID) {
-	m.teacher = &u
+func (m *ClassMutation) SetTeacherID(s string) {
+	m.teacher = &s
 }
 
 // TeacherID returns the value of the "teacher_id" field in the mutation.
-func (m *ClassMutation) TeacherID() (r uuid.UUID, exists bool) {
+func (m *ClassMutation) TeacherID() (r string, exists bool) {
 	v := m.teacher
 	if v == nil {
 		return
@@ -218,7 +217,7 @@ func (m *ClassMutation) TeacherID() (r uuid.UUID, exists bool) {
 // OldTeacherID returns the old "teacher_id" field's value of the Class entity.
 // If the Class object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ClassMutation) OldTeacherID(ctx context.Context) (v uuid.UUID, err error) {
+func (m *ClassMutation) OldTeacherID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTeacherID is only allowed on UpdateOne operations")
 	}
@@ -323,7 +322,7 @@ func (m *ClassMutation) TeacherCleared() bool {
 // TeacherIDs returns the "teacher" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TeacherID instead. It exists only for internal usage by the builders.
-func (m *ClassMutation) TeacherIDs() (ids []uuid.UUID) {
+func (m *ClassMutation) TeacherIDs() (ids []string) {
 	if id := m.teacher; id != nil {
 		ids = append(ids, *id)
 	}
@@ -391,9 +390,9 @@ func (m *ClassMutation) ResetClassStudents() {
 }
 
 // AddInvitationCodeIDs adds the "invitationCodes" edge to the ClassInvitationCode entity by ids.
-func (m *ClassMutation) AddInvitationCodeIDs(ids ...uuid.UUID) {
+func (m *ClassMutation) AddInvitationCodeIDs(ids ...string) {
 	if m.invitationCodes == nil {
-		m.invitationCodes = make(map[uuid.UUID]struct{})
+		m.invitationCodes = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.invitationCodes[ids[i]] = struct{}{}
@@ -411,9 +410,9 @@ func (m *ClassMutation) InvitationCodesCleared() bool {
 }
 
 // RemoveInvitationCodeIDs removes the "invitationCodes" edge to the ClassInvitationCode entity by IDs.
-func (m *ClassMutation) RemoveInvitationCodeIDs(ids ...uuid.UUID) {
+func (m *ClassMutation) RemoveInvitationCodeIDs(ids ...string) {
 	if m.removedinvitationCodes == nil {
-		m.removedinvitationCodes = make(map[uuid.UUID]struct{})
+		m.removedinvitationCodes = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.invitationCodes, ids[i])
@@ -422,7 +421,7 @@ func (m *ClassMutation) RemoveInvitationCodeIDs(ids ...uuid.UUID) {
 }
 
 // RemovedInvitationCodes returns the removed IDs of the "invitationCodes" edge to the ClassInvitationCode entity.
-func (m *ClassMutation) RemovedInvitationCodesIDs() (ids []uuid.UUID) {
+func (m *ClassMutation) RemovedInvitationCodesIDs() (ids []string) {
 	for id := range m.removedinvitationCodes {
 		ids = append(ids, id)
 	}
@@ -430,7 +429,7 @@ func (m *ClassMutation) RemovedInvitationCodesIDs() (ids []uuid.UUID) {
 }
 
 // InvitationCodesIDs returns the "invitationCodes" edge IDs in the mutation.
-func (m *ClassMutation) InvitationCodesIDs() (ids []uuid.UUID) {
+func (m *ClassMutation) InvitationCodesIDs() (ids []string) {
 	for id := range m.invitationCodes {
 		ids = append(ids, id)
 	}
@@ -541,7 +540,7 @@ func (m *ClassMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case class.FieldTeacherID:
-		v, ok := value.(uuid.UUID)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -759,14 +758,14 @@ type ClassInvitationCodeMutation struct {
 	config
 	op              Op
 	typ             string
-	id              *uuid.UUID
+	id              *string
 	invitation_code *string
 	expiration_date *time.Time
 	is_active       *bool
 	created_at      *time.Time
 	updated_at      *time.Time
 	clearedFields   map[string]struct{}
-	class           *uuid.UUID
+	class           *string
 	clearedclass    bool
 	done            bool
 	oldValue        func(context.Context) (*ClassInvitationCode, error)
@@ -793,7 +792,7 @@ func newClassInvitationCodeMutation(c config, op Op, opts ...classinvitationcode
 }
 
 // withClassInvitationCodeID sets the ID field of the mutation.
-func withClassInvitationCodeID(id uuid.UUID) classinvitationcodeOption {
+func withClassInvitationCodeID(id string) classinvitationcodeOption {
 	return func(m *ClassInvitationCodeMutation) {
 		var (
 			err   error
@@ -845,13 +844,13 @@ func (m ClassInvitationCodeMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of ClassInvitationCode entities.
-func (m *ClassInvitationCodeMutation) SetID(id uuid.UUID) {
+func (m *ClassInvitationCodeMutation) SetID(id string) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *ClassInvitationCodeMutation) ID() (id uuid.UUID, exists bool) {
+func (m *ClassInvitationCodeMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -862,12 +861,12 @@ func (m *ClassInvitationCodeMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *ClassInvitationCodeMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *ClassInvitationCodeMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -878,12 +877,12 @@ func (m *ClassInvitationCodeMutation) IDs(ctx context.Context) ([]uuid.UUID, err
 }
 
 // SetClassID sets the "class_id" field.
-func (m *ClassInvitationCodeMutation) SetClassID(u uuid.UUID) {
-	m.class = &u
+func (m *ClassInvitationCodeMutation) SetClassID(s string) {
+	m.class = &s
 }
 
 // ClassID returns the value of the "class_id" field in the mutation.
-func (m *ClassInvitationCodeMutation) ClassID() (r uuid.UUID, exists bool) {
+func (m *ClassInvitationCodeMutation) ClassID() (r string, exists bool) {
 	v := m.class
 	if v == nil {
 		return
@@ -894,7 +893,7 @@ func (m *ClassInvitationCodeMutation) ClassID() (r uuid.UUID, exists bool) {
 // OldClassID returns the old "class_id" field's value of the ClassInvitationCode entity.
 // If the ClassInvitationCode object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ClassInvitationCodeMutation) OldClassID(ctx context.Context) (v uuid.UUID, err error) {
+func (m *ClassInvitationCodeMutation) OldClassID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldClassID is only allowed on UpdateOne operations")
 	}
@@ -980,22 +979,9 @@ func (m *ClassInvitationCodeMutation) OldExpirationDate(ctx context.Context) (v 
 	return oldValue.ExpirationDate, nil
 }
 
-// ClearExpirationDate clears the value of the "expiration_date" field.
-func (m *ClassInvitationCodeMutation) ClearExpirationDate() {
-	m.expiration_date = nil
-	m.clearedFields[classinvitationcode.FieldExpirationDate] = struct{}{}
-}
-
-// ExpirationDateCleared returns if the "expiration_date" field was cleared in this mutation.
-func (m *ClassInvitationCodeMutation) ExpirationDateCleared() bool {
-	_, ok := m.clearedFields[classinvitationcode.FieldExpirationDate]
-	return ok
-}
-
 // ResetExpirationDate resets all changes to the "expiration_date" field.
 func (m *ClassInvitationCodeMutation) ResetExpirationDate() {
 	m.expiration_date = nil
-	delete(m.clearedFields, classinvitationcode.FieldExpirationDate)
 }
 
 // SetIsActive sets the "is_active" field.
@@ -1120,7 +1106,7 @@ func (m *ClassInvitationCodeMutation) ClassCleared() bool {
 // ClassIDs returns the "class" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // ClassID instead. It exists only for internal usage by the builders.
-func (m *ClassInvitationCodeMutation) ClassIDs() (ids []uuid.UUID) {
+func (m *ClassInvitationCodeMutation) ClassIDs() (ids []string) {
 	if id := m.class; id != nil {
 		ids = append(ids, *id)
 	}
@@ -1237,7 +1223,7 @@ func (m *ClassInvitationCodeMutation) OldField(ctx context.Context, name string)
 func (m *ClassInvitationCodeMutation) SetField(name string, value ent.Value) error {
 	switch name {
 	case classinvitationcode.FieldClassID:
-		v, ok := value.(uuid.UUID)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1307,11 +1293,7 @@ func (m *ClassInvitationCodeMutation) AddField(name string, value ent.Value) err
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ClassInvitationCodeMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(classinvitationcode.FieldExpirationDate) {
-		fields = append(fields, classinvitationcode.FieldExpirationDate)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1324,11 +1306,6 @@ func (m *ClassInvitationCodeMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ClassInvitationCodeMutation) ClearField(name string) error {
-	switch name {
-	case classinvitationcode.FieldExpirationDate:
-		m.ClearExpirationDate()
-		return nil
-	}
 	return fmt.Errorf("unknown ClassInvitationCode nullable field %s", name)
 }
 
@@ -1437,9 +1414,9 @@ type StudentMutation struct {
 	config
 	op                    Op
 	typ                   string
-	id                    *uuid.UUID
+	id                    *string
 	clearedFields         map[string]struct{}
-	user                  *uuid.UUID
+	user                  *string
 	cleareduser           bool
 	studentClasses        map[int]struct{}
 	removedstudentClasses map[int]struct{}
@@ -1469,7 +1446,7 @@ func newStudentMutation(c config, op Op, opts ...studentOption) *StudentMutation
 }
 
 // withStudentID sets the ID field of the mutation.
-func withStudentID(id uuid.UUID) studentOption {
+func withStudentID(id string) studentOption {
 	return func(m *StudentMutation) {
 		var (
 			err   error
@@ -1521,13 +1498,13 @@ func (m StudentMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Student entities.
-func (m *StudentMutation) SetID(id uuid.UUID) {
+func (m *StudentMutation) SetID(id string) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *StudentMutation) ID() (id uuid.UUID, exists bool) {
+func (m *StudentMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1538,12 +1515,12 @@ func (m *StudentMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *StudentMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *StudentMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1554,7 +1531,7 @@ func (m *StudentMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
-func (m *StudentMutation) SetUserID(id uuid.UUID) {
+func (m *StudentMutation) SetUserID(id string) {
 	m.user = &id
 }
 
@@ -1569,7 +1546,7 @@ func (m *StudentMutation) UserCleared() bool {
 }
 
 // UserID returns the "user" edge ID in the mutation.
-func (m *StudentMutation) UserID() (id uuid.UUID, exists bool) {
+func (m *StudentMutation) UserID() (id string, exists bool) {
 	if m.user != nil {
 		return *m.user, true
 	}
@@ -1579,7 +1556,7 @@ func (m *StudentMutation) UserID() (id uuid.UUID, exists bool) {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *StudentMutation) UserIDs() (ids []uuid.UUID) {
+func (m *StudentMutation) UserIDs() (ids []string) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -1863,9 +1840,9 @@ type StudentClassMutation struct {
 	created_at     *time.Time
 	updated_at     *time.Time
 	clearedFields  map[string]struct{}
-	student        *uuid.UUID
+	student        *string
 	clearedstudent bool
-	class          *uuid.UUID
+	class          *string
 	clearedclass   bool
 	done           bool
 	oldValue       func(context.Context) (*StudentClass, error)
@@ -1971,12 +1948,12 @@ func (m *StudentClassMutation) IDs(ctx context.Context) ([]int, error) {
 }
 
 // SetStudentID sets the "student_id" field.
-func (m *StudentClassMutation) SetStudentID(u uuid.UUID) {
-	m.student = &u
+func (m *StudentClassMutation) SetStudentID(s string) {
+	m.student = &s
 }
 
 // StudentID returns the value of the "student_id" field in the mutation.
-func (m *StudentClassMutation) StudentID() (r uuid.UUID, exists bool) {
+func (m *StudentClassMutation) StudentID() (r string, exists bool) {
 	v := m.student
 	if v == nil {
 		return
@@ -1987,7 +1964,7 @@ func (m *StudentClassMutation) StudentID() (r uuid.UUID, exists bool) {
 // OldStudentID returns the old "student_id" field's value of the StudentClass entity.
 // If the StudentClass object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StudentClassMutation) OldStudentID(ctx context.Context) (v uuid.UUID, err error) {
+func (m *StudentClassMutation) OldStudentID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStudentID is only allowed on UpdateOne operations")
 	}
@@ -2007,12 +1984,12 @@ func (m *StudentClassMutation) ResetStudentID() {
 }
 
 // SetClassID sets the "class_id" field.
-func (m *StudentClassMutation) SetClassID(u uuid.UUID) {
-	m.class = &u
+func (m *StudentClassMutation) SetClassID(s string) {
+	m.class = &s
 }
 
 // ClassID returns the value of the "class_id" field in the mutation.
-func (m *StudentClassMutation) ClassID() (r uuid.UUID, exists bool) {
+func (m *StudentClassMutation) ClassID() (r string, exists bool) {
 	v := m.class
 	if v == nil {
 		return
@@ -2023,7 +2000,7 @@ func (m *StudentClassMutation) ClassID() (r uuid.UUID, exists bool) {
 // OldClassID returns the old "class_id" field's value of the StudentClass entity.
 // If the StudentClass object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StudentClassMutation) OldClassID(ctx context.Context) (v uuid.UUID, err error) {
+func (m *StudentClassMutation) OldClassID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldClassID is only allowed on UpdateOne operations")
 	}
@@ -2128,7 +2105,7 @@ func (m *StudentClassMutation) StudentCleared() bool {
 // StudentIDs returns the "student" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // StudentID instead. It exists only for internal usage by the builders.
-func (m *StudentClassMutation) StudentIDs() (ids []uuid.UUID) {
+func (m *StudentClassMutation) StudentIDs() (ids []string) {
 	if id := m.student; id != nil {
 		ids = append(ids, *id)
 	}
@@ -2155,7 +2132,7 @@ func (m *StudentClassMutation) ClassCleared() bool {
 // ClassIDs returns the "class" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // ClassID instead. It exists only for internal usage by the builders.
-func (m *StudentClassMutation) ClassIDs() (ids []uuid.UUID) {
+func (m *StudentClassMutation) ClassIDs() (ids []string) {
 	if id := m.class; id != nil {
 		ids = append(ids, *id)
 	}
@@ -2258,14 +2235,14 @@ func (m *StudentClassMutation) OldField(ctx context.Context, name string) (ent.V
 func (m *StudentClassMutation) SetField(name string, value ent.Value) error {
 	switch name {
 	case studentclass.FieldStudentID:
-		v, ok := value.(uuid.UUID)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStudentID(v)
 		return nil
 	case studentclass.FieldClassID:
-		v, ok := value.(uuid.UUID)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2447,12 +2424,12 @@ type TeacherMutation struct {
 	config
 	op             Op
 	typ            string
-	id             *uuid.UUID
+	id             *string
 	clearedFields  map[string]struct{}
-	user           *uuid.UUID
+	user           *string
 	cleareduser    bool
-	classes        map[uuid.UUID]struct{}
-	removedclasses map[uuid.UUID]struct{}
+	classes        map[string]struct{}
+	removedclasses map[string]struct{}
 	clearedclasses bool
 	done           bool
 	oldValue       func(context.Context) (*Teacher, error)
@@ -2479,7 +2456,7 @@ func newTeacherMutation(c config, op Op, opts ...teacherOption) *TeacherMutation
 }
 
 // withTeacherID sets the ID field of the mutation.
-func withTeacherID(id uuid.UUID) teacherOption {
+func withTeacherID(id string) teacherOption {
 	return func(m *TeacherMutation) {
 		var (
 			err   error
@@ -2531,13 +2508,13 @@ func (m TeacherMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Teacher entities.
-func (m *TeacherMutation) SetID(id uuid.UUID) {
+func (m *TeacherMutation) SetID(id string) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *TeacherMutation) ID() (id uuid.UUID, exists bool) {
+func (m *TeacherMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -2548,12 +2525,12 @@ func (m *TeacherMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *TeacherMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *TeacherMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -2564,7 +2541,7 @@ func (m *TeacherMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
-func (m *TeacherMutation) SetUserID(id uuid.UUID) {
+func (m *TeacherMutation) SetUserID(id string) {
 	m.user = &id
 }
 
@@ -2579,7 +2556,7 @@ func (m *TeacherMutation) UserCleared() bool {
 }
 
 // UserID returns the "user" edge ID in the mutation.
-func (m *TeacherMutation) UserID() (id uuid.UUID, exists bool) {
+func (m *TeacherMutation) UserID() (id string, exists bool) {
 	if m.user != nil {
 		return *m.user, true
 	}
@@ -2589,7 +2566,7 @@ func (m *TeacherMutation) UserID() (id uuid.UUID, exists bool) {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *TeacherMutation) UserIDs() (ids []uuid.UUID) {
+func (m *TeacherMutation) UserIDs() (ids []string) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -2603,9 +2580,9 @@ func (m *TeacherMutation) ResetUser() {
 }
 
 // AddClassIDs adds the "classes" edge to the Class entity by ids.
-func (m *TeacherMutation) AddClassIDs(ids ...uuid.UUID) {
+func (m *TeacherMutation) AddClassIDs(ids ...string) {
 	if m.classes == nil {
-		m.classes = make(map[uuid.UUID]struct{})
+		m.classes = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.classes[ids[i]] = struct{}{}
@@ -2623,9 +2600,9 @@ func (m *TeacherMutation) ClassesCleared() bool {
 }
 
 // RemoveClassIDs removes the "classes" edge to the Class entity by IDs.
-func (m *TeacherMutation) RemoveClassIDs(ids ...uuid.UUID) {
+func (m *TeacherMutation) RemoveClassIDs(ids ...string) {
 	if m.removedclasses == nil {
-		m.removedclasses = make(map[uuid.UUID]struct{})
+		m.removedclasses = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.classes, ids[i])
@@ -2634,7 +2611,7 @@ func (m *TeacherMutation) RemoveClassIDs(ids ...uuid.UUID) {
 }
 
 // RemovedClasses returns the removed IDs of the "classes" edge to the Class entity.
-func (m *TeacherMutation) RemovedClassesIDs() (ids []uuid.UUID) {
+func (m *TeacherMutation) RemovedClassesIDs() (ids []string) {
 	for id := range m.removedclasses {
 		ids = append(ids, id)
 	}
@@ -2642,7 +2619,7 @@ func (m *TeacherMutation) RemovedClassesIDs() (ids []uuid.UUID) {
 }
 
 // ClassesIDs returns the "classes" edge IDs in the mutation.
-func (m *TeacherMutation) ClassesIDs() (ids []uuid.UUID) {
+func (m *TeacherMutation) ClassesIDs() (ids []string) {
 	for id := range m.classes {
 		ids = append(ids, id)
 	}
@@ -2869,15 +2846,15 @@ type UserMutation struct {
 	config
 	op             Op
 	typ            string
-	id             *uuid.UUID
+	id             *string
 	name           *string
 	email          *string
 	created_at     *time.Time
 	updated_at     *time.Time
 	clearedFields  map[string]struct{}
-	teacher        *uuid.UUID
+	teacher        *string
 	clearedteacher bool
-	student        *uuid.UUID
+	student        *string
 	clearedstudent bool
 	done           bool
 	oldValue       func(context.Context) (*User, error)
@@ -2904,7 +2881,7 @@ func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
 }
 
 // withUserID sets the ID field of the mutation.
-func withUserID(id uuid.UUID) userOption {
+func withUserID(id string) userOption {
 	return func(m *UserMutation) {
 		var (
 			err   error
@@ -2956,13 +2933,13 @@ func (m UserMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of User entities.
-func (m *UserMutation) SetID(id uuid.UUID) {
+func (m *UserMutation) SetID(id string) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserMutation) ID() (id uuid.UUID, exists bool) {
+func (m *UserMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -2973,12 +2950,12 @@ func (m *UserMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *UserMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *UserMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -3133,7 +3110,7 @@ func (m *UserMutation) ResetUpdatedAt() {
 }
 
 // SetTeacherID sets the "teacher" edge to the Teacher entity by id.
-func (m *UserMutation) SetTeacherID(id uuid.UUID) {
+func (m *UserMutation) SetTeacherID(id string) {
 	m.teacher = &id
 }
 
@@ -3148,7 +3125,7 @@ func (m *UserMutation) TeacherCleared() bool {
 }
 
 // TeacherID returns the "teacher" edge ID in the mutation.
-func (m *UserMutation) TeacherID() (id uuid.UUID, exists bool) {
+func (m *UserMutation) TeacherID() (id string, exists bool) {
 	if m.teacher != nil {
 		return *m.teacher, true
 	}
@@ -3158,7 +3135,7 @@ func (m *UserMutation) TeacherID() (id uuid.UUID, exists bool) {
 // TeacherIDs returns the "teacher" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TeacherID instead. It exists only for internal usage by the builders.
-func (m *UserMutation) TeacherIDs() (ids []uuid.UUID) {
+func (m *UserMutation) TeacherIDs() (ids []string) {
 	if id := m.teacher; id != nil {
 		ids = append(ids, *id)
 	}
@@ -3172,7 +3149,7 @@ func (m *UserMutation) ResetTeacher() {
 }
 
 // SetStudentID sets the "student" edge to the Student entity by id.
-func (m *UserMutation) SetStudentID(id uuid.UUID) {
+func (m *UserMutation) SetStudentID(id string) {
 	m.student = &id
 }
 
@@ -3187,7 +3164,7 @@ func (m *UserMutation) StudentCleared() bool {
 }
 
 // StudentID returns the "student" edge ID in the mutation.
-func (m *UserMutation) StudentID() (id uuid.UUID, exists bool) {
+func (m *UserMutation) StudentID() (id string, exists bool) {
 	if m.student != nil {
 		return *m.student, true
 	}
@@ -3197,7 +3174,7 @@ func (m *UserMutation) StudentID() (id uuid.UUID, exists bool) {
 // StudentIDs returns the "student" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // StudentID instead. It exists only for internal usage by the builders.
-func (m *UserMutation) StudentIDs() (ids []uuid.UUID) {
+func (m *UserMutation) StudentIDs() (ids []string) {
 	if id := m.student; id != nil {
 		ids = append(ids, *id)
 	}

@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // ClassInvitationCodeUpdate is the builder for updating ClassInvitationCode entities.
@@ -31,15 +30,15 @@ func (cicu *ClassInvitationCodeUpdate) Where(ps ...predicate.ClassInvitationCode
 }
 
 // SetClassID sets the "class_id" field.
-func (cicu *ClassInvitationCodeUpdate) SetClassID(u uuid.UUID) *ClassInvitationCodeUpdate {
-	cicu.mutation.SetClassID(u)
+func (cicu *ClassInvitationCodeUpdate) SetClassID(s string) *ClassInvitationCodeUpdate {
+	cicu.mutation.SetClassID(s)
 	return cicu
 }
 
 // SetNillableClassID sets the "class_id" field if the given value is not nil.
-func (cicu *ClassInvitationCodeUpdate) SetNillableClassID(u *uuid.UUID) *ClassInvitationCodeUpdate {
-	if u != nil {
-		cicu.SetClassID(*u)
+func (cicu *ClassInvitationCodeUpdate) SetNillableClassID(s *string) *ClassInvitationCodeUpdate {
+	if s != nil {
+		cicu.SetClassID(*s)
 	}
 	return cicu
 }
@@ -69,12 +68,6 @@ func (cicu *ClassInvitationCodeUpdate) SetNillableExpirationDate(t *time.Time) *
 	if t != nil {
 		cicu.SetExpirationDate(*t)
 	}
-	return cicu
-}
-
-// ClearExpirationDate clears the value of the "expiration_date" field.
-func (cicu *ClassInvitationCodeUpdate) ClearExpirationDate() *ClassInvitationCodeUpdate {
-	cicu.mutation.ClearExpirationDate()
 	return cicu
 }
 
@@ -165,11 +158,6 @@ func (cicu *ClassInvitationCodeUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (cicu *ClassInvitationCodeUpdate) check() error {
-	if v, ok := cicu.mutation.InvitationCode(); ok {
-		if err := classinvitationcode.InvitationCodeValidator(v); err != nil {
-			return &ValidationError{Name: "invitation_code", err: fmt.Errorf(`ent: validator failed for field "ClassInvitationCode.invitation_code": %w`, err)}
-		}
-	}
 	if _, ok := cicu.mutation.ClassID(); cicu.mutation.ClassCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "ClassInvitationCode.class"`)
 	}
@@ -180,7 +168,7 @@ func (cicu *ClassInvitationCodeUpdate) sqlSave(ctx context.Context) (n int, err 
 	if err := cicu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(classinvitationcode.Table, classinvitationcode.Columns, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(classinvitationcode.Table, classinvitationcode.Columns, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString))
 	if ps := cicu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -193,9 +181,6 @@ func (cicu *ClassInvitationCodeUpdate) sqlSave(ctx context.Context) (n int, err 
 	}
 	if value, ok := cicu.mutation.ExpirationDate(); ok {
 		_spec.SetField(classinvitationcode.FieldExpirationDate, field.TypeTime, value)
-	}
-	if cicu.mutation.ExpirationDateCleared() {
-		_spec.ClearField(classinvitationcode.FieldExpirationDate, field.TypeTime)
 	}
 	if value, ok := cicu.mutation.IsActive(); ok {
 		_spec.SetField(classinvitationcode.FieldIsActive, field.TypeBool, value)
@@ -214,7 +199,7 @@ func (cicu *ClassInvitationCodeUpdate) sqlSave(ctx context.Context) (n int, err 
 			Columns: []string{classinvitationcode.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -227,7 +212,7 @@ func (cicu *ClassInvitationCodeUpdate) sqlSave(ctx context.Context) (n int, err 
 			Columns: []string{classinvitationcode.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -256,15 +241,15 @@ type ClassInvitationCodeUpdateOne struct {
 }
 
 // SetClassID sets the "class_id" field.
-func (cicuo *ClassInvitationCodeUpdateOne) SetClassID(u uuid.UUID) *ClassInvitationCodeUpdateOne {
-	cicuo.mutation.SetClassID(u)
+func (cicuo *ClassInvitationCodeUpdateOne) SetClassID(s string) *ClassInvitationCodeUpdateOne {
+	cicuo.mutation.SetClassID(s)
 	return cicuo
 }
 
 // SetNillableClassID sets the "class_id" field if the given value is not nil.
-func (cicuo *ClassInvitationCodeUpdateOne) SetNillableClassID(u *uuid.UUID) *ClassInvitationCodeUpdateOne {
-	if u != nil {
-		cicuo.SetClassID(*u)
+func (cicuo *ClassInvitationCodeUpdateOne) SetNillableClassID(s *string) *ClassInvitationCodeUpdateOne {
+	if s != nil {
+		cicuo.SetClassID(*s)
 	}
 	return cicuo
 }
@@ -294,12 +279,6 @@ func (cicuo *ClassInvitationCodeUpdateOne) SetNillableExpirationDate(t *time.Tim
 	if t != nil {
 		cicuo.SetExpirationDate(*t)
 	}
-	return cicuo
-}
-
-// ClearExpirationDate clears the value of the "expiration_date" field.
-func (cicuo *ClassInvitationCodeUpdateOne) ClearExpirationDate() *ClassInvitationCodeUpdateOne {
-	cicuo.mutation.ClearExpirationDate()
 	return cicuo
 }
 
@@ -403,11 +382,6 @@ func (cicuo *ClassInvitationCodeUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (cicuo *ClassInvitationCodeUpdateOne) check() error {
-	if v, ok := cicuo.mutation.InvitationCode(); ok {
-		if err := classinvitationcode.InvitationCodeValidator(v); err != nil {
-			return &ValidationError{Name: "invitation_code", err: fmt.Errorf(`ent: validator failed for field "ClassInvitationCode.invitation_code": %w`, err)}
-		}
-	}
 	if _, ok := cicuo.mutation.ClassID(); cicuo.mutation.ClassCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "ClassInvitationCode.class"`)
 	}
@@ -418,7 +392,7 @@ func (cicuo *ClassInvitationCodeUpdateOne) sqlSave(ctx context.Context) (_node *
 	if err := cicuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(classinvitationcode.Table, classinvitationcode.Columns, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(classinvitationcode.Table, classinvitationcode.Columns, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString))
 	id, ok := cicuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ClassInvitationCode.id" for update`)}
@@ -449,9 +423,6 @@ func (cicuo *ClassInvitationCodeUpdateOne) sqlSave(ctx context.Context) (_node *
 	if value, ok := cicuo.mutation.ExpirationDate(); ok {
 		_spec.SetField(classinvitationcode.FieldExpirationDate, field.TypeTime, value)
 	}
-	if cicuo.mutation.ExpirationDateCleared() {
-		_spec.ClearField(classinvitationcode.FieldExpirationDate, field.TypeTime)
-	}
 	if value, ok := cicuo.mutation.IsActive(); ok {
 		_spec.SetField(classinvitationcode.FieldIsActive, field.TypeBool, value)
 	}
@@ -469,7 +440,7 @@ func (cicuo *ClassInvitationCodeUpdateOne) sqlSave(ctx context.Context) (_node *
 			Columns: []string{classinvitationcode.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -482,7 +453,7 @@ func (cicuo *ClassInvitationCodeUpdateOne) sqlSave(ctx context.Context) (_node *
 			Columns: []string{classinvitationcode.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

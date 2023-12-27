@@ -13,7 +13,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // StudentClassCreate is the builder for creating a StudentClass entity.
@@ -24,14 +23,14 @@ type StudentClassCreate struct {
 }
 
 // SetStudentID sets the "student_id" field.
-func (scc *StudentClassCreate) SetStudentID(u uuid.UUID) *StudentClassCreate {
-	scc.mutation.SetStudentID(u)
+func (scc *StudentClassCreate) SetStudentID(s string) *StudentClassCreate {
+	scc.mutation.SetStudentID(s)
 	return scc
 }
 
 // SetClassID sets the "class_id" field.
-func (scc *StudentClassCreate) SetClassID(u uuid.UUID) *StudentClassCreate {
-	scc.mutation.SetClassID(u)
+func (scc *StudentClassCreate) SetClassID(s string) *StudentClassCreate {
+	scc.mutation.SetClassID(s)
 	return scc
 }
 
@@ -151,7 +150,7 @@ func (scc *StudentClassCreate) createSpec() (*StudentClass, *sqlgraph.CreateSpec
 			Columns: []string{studentclass.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -168,7 +167,7 @@ func (scc *StudentClassCreate) createSpec() (*StudentClass, *sqlgraph.CreateSpec
 			Columns: []string{studentclass.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

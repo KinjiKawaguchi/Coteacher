@@ -16,7 +16,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // ClassUpdate is the builder for updating Class entities.
@@ -47,15 +46,15 @@ func (cu *ClassUpdate) SetNillableName(s *string) *ClassUpdate {
 }
 
 // SetTeacherID sets the "teacher_id" field.
-func (cu *ClassUpdate) SetTeacherID(u uuid.UUID) *ClassUpdate {
-	cu.mutation.SetTeacherID(u)
+func (cu *ClassUpdate) SetTeacherID(s string) *ClassUpdate {
+	cu.mutation.SetTeacherID(s)
 	return cu
 }
 
 // SetNillableTeacherID sets the "teacher_id" field if the given value is not nil.
-func (cu *ClassUpdate) SetNillableTeacherID(u *uuid.UUID) *ClassUpdate {
-	if u != nil {
-		cu.SetTeacherID(*u)
+func (cu *ClassUpdate) SetNillableTeacherID(s *string) *ClassUpdate {
+	if s != nil {
+		cu.SetTeacherID(*s)
 	}
 	return cu
 }
@@ -109,14 +108,14 @@ func (cu *ClassUpdate) AddClassStudents(s ...*StudentClass) *ClassUpdate {
 }
 
 // AddInvitationCodeIDs adds the "invitationCodes" edge to the ClassInvitationCode entity by IDs.
-func (cu *ClassUpdate) AddInvitationCodeIDs(ids ...uuid.UUID) *ClassUpdate {
+func (cu *ClassUpdate) AddInvitationCodeIDs(ids ...string) *ClassUpdate {
 	cu.mutation.AddInvitationCodeIDs(ids...)
 	return cu
 }
 
 // AddInvitationCodes adds the "invitationCodes" edges to the ClassInvitationCode entity.
 func (cu *ClassUpdate) AddInvitationCodes(c ...*ClassInvitationCode) *ClassUpdate {
-	ids := make([]uuid.UUID, len(c))
+	ids := make([]string, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -162,14 +161,14 @@ func (cu *ClassUpdate) ClearInvitationCodes() *ClassUpdate {
 }
 
 // RemoveInvitationCodeIDs removes the "invitationCodes" edge to ClassInvitationCode entities by IDs.
-func (cu *ClassUpdate) RemoveInvitationCodeIDs(ids ...uuid.UUID) *ClassUpdate {
+func (cu *ClassUpdate) RemoveInvitationCodeIDs(ids ...string) *ClassUpdate {
 	cu.mutation.RemoveInvitationCodeIDs(ids...)
 	return cu
 }
 
 // RemoveInvitationCodes removes "invitationCodes" edges to ClassInvitationCode entities.
 func (cu *ClassUpdate) RemoveInvitationCodes(c ...*ClassInvitationCode) *ClassUpdate {
-	ids := make([]uuid.UUID, len(c))
+	ids := make([]string, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -205,11 +204,6 @@ func (cu *ClassUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (cu *ClassUpdate) check() error {
-	if v, ok := cu.mutation.Name(); ok {
-		if err := class.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Class.name": %w`, err)}
-		}
-	}
 	if _, ok := cu.mutation.TeacherID(); cu.mutation.TeacherCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Class.teacher"`)
 	}
@@ -220,7 +214,7 @@ func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := cu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(class.Table, class.Columns, sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(class.Table, class.Columns, sqlgraph.NewFieldSpec(class.FieldID, field.TypeString))
 	if ps := cu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -245,7 +239,7 @@ func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{class.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -258,7 +252,7 @@ func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{class.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -319,7 +313,7 @@ func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{class.InvitationCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -332,7 +326,7 @@ func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{class.InvitationCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -348,7 +342,7 @@ func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{class.InvitationCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -391,15 +385,15 @@ func (cuo *ClassUpdateOne) SetNillableName(s *string) *ClassUpdateOne {
 }
 
 // SetTeacherID sets the "teacher_id" field.
-func (cuo *ClassUpdateOne) SetTeacherID(u uuid.UUID) *ClassUpdateOne {
-	cuo.mutation.SetTeacherID(u)
+func (cuo *ClassUpdateOne) SetTeacherID(s string) *ClassUpdateOne {
+	cuo.mutation.SetTeacherID(s)
 	return cuo
 }
 
 // SetNillableTeacherID sets the "teacher_id" field if the given value is not nil.
-func (cuo *ClassUpdateOne) SetNillableTeacherID(u *uuid.UUID) *ClassUpdateOne {
-	if u != nil {
-		cuo.SetTeacherID(*u)
+func (cuo *ClassUpdateOne) SetNillableTeacherID(s *string) *ClassUpdateOne {
+	if s != nil {
+		cuo.SetTeacherID(*s)
 	}
 	return cuo
 }
@@ -453,14 +447,14 @@ func (cuo *ClassUpdateOne) AddClassStudents(s ...*StudentClass) *ClassUpdateOne 
 }
 
 // AddInvitationCodeIDs adds the "invitationCodes" edge to the ClassInvitationCode entity by IDs.
-func (cuo *ClassUpdateOne) AddInvitationCodeIDs(ids ...uuid.UUID) *ClassUpdateOne {
+func (cuo *ClassUpdateOne) AddInvitationCodeIDs(ids ...string) *ClassUpdateOne {
 	cuo.mutation.AddInvitationCodeIDs(ids...)
 	return cuo
 }
 
 // AddInvitationCodes adds the "invitationCodes" edges to the ClassInvitationCode entity.
 func (cuo *ClassUpdateOne) AddInvitationCodes(c ...*ClassInvitationCode) *ClassUpdateOne {
-	ids := make([]uuid.UUID, len(c))
+	ids := make([]string, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -506,14 +500,14 @@ func (cuo *ClassUpdateOne) ClearInvitationCodes() *ClassUpdateOne {
 }
 
 // RemoveInvitationCodeIDs removes the "invitationCodes" edge to ClassInvitationCode entities by IDs.
-func (cuo *ClassUpdateOne) RemoveInvitationCodeIDs(ids ...uuid.UUID) *ClassUpdateOne {
+func (cuo *ClassUpdateOne) RemoveInvitationCodeIDs(ids ...string) *ClassUpdateOne {
 	cuo.mutation.RemoveInvitationCodeIDs(ids...)
 	return cuo
 }
 
 // RemoveInvitationCodes removes "invitationCodes" edges to ClassInvitationCode entities.
 func (cuo *ClassUpdateOne) RemoveInvitationCodes(c ...*ClassInvitationCode) *ClassUpdateOne {
-	ids := make([]uuid.UUID, len(c))
+	ids := make([]string, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -562,11 +556,6 @@ func (cuo *ClassUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (cuo *ClassUpdateOne) check() error {
-	if v, ok := cuo.mutation.Name(); ok {
-		if err := class.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Class.name": %w`, err)}
-		}
-	}
 	if _, ok := cuo.mutation.TeacherID(); cuo.mutation.TeacherCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Class.teacher"`)
 	}
@@ -577,7 +566,7 @@ func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error
 	if err := cuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(class.Table, class.Columns, sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(class.Table, class.Columns, sqlgraph.NewFieldSpec(class.FieldID, field.TypeString))
 	id, ok := cuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Class.id" for update`)}
@@ -619,7 +608,7 @@ func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error
 			Columns: []string{class.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -632,7 +621,7 @@ func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error
 			Columns: []string{class.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -693,7 +682,7 @@ func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error
 			Columns: []string{class.InvitationCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -706,7 +695,7 @@ func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error
 			Columns: []string{class.InvitationCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -722,7 +711,7 @@ func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error
 			Columns: []string{class.InvitationCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // StudentClassQuery is the builder for querying StudentClass entities.
@@ -334,7 +333,7 @@ func (scq *StudentClassQuery) WithClass(opts ...func(*ClassQuery)) *StudentClass
 // Example:
 //
 //	var v []struct {
-//		StudentID uuid.UUID `json:"student_id,omitempty"`
+//		StudentID string `json:"student_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -357,7 +356,7 @@ func (scq *StudentClassQuery) GroupBy(field string, fields ...string) *StudentCl
 // Example:
 //
 //	var v []struct {
-//		StudentID uuid.UUID `json:"student_id,omitempty"`
+//		StudentID string `json:"student_id,omitempty"`
 //	}
 //
 //	client.StudentClass.Query().
@@ -445,8 +444,8 @@ func (scq *StudentClassQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 }
 
 func (scq *StudentClassQuery) loadStudent(ctx context.Context, query *StudentQuery, nodes []*StudentClass, init func(*StudentClass), assign func(*StudentClass, *Student)) error {
-	ids := make([]uuid.UUID, 0, len(nodes))
-	nodeids := make(map[uuid.UUID][]*StudentClass)
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*StudentClass)
 	for i := range nodes {
 		fk := nodes[i].StudentID
 		if _, ok := nodeids[fk]; !ok {
@@ -474,8 +473,8 @@ func (scq *StudentClassQuery) loadStudent(ctx context.Context, query *StudentQue
 	return nil
 }
 func (scq *StudentClassQuery) loadClass(ctx context.Context, query *ClassQuery, nodes []*StudentClass, init func(*StudentClass), assign func(*StudentClass, *Class)) error {
-	ids := make([]uuid.UUID, 0, len(nodes))
-	nodeids := make(map[uuid.UUID][]*StudentClass)
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*StudentClass)
 	for i := range nodes {
 		fk := nodes[i].ClassID
 		if _, ok := nodeids[fk]; !ok {
