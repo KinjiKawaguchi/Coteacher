@@ -4,7 +4,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // Teacher holds the schema definition for the Teacher entity.
@@ -15,7 +14,7 @@ type Student struct {
 // Fields of the Teacher.
 func (Student) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("id", uuid.UUID{}),
+		field.String("id").Unique(),
 	}
 }
 
