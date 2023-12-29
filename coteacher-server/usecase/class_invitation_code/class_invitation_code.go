@@ -1,12 +1,16 @@
-package usecase
+package class_invitation_code
 
 import (
-	"coteacher/domain/repository/ent"
-	classinvitationcode "coteacher/domain/repository/ent/classinvitationcode"
-	pb "coteacher/proto-gen/go/coteacher/v1"
-	"log/slog"
+	"time"
 
-	"golang.org/x/net/context"
+	"golang.org/x/exp/slog"
+
+	utils "coteacher/usecase/utils"
+
+	"context"
+	"coteacher/domain/repository/ent"
+	entcic "coteacher/domain/repository/ent/classinvitationcode"
+	pb "coteacher/proto-gen/go/coteacher/v1"
 )
 
 type Interactor struct {
@@ -18,135 +22,62 @@ func NewInteractor(entClient *ent.Client, logger *slog.Logger) *Interactor {
 	return &Interactor{entClient, logger}
 }
 
-func (i *Interactor) CreateClassInvitationCodeRequest(ctx context.Context, req *pb.CreateClassInvitationCodeRequest) *pb.CreateClassInvitationCodeRes {
-	var entIsActive bool
-	switch req.IsActive {
-	case pb.IsActive_IS_ACTIVE_TRUE:
-		entIsActive = true
-	case pb.IsActive_IS_ACTIVE_FALSE:
-		entIsActive = false
-	default:
-		entIsActive = false
-	}
-
-	classInvitationCode, err := i.entClient.ClassInvitationCode.Create().
-		SetInvitationCode(req.InvitationCode).
+func (i *Interactor) CreateClassInvitationCode(ctx context.Context, req *pb.CreateClassInvitationCodeRequest) (*pb.CreateClassInvitationCodeResponse, error) {
+	now := time.Now()
+	cic, err := i.entClient.ClassInvitationCode.Create().
+		SetClassID(req.ClassId).
 		SetExpirationDate(req.ExpirationDate.AsTime()).
-		SetIsActive(entIsActive).
+		SetCreatedAt(now).
+		SetUpdatedAt(now).
 		Save(ctx)
-
 	if err != nil {
-		return &pb.CreateClassInvitationCodeRes{
-			Success: false,
-			Message: err.Error(),
-		}
+		return nil, err
 	}
 
-	return &pb.CreateClassInvitationCodeRes{
-		Success: true,
-		Message: "success",
-		ClassInvitationCode: &pb.ClassInvitationCode{
-			Id:             classInvitationCode.ID,
-			InvitationCode: classInvitationCode.InvitationCode,
-			ExpirationDate: &pb.Timestamp{
-				Seconds: classInvitationCode.ExpirationDate.Unix(),
-			},
-			IsActive: classInvitationCode.IsActive,
-		},
-	}
+	return &pb.CreateClassInvitationCodeResponse{
+		ClassInvitationCode: utils.ToPbClassInvitationCode(cic),
+	}, nil
 }
 
-func (i *Interactor) GetClassInvitationCodeByIDRequest(ctx context.Context, req *pb.GetClassInvitationCodeByIDRequest) *pb.GetClassInvitationCodeByIDResponse {
-	classInvitationCode, err := i.entClient.ClassInvitationCode.Query().
-		Where(classinvitationcode.ID(req.Id)).
-		Only(ctx)
-
+func (i *Interactor) GetClassInvitationCodeByID(ctx context.Context, req *pb.GetClassInvitationCodeByIDRequest) (*pb.GetClassInvitationCodeByIDResponse, error) {
+	cic, err := i.entClient.ClassInvitationCode.Query().Where(entcic.ID(req.Id)).Only(ctx)
 	if err != nil {
-		return &pb.GetClassInvitationCodeByIDResponse{
-			Success: false,
-			Message: err.Error(),
-		}
+		return nil, err
 	}
 
 	return &pb.GetClassInvitationCodeByIDResponse{
-		Success: true,
-		Message: "success",
-		ClassInvitationCode: &pb.ClassInvitationCode{
-			Id:             classInvitationCode.ID,
-			InvitationCode: classInvitationCode.InvitationCode,
-			ExpirationDate: &pb.Timestamp{
-				Seconds: classInvitationCode.ExpirationDate.Unix(),
-			},
-			IsActive: classInvitationCode.IsActive,
-		},
-	}
+		ClassInvitationCode: utils.ToPbClassInvitationCode(cic),
+	}, nil
 }
 
-func (i *Interactor) GetClassInvitationCodeListByClassIDRequest(ctx context.COntext, req *pb.GetClassInvitationCodeListByClassIDRequest) *pb.GetClassInvitationCodeListByClassIDResponse {
-	classInvitationCodeList, err := i.entClient.ClassInvitationCode.Query().
-		Where(classinvitationcode.ClassID(req.ClassId)).
-		All(ctx)
-
+func (i *Interactor) GetClassInvitationCodeListByClassID(ctx context.Context, req *pb.GetClassInvitationCodeListByClassIDRequest) (*pb.GetClassInvitationCodeListByClassIDResponse, error) {
+	cicList, err := i.entClient.ClassInvitationCode.Query().Where(entcic.ClassID(req.ClassId)).All(ctx)
 	if err != nil {
-		return &pb.GetClassInvitationCodeListByClassIDResponse{
-			Success: false,
-			Message: err.Error(),
-		}
+		return nil, err
 	}
 
-	var pbClassInvitationCodeList []*pb.ClassInvitationCode
-	for _, classInvitationCode := range classInvitationCodeList {
-		pbClassInvitationCodeList = append(pbClassInvitationCodeList, &pb.ClassInvitationCode{
-			Id:             classInvitationCode.ID,
-			InvitationCode: classInvitationCode.InvitationCode,
-			ExpirationDate: &pb.Timestamp{
-				Seconds: classInvitationCode.ExpirationDate.Unix(),
-			},
-			IsActive: classInvitationCode.IsActive,
-		})
+	pbCicList := make([]*pb.ClassInvitationCode, len(cicList))
+	for i, cic := range cicList {
+		pbCicList[i] = utils.ToPbClassInvitationCode(cic)
 	}
 
 	return &pb.GetClassInvitationCodeListByClassIDResponse{
-		Success:                 true,
-		Message:                 "success",
-		ClassInvitationCodeList: pbClassInvitationCodeList,
-	}
+		ClassInvitationCodeList: pbCicList,
+	}, nil
 }
 
-func (i *Interactor) UpdateClassInvitationCodeRequest(ctx context.Context, req *pb.UpdateClassInvitationCodeRequest) *pb.UpdateClassInvitationCodeResponse {
-	var entIsActive bool
-	switch req.IsActive {
-	case pb.IsActive_IS_ACTIVE_TRUE:
-		entIsActive = true
-	case pb.IsActive_IS_ACTIVE_FALSE:
-		entIsActive = false
-	default:
-		entIsActive = false
-	}
-
-	classInvitationCode, err := i.entClient.ClassInvitationCode.UpdateOneID(req.Id).
-		SetInvitationCode(req.InvitationCode).
+func (i *Interactor) UpdateClassInvitationCode(ctx context.Context, req *pb.UpdateClassInvitationCodeRequest) (*pb.UpdateClassInvitationCodeResponse, error) {
+	cic, err := i.entClient.ClassInvitationCode.UpdateOneID((req.Id)).
+		SetIsActive(req.IsActive).
 		SetExpirationDate(req.ExpirationDate.AsTime()).
-		SetIsActive(entIsActive).
+		SetUpdatedAt(time.Now()).
 		Save(ctx)
 
 	if err != nil {
-		return &pb.UpdateClassInvitationCodeResponse{
-			Success: false,
-			Message: err.Error(),
-		}
+		return nil, err
 	}
 
 	return &pb.UpdateClassInvitationCodeResponse{
-		Success: true,
-		Message: "success",
-		ClassInvitationCode: &pb.ClassInvitationCode{
-			Id:             classInvitationCode.ID,
-			InvitationCode: classInvitationCode.InvitationCode,
-			ExpirationDate: &pb.Timestamp{
-				Seconds: classInvitationCode.ExpirationDate.Unix(),
-			},
-			IsActive: classInvitationCode.IsActive,
-		},
-	}
+		ClassInvitationCode: utils.ToPbClassInvitationCode(cic),
+	}, nil
 }

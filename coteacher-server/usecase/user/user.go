@@ -1,15 +1,21 @@
-package usecase
+package user
 
 import (
-	"log/slog"
+	"errors"
+	"time"
 
+	utils "coteacher/usecase/utils"
+
+	"connectrpc.com/connect"
+
+	"context"
 	"coteacher/domain/repository/ent"
+	entstudent "coteacher/domain/repository/ent/student"
+	entteacher "coteacher/domain/repository/ent/teacher"
 	entuser "coteacher/domain/repository/ent/user"
 	pb "coteacher/proto-gen/go/coteacher/v1"
 
-	"golang.org/x/net/context"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"golang.org/x/exp/slog"
 )
 
 type Interactor struct {
@@ -22,162 +28,191 @@ func NewInteractor(entClient *ent.Client, logger *slog.Logger) *Interactor {
 }
 
 func (i *Interactor) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	var entUserType string
-	switch req.UserType {
-	case pb.UserType_USER_TYPE_TEACHER:
-		entUserType = "teacher"
-	case pb.UserType_USER_TYPE_STUDENT:
-		entUserType = "student"
-	default:
-		entUserType = "" // Handle default case or return an error
+	now := time.Now()
+	// Start a transaction because you may need to create a user and a teacher/student.
+	tx, err := i.entClient.Tx(ctx)
+	if err != nil {
+		return nil, err
 	}
 
-	user, err := i.entClient.User.Create().
+	// Create a base user.
+	user, err := tx.User.
+		Create().
 		SetName(req.Name).
 		SetEmail(req.Email).
-		SetUserType(entUserType).
+		SetCreatedAt(now).
+		SetUpdatedAt(now).
 		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check what type of user is being created and set the appropriate fields.
+	switch {
+	case req.GetTeacher() != nil:
+		_, err = tx.Teacher.
+			Create().
+			SetID(user.ID).
+			// Set additional fields specific to the Teacher here.
+			Save(ctx)
+	case req.GetStudent() != nil:
+		_, err = tx.Student.
+			Create().
+			SetID(user.ID).
+			// Set additional fields specific to the Student here.
+			Save(ctx)
+	default:
+		// Rollback the transaction if no role is provided.
+		tx.Rollback()
+		return nil, errors.New("user role is not specified")
+	}
 
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		tx.Rollback()
+		return nil, err
 	}
 
-	// Map the Ent user type to the protobuf UserType
-	var pbUserType pb.UserType
-	switch user.UserType {
-	case "teacher":
-		pbUserType = pb.UserType_USER_TYPE_TEACHER
-	case "student":
-		pbUserType = pb.UserType_USER_TYPE_STUDENT
-	default:
-		pbUserType = pb.UserType_USER_TYPE_UNSPECIFIED
+	// Commit the transaction if everything is successful.
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
 	}
 
-	return &pb.CreateUserResponse{
-		User: &pb.User{
-			Id:       user.ID,
-			Name:     user.Name,
-			Email:    user.Email,
-			UserType: pbUserType,
-		},
-	}
+	// Return the created user.
+	return &pb.CreateUserResponse{User: utils.ToPbUser(user)}, nil
 }
 
 func (i *Interactor) GetUserByID(ctx context.Context, req *pb.GetUserByIDRequest) (*pb.GetUserByIDResponse, error) {
-	// Query the user from the database
-	user, err := i.entClient.User.Query().Where(entuser.ID(req.Id)).Only(ctx)
+	q := i.entClient.User.Query()
+	user, err := q.Where(entuser.ID(req.Id)).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, status.Error(codes.NotFound, "the user is not found")
+			return nil, connect.NewError(connect.CodeNotFound, errors.New("user not found"))
 		}
-		return nil, status.Error(codes.Internal, err.Error())
 	}
-
-	// Map the Ent user type to the protobuf UserType
-	var userType pb.UserType
-	switch user.UserType {
-	case "teacher":
-		userType = pb.UserType_USER_TYPE_TEACHER
-	case "student":
-		userType = pb.UserType_USER_TYPE_STUDENT
-	default:
-		userType = pb.UserType_USER_TYPE_UNSPECIFIED
-	}
-
-	// Create the response
 	return &pb.GetUserByIDResponse{
-		User: &pb.User{
-			Id:       user.ID,
-			Name:     user.Name,
-			Email:    user.Email,
-			UserType: userType, // Add the user type to the response
-		},
+		User: utils.ToPbUser(user),
 	}, nil
 }
 
 func (i *Interactor) GetUserByEmail(ctx context.Context, req *pb.GetUserByEmailRequest) (*pb.GetUserByEmailResponse, error) {
-	user, err := i.entClient.User.Query().Where(entuser.Email(req.Email)).Only(ctx)
+	q := i.entClient.User.Query()
+	user, err := q.Where(entuser.Email(req.Email)).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, status.Error(codes.NotFound, "the user is not found")
+			return nil, connect.NewError(connect.CodeNotFound, errors.New("user not found"))
 		}
-		return nil, status.Error(codes.Internal, err.Error())
 	}
-
-	// Map the Ent user type to the protobuf UserType
-	var userType pb.UserType
-	switch user.UserType {
-	case "teacher":
-		userType = pb.UserType_USER_TYPE_TEACHER
-	case "student":
-		userType = pb.UserType_USER_TYPE_STUDENT
-	default:
-		userType = pb.UserType_USER_TYPE_UNSPECIFIED
-	}
-
-	// Create the response
 	return &pb.GetUserByEmailResponse{
-		User: &pb.User{
-			Id:       user.ID,
-			Name:     user.Name,
-			Email:    user.Email,
-			UserType: userType, // Add the user type to the response
-		},
+		User: utils.ToPbUser(user),
 	}, nil
 }
 
 func (i *Interactor) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
-	// Query the user from the database
-	user, err := i.entClient.User.Query().Where(entuser.ID(req.Id)).Only(ctx)
+	now := time.Now()
+	tx, err := i.entClient.Tx(ctx)
 	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, status.Error(codes.NotFound, "the user is not found")
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, err
 	}
 
-	// Update the user
-	user, err = user.Update().
+	user, err := i.entClient.User.UpdateOneID(req.Id).
 		SetName(req.Name).
 		SetEmail(req.Email).
-		SetUserType(req.UserType). // Set the user type
+		SetUpdatedAt(now).
 		Save(ctx)
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		tx.Rollback()
+		return nil, err
 	}
 
-	// Map the Ent user type to the protobuf UserType
-	var userType pb.UserType
-	switch user.UserType {
-	case "teacher":
-		userType = pb.UserType_USER_TYPE_TEACHER
-	case "student":
-		userType = pb.UserType_USER_TYPE_STUDENT
-	default:
-		userType = pb.UserType_USER_TYPE_UNSPECIFIED
+	if err := i.updateUserRole(ctx, user, req); err != nil {
+		tx.Rollback()
+		return nil, err
 	}
 
-	// Create the response
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
 	return &pb.UpdateUserResponse{
-		User: &pb.User{
-			Id:       user.ID,
-			Name:     user.Name,
-			Email:    user.Email,
-			UserType: userType, // Add the user type to the response
-		},
+		User: utils.ToPbUser(user),
 	}, nil
 }
 
-func (i *Interactor) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
-	// Delete the user from the database
-	err := i.entClient.User.DeleteOneID(req.Id).Exec(ctx)
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, status.Error(codes.NotFound, "the user is not found")
+func (i *Interactor) updateUserRole(ctx context.Context, user *ent.User, req *pb.UpdateUserRequest) error {
+	switch {
+	case req.GetTeacher() != nil:
+		return i.updateTeacherRole(ctx, user, req)
+	case req.GetStudent() != nil:
+		return i.updateStudentRole(ctx, user, req)
+	}
+	return nil
+}
+
+func (i *Interactor) updateTeacherRole(ctx context.Context, user *ent.User, req *pb.UpdateUserRequest) error {
+	exists := i.entClient.Teacher.Query().Where(entteacher.ID(req.Id)).ExistX(ctx)
+	if exists {
+		// 既存の教師データを更新するロジック（必要に応じて）
+	} else {
+		// 教師として新しくデータを作成する
+		_, err := i.entClient.Teacher.
+			Create().
+			SetID(user.ID).
+			// ここで教師固有のフィールドを設定
+			Save(ctx)
+		if err != nil {
+			return err
 		}
-		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return nil
+}
+
+func (i *Interactor) updateStudentRole(ctx context.Context, user *ent.User, req *pb.UpdateUserRequest) error {
+	exists := i.entClient.Student.Query().Where(entstudent.ID(req.Id)).ExistX(ctx)
+	if exists {
+		// 既存の生徒データを更新するロジック（必要に応じて）
+	} else {
+		// 生徒として新しくデータを作成する
+		_, err := i.entClient.Student.
+			Create().
+			SetID(user.ID).
+			// ここで生徒固有のフィールドを設定
+			Save(ctx)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (i *Interactor) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
+	tx, err := i.entClient.Tx(ctx)
+	if err != nil {
+		return nil, err
 	}
 
-	// Create the response
+	err = i.entClient.User.DeleteOneID(req.Id).Exec(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, errors.New("user not found"))
+		}
+		tx.Rollback()
+	}
+	if i.entClient.Student.Query().Where(entstudent.ID(req.Id)).ExistX(ctx) {
+		err := i.entClient.Student.DeleteOneID(req.Id).Exec(ctx)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+	}
+	if i.entClient.Teacher.Query().Where(entteacher.ID(req.Id)).ExistX(ctx) {
+		err := i.entClient.Teacher.DeleteOneID(req.Id).Exec(ctx)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return &pb.DeleteUserResponse{}, nil
 }

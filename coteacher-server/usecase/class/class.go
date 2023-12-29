@@ -1,11 +1,18 @@
-package usecase
+package class
 
 import (
-	"coteacher/domain/repository/ent"
-	pb "coteacher/proto-gen/go/coteacher/v1"
-	"log/slog"
+	utils "coteacher/usecase/utils"
+	"errors"
+	"time"
 
-	"golang.org/x/net/context"
+	"connectrpc.com/connect"
+
+	"context"
+	"coteacher/domain/repository/ent"
+	entclass "coteacher/domain/repository/ent/class"
+	pb "coteacher/proto-gen/go/coteacher/v1"
+
+	"golang.org/x/exp/slog"
 )
 
 type Interactor struct {
@@ -18,24 +25,84 @@ func NewInteractor(entClient *ent.Client, logger *slog.Logger) *Interactor {
 }
 
 func (i *Interactor) CreateClass(ctx context.Context, req *pb.CreateClassRequest) (*pb.CreateClassResponse, error) {
-	// クラスの作成と保存
-	class, err := i.entClient.Class.Create().
+	now := time.Now()
+	q := i.entClient.Class.Create().
 		SetName(req.Name).
-		AddUserIDs(req.TeacherId).
-		Save(ctx)
+		SetTeacherID(req.TeacherId).
+		SetCreatedAt(now).
+		SetUpdatedAt(now)
 
-	// エラーが発生した場合、エラーを返す
+	class, err := q.Save(ctx)
 	if err != nil {
-		i.logger.Error("failed to create class", slog.Any("error", err))
-		return nil, err // エラーを返す際には、通常はエラー情報をラップする
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, errors.New("the task was not found"))
+		}
+		i.logger.Error("failed to get the task", slog.Any("error", err))
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	// 成功した場合、作成されたクラスの情報を含むレスポンスを返す
 	return &pb.CreateClassResponse{
-		Class: &pb.Class{
-			Id:        class.ID,
-			Name:      class.Name,
-			TeacherId: class.Edges.Users[0].ID,
-		},
+		Class: utils.ToPbClass(class),
 	}, nil
+}
+
+func (i *Interactor) GetClassByID(ctx context.Context, req *pb.GetClassByIDRequest) (*pb.GetClassByIDResponse, error) {
+	q := i.entClient.Class.Query()
+	class, err := q.Where(entclass.ID(req.Id)).Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, errors.New("class not found"))
+		}
+	}
+	return &pb.GetClassByIDResponse{
+		Class: utils.ToPbClass(class),
+	}, nil
+}
+
+func (i *Interactor) GetClassListByTeacherID(ctx context.Context, req *pb.GetClassListByTeacherIDRequest) (*pb.GetClassListByTeacherIDResponse, error) {
+	classes, err := i.entClient.Class.
+		Query().
+		Where(entclass.TeacherID(req.TeacherId)).
+		All(ctx)
+
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, errors.New("classes not found"))
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	pbClasses := make([]*pb.Class, len(classes))
+	for i, class := range classes {
+		pbClasses[i] = utils.ToPbClass(class)
+	}
+
+	return &pb.GetClassListByTeacherIDResponse{
+		Classes: pbClasses,
+	}, nil
+}
+
+func (i *Interactor) UpdateClass(ctx context.Context, req *pb.UpdateClassRequest) (*pb.UpdateClassResponse, error) {
+	class, err := i.entClient.Class.UpdateOneID(req.Id).
+		SetName(req.Name).
+		SetTeacherID(req.TeacherId).
+		Save(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, errors.New("class not found"))
+		}
+	}
+	return &pb.UpdateClassResponse{
+		Class: utils.ToPbClass(class),
+	}, nil
+}
+
+func (i *Interactor) DeleteClass(ctx context.Context, req *pb.DeleteClassRequest) (*pb.DeleteClassResponse, error) {
+	err := i.entClient.Class.DeleteOneID(req.Id).Exec(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, errors.New("class not found"))
+		}
+	}
+	return &pb.DeleteClassResponse{}, nil
 }
