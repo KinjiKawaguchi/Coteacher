@@ -1,0 +1,183 @@
+syntax = "proto3";
+
+package coteacher.v1;
+
+import "coteacher/v1/resources.proto";
+import "google/protobuf/timestamp.proto";
+
+message UnaryRequest { string msg = 1; }
+message UnaryResponse { string msg = 1; }
+message ServerStreamingRequest { string msg = 1; }
+message ServerStreamingResponse { string msg = 1; }
+message ClientStreamingRequest { string msg = 1; }
+message ClientStreamingResponse { string msg = 1; }
+message BidirectionalStreamingRequest { string msg = 1; }
+message BidirectionalStreamingResponse { string msg = 1; }
+
+message CreateClassInvitationCodeRequest {
+  string class_id = 1;
+  google.protobuf.Timestamp expiration_date = 2;
+}
+
+message CreateClassInvitationCodeResponse {
+  ClassInvitationCode class_invitation_code = 1;
+}
+
+message GetClassInvitationCodeByIDRequest {
+  string id = 1;
+}
+
+message GetClassInvitationCodeByIDResponse {
+  ClassInvitationCode class_invitation_code = 1;
+}
+
+message GetClassInvitationCodeListByClassIDRequest {
+  string class_id = 1;
+}
+
+message GetClassInvitationCodeListByClassIDResponse {
+  repeated ClassInvitationCode class_invitation_code_list = 1;
+}
+
+message UpdateClassInvitationCodeRequest {
+  string id = 1;
+  google.protobuf.Timestamp expiration_date = 2;
+  bool is_active = 3;
+}
+
+message UpdateClassInvitationCodeResponse {
+  ClassInvitationCode class_invitation_code = 1;
+}
+
+//----------------------
+message CreateStudentClassRequest {
+  string student_id = 1;
+  string class_id = 2;
+}
+
+message CreateStudentClassResponse {
+  StudentClass student_class = 1;
+}
+
+message GetStudentListByClassIDRequest {
+  string class_id = 1;
+}
+
+message GetStudentListByClassIDResponse {
+  repeated User students = 1;
+}
+
+message GetClassListByStudentIDRequest {
+  string student_id = 1;
+}
+
+message GetClassListByStudentIDResponse {
+  repeated Class classes = 1;
+}
+
+message DeleteStudentClassRequest {
+  string student_id = 1;
+  string class_id = 2;
+}
+
+message DeleteStudentClassResponse {
+  StudentClass student_class = 1;
+}
+
+//----------------------
+message CreateClassRequest {
+  string name = 1;
+  string teacher_id = 2;
+}
+
+message CreateClassResponse {
+  Class class = 1;
+}
+
+
+message GetClassByIDRequest {
+  string id = 1;
+}
+
+message GetClassByIDResponse {
+  Class class = 1;
+}
+
+message GetClassListByTeacherIDRequest {
+  string teacher_id = 1;
+}
+
+message GetClassListByTeacherIDResponse {
+  repeated Class classes = 1;
+}
+
+message UpdateClassRequest {
+  string id = 1;
+  string name = 2;
+  string teacher_id = 3;
+}
+
+message UpdateClassResponse {
+  Class class = 1;
+}
+
+message DeleteClassRequest {
+  string id = 1;
+}
+
+message DeleteClassResponse {
+  Class class = 1;
+}
+
+//----------------------
+
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+  oneof role {
+    Teacher teacher = 3;
+    Student student = 4;
+  }
+}
+
+message CreateUserResponse {
+  User user = 1;
+}
+
+message GetUserByIDRequest {
+  string id = 1;
+}
+
+message GetUserByIDResponse {
+  User user = 1;
+}
+
+message GetUserByEmailRequest {
+  string email = 1;
+}
+
+message GetUserByEmailResponse {
+  User user = 1;
+}
+
+message UpdateUserRequest {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  oneof role {
+    Teacher teacher = 4;
+    Student student = 5;
+  }
+}
+
+message UpdateUserResponse {
+  User user = 1;
+}
+
+message DeleteUserRequest {
+  string id = 1;
+}
+
+message DeleteUserResponse {
+  User user = 1;
+}

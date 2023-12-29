@@ -44,3 +44,10 @@ message Class {
   google.protobuf.Timestamp created_at = 4;
   google.protobuf.Timestamp updated_at = 5;
 }
+
+message StudentClass {
+  string student_id = 1;
+  string class_id = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp updated_at = 4;
+}
