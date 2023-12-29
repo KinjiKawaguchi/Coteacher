@@ -1,42 +1,72 @@
 package main
 
 import (
-	"coteacher/usecase/user" // gRPCサービスのパッケージ
-	"database/sql"
+	"context"
 	"log"
 	"net"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
-	"github.com/joho/godotenv"
-	"google.golang.org/grpc"
+	"github.com/go-sql-driver/mysql" //lint:ignore ST1019 this is just example
+	_ "github.com/go-sql-driver/mysql"
+	"coteacher/api/grpc_server"
+	//"coteacher/config"
+	"coteacher/domain/repository/ent"
+	"golang.org/x/exp/slog"
 )
 
-var db *sql.DB
-
 func main() {
-	// .envファイルの読み込み、データベース接続など
-	err := godotenv.Load()
+	// conf, err := config.New()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// mysql client
+	jst, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
-		log.Fatal("failed to load env", err)
+		log.Fatal(err)
 	}
-
-	db, err = sql.Open("mysql", os.Getenv("DSN"))
+	mysqlConfig := &mysql.Config{
+		DBName:    "coteacher",
+		User:      "root",
+		Passwd:    "016be2senpu7f",
+		Addr:      "localhost:3306",
+		Net:       "tcp",
+		ParseTime: true,
+		Loc:       jst,
+	}
+	entClient, err := ent.Open("mysql", mysqlConfig.FormatDSN())
 	if err != nil {
-		log.Fatal("failed to open db connection", err)
+		log.Fatal(err)
+	}
+	defer entClient.Close()
+	if err := entClient.Schema.Create(context.Background()); err != nil {
+		log.Fatal(err)
 	}
 
-	// gRPCサーバの設定
-	lis, err := net.Listen("tcp", ":50051") // 50051はgRPCのデフォルトポート
+	// logger
+	logger := slog.Default()
+
+	srv := grpc_server.New(
+		grpc_server.WithLogger(logger),
+		grpc_server.WithEntClient(entClient),
+	)
+	lsnr, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatal(err)
 	}
-
-	grpcServer := grpc.NewServer()
-	coteacher.RegisterCoTeacherServiceServer(grpcServer, &services.Server{DB: db}) // サービスの登録
-
-	// サーバの起動
-	log.Printf("Starting gRPC server on port 50051")
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+	defer lsnr.Close()
+	go func() {
+		logger.Info("server launched")
+		if err := srv.Serve(lsnr); err != nil {
+			log.Fatal(err)
+		}
+	}()
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
+	<-sigCh
+	logger.Info("server is being stopped")
+	srv.GracefulStop()
 }
