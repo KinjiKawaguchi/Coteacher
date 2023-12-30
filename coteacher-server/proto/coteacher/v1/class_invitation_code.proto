@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package coteacher.v1;
+
+import "coteacher/v1/resources.proto";
+import "google/protobuf/timestamp.proto";
+
+service ClassInvitationCodeService {
+  rpc CreateClassInvitationCode(CreateClassInvitationCodeRequest) returns (CreateClassInvitationCodeResponse);
+  rpc GetClassInvitationCodeByID(GetClassInvitationCodeByIDRequest) returns (GetClassInvitationCodeByIDResponse);
+  rpc GetClassInvitationCodeListByClassID(GetClassInvitationCodeListByClassIDRequest) returns (GetClassInvitationCodeListByClassIDResponse);
+  rpc UpdateClassInvitationCode(UpdateClassInvitationCodeRequest) returns (UpdateClassInvitationCodeResponse);
+}
+
+message CreateClassInvitationCodeRequest {
+  string class_id = 1;
+  google.protobuf.Timestamp expiration_date = 2;
+}
+
+message CreateClassInvitationCodeResponse {
+  ClassInvitationCode class_invitation_code = 1;
+}
+
+message GetClassInvitationCodeByIDRequest {
+  string id = 1;
+}
+
+message GetClassInvitationCodeByIDResponse {
+  ClassInvitationCode class_invitation_code = 1;
+}
+
+message GetClassInvitationCodeListByClassIDRequest {
+  string class_id = 1;
+}
+
+message GetClassInvitationCodeListByClassIDResponse {
+  repeated ClassInvitationCode class_invitation_code_list = 1;
+}
+
+message UpdateClassInvitationCodeRequest {
+  string id = 1;
+  google.protobuf.Timestamp expiration_date = 2;
+  bool is_active = 3;
+}
+
+message UpdateClassInvitationCodeResponse {
+  ClassInvitationCode class_invitation_code = 1;
+}
