@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // ClassInvitationCodeUpdate is the builder for updating ClassInvitationCode entities.
@@ -30,15 +31,15 @@ func (cicu *ClassInvitationCodeUpdate) Where(ps ...predicate.ClassInvitationCode
 }
 
 // SetClassID sets the "class_id" field.
-func (cicu *ClassInvitationCodeUpdate) SetClassID(s string) *ClassInvitationCodeUpdate {
-	cicu.mutation.SetClassID(s)
+func (cicu *ClassInvitationCodeUpdate) SetClassID(u uuid.UUID) *ClassInvitationCodeUpdate {
+	cicu.mutation.SetClassID(u)
 	return cicu
 }
 
 // SetNillableClassID sets the "class_id" field if the given value is not nil.
-func (cicu *ClassInvitationCodeUpdate) SetNillableClassID(s *string) *ClassInvitationCodeUpdate {
-	if s != nil {
-		cicu.SetClassID(*s)
+func (cicu *ClassInvitationCodeUpdate) SetNillableClassID(u *uuid.UUID) *ClassInvitationCodeUpdate {
+	if u != nil {
+		cicu.SetClassID(*u)
 	}
 	return cicu
 }
@@ -168,7 +169,7 @@ func (cicu *ClassInvitationCodeUpdate) sqlSave(ctx context.Context) (n int, err 
 	if err := cicu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(classinvitationcode.Table, classinvitationcode.Columns, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString))
+	_spec := sqlgraph.NewUpdateSpec(classinvitationcode.Table, classinvitationcode.Columns, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID))
 	if ps := cicu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -199,7 +200,7 @@ func (cicu *ClassInvitationCodeUpdate) sqlSave(ctx context.Context) (n int, err 
 			Columns: []string{classinvitationcode.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -212,7 +213,7 @@ func (cicu *ClassInvitationCodeUpdate) sqlSave(ctx context.Context) (n int, err 
 			Columns: []string{classinvitationcode.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -241,15 +242,15 @@ type ClassInvitationCodeUpdateOne struct {
 }
 
 // SetClassID sets the "class_id" field.
-func (cicuo *ClassInvitationCodeUpdateOne) SetClassID(s string) *ClassInvitationCodeUpdateOne {
-	cicuo.mutation.SetClassID(s)
+func (cicuo *ClassInvitationCodeUpdateOne) SetClassID(u uuid.UUID) *ClassInvitationCodeUpdateOne {
+	cicuo.mutation.SetClassID(u)
 	return cicuo
 }
 
 // SetNillableClassID sets the "class_id" field if the given value is not nil.
-func (cicuo *ClassInvitationCodeUpdateOne) SetNillableClassID(s *string) *ClassInvitationCodeUpdateOne {
-	if s != nil {
-		cicuo.SetClassID(*s)
+func (cicuo *ClassInvitationCodeUpdateOne) SetNillableClassID(u *uuid.UUID) *ClassInvitationCodeUpdateOne {
+	if u != nil {
+		cicuo.SetClassID(*u)
 	}
 	return cicuo
 }
@@ -392,7 +393,7 @@ func (cicuo *ClassInvitationCodeUpdateOne) sqlSave(ctx context.Context) (_node *
 	if err := cicuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(classinvitationcode.Table, classinvitationcode.Columns, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString))
+	_spec := sqlgraph.NewUpdateSpec(classinvitationcode.Table, classinvitationcode.Columns, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID))
 	id, ok := cicuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ClassInvitationCode.id" for update`)}
@@ -440,7 +441,7 @@ func (cicuo *ClassInvitationCodeUpdateOne) sqlSave(ctx context.Context) (_node *
 			Columns: []string{classinvitationcode.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -453,7 +454,7 @@ func (cicuo *ClassInvitationCodeUpdateOne) sqlSave(ctx context.Context) (_node *
 			Columns: []string{classinvitationcode.ClassColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

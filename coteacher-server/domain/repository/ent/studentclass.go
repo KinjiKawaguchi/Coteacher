@@ -12,6 +12,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 )
 
 // StudentClass is the model entity for the StudentClass schema.
@@ -20,9 +21,9 @@ type StudentClass struct {
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
 	// StudentID holds the value of the "student_id" field.
-	StudentID string `json:"student_id,omitempty"`
+	StudentID uuid.UUID `json:"student_id,omitempty"`
 	// ClassID holds the value of the "class_id" field.
-	ClassID string `json:"class_id,omitempty"`
+	ClassID uuid.UUID `json:"class_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -77,10 +78,10 @@ func (*StudentClass) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case studentclass.FieldID:
 			values[i] = new(sql.NullInt64)
-		case studentclass.FieldStudentID, studentclass.FieldClassID:
-			values[i] = new(sql.NullString)
 		case studentclass.FieldCreatedAt, studentclass.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case studentclass.FieldStudentID, studentclass.FieldClassID:
+			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -103,16 +104,16 @@ func (sc *StudentClass) assignValues(columns []string, values []any) error {
 			}
 			sc.ID = int(value.Int64)
 		case studentclass.FieldStudentID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field student_id", values[i])
-			} else if value.Valid {
-				sc.StudentID = value.String
+			} else if value != nil {
+				sc.StudentID = *value
 			}
 		case studentclass.FieldClassID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field class_id", values[i])
-			} else if value.Valid {
-				sc.ClassID = value.String
+			} else if value != nil {
+				sc.ClassID = *value
 			}
 		case studentclass.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -173,10 +174,10 @@ func (sc *StudentClass) String() string {
 	builder.WriteString("StudentClass(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", sc.ID))
 	builder.WriteString("student_id=")
-	builder.WriteString(sc.StudentID)
+	builder.WriteString(fmt.Sprintf("%v", sc.StudentID))
 	builder.WriteString(", ")
 	builder.WriteString("class_id=")
-	builder.WriteString(sc.ClassID)
+	builder.WriteString(fmt.Sprintf("%v", sc.ClassID))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(sc.CreatedAt.Format(time.ANSIC))

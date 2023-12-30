@@ -7,61 +7,52 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id string) predicate.Student {
+func ID(id uuid.UUID) predicate.Student {
 	return predicate.Student(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id string) predicate.Student {
+func IDEQ(id uuid.UUID) predicate.Student {
 	return predicate.Student(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id string) predicate.Student {
+func IDNEQ(id uuid.UUID) predicate.Student {
 	return predicate.Student(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...string) predicate.Student {
+func IDIn(ids ...uuid.UUID) predicate.Student {
 	return predicate.Student(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...string) predicate.Student {
+func IDNotIn(ids ...uuid.UUID) predicate.Student {
 	return predicate.Student(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id string) predicate.Student {
+func IDGT(id uuid.UUID) predicate.Student {
 	return predicate.Student(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id string) predicate.Student {
+func IDGTE(id uuid.UUID) predicate.Student {
 	return predicate.Student(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id string) predicate.Student {
+func IDLT(id uuid.UUID) predicate.Student {
 	return predicate.Student(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id string) predicate.Student {
+func IDLTE(id uuid.UUID) predicate.Student {
 	return predicate.Student(sql.FieldLTE(FieldID, id))
-}
-
-// IDEqualFold applies the EqualFold predicate on the ID field.
-func IDEqualFold(id string) predicate.Student {
-	return predicate.Student(sql.FieldEqualFold(FieldID, id))
-}
-
-// IDContainsFold applies the ContainsFold predicate on the ID field.
-func IDContainsFold(id string) predicate.Student {
-	return predicate.Student(sql.FieldContainsFold(FieldID, id))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

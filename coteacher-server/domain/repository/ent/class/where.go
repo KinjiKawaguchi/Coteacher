@@ -8,61 +8,52 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id string) predicate.Class {
+func ID(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id string) predicate.Class {
+func IDEQ(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id string) predicate.Class {
+func IDNEQ(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...string) predicate.Class {
+func IDIn(ids ...uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...string) predicate.Class {
+func IDNotIn(ids ...uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id string) predicate.Class {
+func IDGT(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id string) predicate.Class {
+func IDGTE(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id string) predicate.Class {
+func IDLT(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id string) predicate.Class {
+func IDLTE(id uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldLTE(FieldID, id))
-}
-
-// IDEqualFold applies the EqualFold predicate on the ID field.
-func IDEqualFold(id string) predicate.Class {
-	return predicate.Class(sql.FieldEqualFold(FieldID, id))
-}
-
-// IDContainsFold applies the ContainsFold predicate on the ID field.
-func IDContainsFold(id string) predicate.Class {
-	return predicate.Class(sql.FieldContainsFold(FieldID, id))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
@@ -71,7 +62,7 @@ func Name(v string) predicate.Class {
 }
 
 // TeacherID applies equality check predicate on the "teacher_id" field. It's identical to TeacherIDEQ.
-func TeacherID(v string) predicate.Class {
+func TeacherID(v uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldEQ(FieldTeacherID, v))
 }
 
@@ -151,68 +142,23 @@ func NameContainsFold(v string) predicate.Class {
 }
 
 // TeacherIDEQ applies the EQ predicate on the "teacher_id" field.
-func TeacherIDEQ(v string) predicate.Class {
+func TeacherIDEQ(v uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldEQ(FieldTeacherID, v))
 }
 
 // TeacherIDNEQ applies the NEQ predicate on the "teacher_id" field.
-func TeacherIDNEQ(v string) predicate.Class {
+func TeacherIDNEQ(v uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldNEQ(FieldTeacherID, v))
 }
 
 // TeacherIDIn applies the In predicate on the "teacher_id" field.
-func TeacherIDIn(vs ...string) predicate.Class {
+func TeacherIDIn(vs ...uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldIn(FieldTeacherID, vs...))
 }
 
 // TeacherIDNotIn applies the NotIn predicate on the "teacher_id" field.
-func TeacherIDNotIn(vs ...string) predicate.Class {
+func TeacherIDNotIn(vs ...uuid.UUID) predicate.Class {
 	return predicate.Class(sql.FieldNotIn(FieldTeacherID, vs...))
-}
-
-// TeacherIDGT applies the GT predicate on the "teacher_id" field.
-func TeacherIDGT(v string) predicate.Class {
-	return predicate.Class(sql.FieldGT(FieldTeacherID, v))
-}
-
-// TeacherIDGTE applies the GTE predicate on the "teacher_id" field.
-func TeacherIDGTE(v string) predicate.Class {
-	return predicate.Class(sql.FieldGTE(FieldTeacherID, v))
-}
-
-// TeacherIDLT applies the LT predicate on the "teacher_id" field.
-func TeacherIDLT(v string) predicate.Class {
-	return predicate.Class(sql.FieldLT(FieldTeacherID, v))
-}
-
-// TeacherIDLTE applies the LTE predicate on the "teacher_id" field.
-func TeacherIDLTE(v string) predicate.Class {
-	return predicate.Class(sql.FieldLTE(FieldTeacherID, v))
-}
-
-// TeacherIDContains applies the Contains predicate on the "teacher_id" field.
-func TeacherIDContains(v string) predicate.Class {
-	return predicate.Class(sql.FieldContains(FieldTeacherID, v))
-}
-
-// TeacherIDHasPrefix applies the HasPrefix predicate on the "teacher_id" field.
-func TeacherIDHasPrefix(v string) predicate.Class {
-	return predicate.Class(sql.FieldHasPrefix(FieldTeacherID, v))
-}
-
-// TeacherIDHasSuffix applies the HasSuffix predicate on the "teacher_id" field.
-func TeacherIDHasSuffix(v string) predicate.Class {
-	return predicate.Class(sql.FieldHasSuffix(FieldTeacherID, v))
-}
-
-// TeacherIDEqualFold applies the EqualFold predicate on the "teacher_id" field.
-func TeacherIDEqualFold(v string) predicate.Class {
-	return predicate.Class(sql.FieldEqualFold(FieldTeacherID, v))
-}
-
-// TeacherIDContainsFold applies the ContainsFold predicate on the "teacher_id" field.
-func TeacherIDContainsFold(v string) predicate.Class {
-	return predicate.Class(sql.FieldContainsFold(FieldTeacherID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

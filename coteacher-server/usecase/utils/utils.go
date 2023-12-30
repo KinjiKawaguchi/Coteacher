@@ -9,8 +9,8 @@ import (
 
 func ToPbStudentClass(t *ent.StudentClass) *pb.StudentClass {
 	return &pb.StudentClass{
-		StudentId: t.StudentID,
-		ClassId:   t.ClassID,
+		StudentId: t.StudentID.String(),
+		ClassId:   t.ClassID.String(),
 		CreatedAt: timestamppb.New(t.CreatedAt),
 		UpdatedAt: timestamppb.New(t.UpdatedAt),
 	}
@@ -18,7 +18,7 @@ func ToPbStudentClass(t *ent.StudentClass) *pb.StudentClass {
 
 func ToPbUser(t *ent.User) *pb.User {
 	return &pb.User{
-		Id:        t.ID,
+		Id:        t.ID.String(),
 		Name:      t.Name,
 		Email:     t.Email,
 		CreatedAt: timestamppb.New(t.CreatedAt),
@@ -28,8 +28,8 @@ func ToPbUser(t *ent.User) *pb.User {
 
 func ToPbClassInvitationCode(t *ent.ClassInvitationCode) *pb.ClassInvitationCode {
 	return &pb.ClassInvitationCode{
-		Id:             t.ID,
-		ClassId:        t.ClassID,
+		Id:             t.ID.String(),
+		ClassId:        t.ClassID.String(),
 		InvitationCode: t.InvitationCode,
 		ExpirationDate: timestamppb.New(t.ExpirationDate),
 		IsActive:       t.IsActive,
@@ -40,9 +40,9 @@ func ToPbClassInvitationCode(t *ent.ClassInvitationCode) *pb.ClassInvitationCode
 
 func ToPbClass(t *ent.Class) *pb.Class {
 	return &pb.Class{
-		Id:        t.ID,
+		Id:        t.ID.String(),
 		Name:      t.Name,
-		TeacherId: t.TeacherID,
+		TeacherId: t.TeacherID.String(),
 		CreatedAt: timestamppb.New(t.CreatedAt),
 		UpdatedAt: timestamppb.New(t.UpdatedAt),
 	}

@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // ClassInvitationCodeQuery is the builder for querying ClassInvitationCode entities.
@@ -105,8 +106,8 @@ func (cicq *ClassInvitationCodeQuery) FirstX(ctx context.Context) *ClassInvitati
 
 // FirstID returns the first ClassInvitationCode ID from the query.
 // Returns a *NotFoundError when no ClassInvitationCode ID was found.
-func (cicq *ClassInvitationCodeQuery) FirstID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (cicq *ClassInvitationCodeQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = cicq.Limit(1).IDs(setContextOp(ctx, cicq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -118,7 +119,7 @@ func (cicq *ClassInvitationCodeQuery) FirstID(ctx context.Context) (id string, e
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cicq *ClassInvitationCodeQuery) FirstIDX(ctx context.Context) string {
+func (cicq *ClassInvitationCodeQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := cicq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -156,8 +157,8 @@ func (cicq *ClassInvitationCodeQuery) OnlyX(ctx context.Context) *ClassInvitatio
 // OnlyID is like Only, but returns the only ClassInvitationCode ID in the query.
 // Returns a *NotSingularError when more than one ClassInvitationCode ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (cicq *ClassInvitationCodeQuery) OnlyID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (cicq *ClassInvitationCodeQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = cicq.Limit(2).IDs(setContextOp(ctx, cicq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -173,7 +174,7 @@ func (cicq *ClassInvitationCodeQuery) OnlyID(ctx context.Context) (id string, er
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cicq *ClassInvitationCodeQuery) OnlyIDX(ctx context.Context) string {
+func (cicq *ClassInvitationCodeQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := cicq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -201,7 +202,7 @@ func (cicq *ClassInvitationCodeQuery) AllX(ctx context.Context) []*ClassInvitati
 }
 
 // IDs executes the query and returns a list of ClassInvitationCode IDs.
-func (cicq *ClassInvitationCodeQuery) IDs(ctx context.Context) (ids []string, err error) {
+func (cicq *ClassInvitationCodeQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 	if cicq.ctx.Unique == nil && cicq.path != nil {
 		cicq.Unique(true)
 	}
@@ -213,7 +214,7 @@ func (cicq *ClassInvitationCodeQuery) IDs(ctx context.Context) (ids []string, er
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cicq *ClassInvitationCodeQuery) IDsX(ctx context.Context) []string {
+func (cicq *ClassInvitationCodeQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := cicq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -297,7 +298,7 @@ func (cicq *ClassInvitationCodeQuery) WithClass(opts ...func(*ClassQuery)) *Clas
 // Example:
 //
 //	var v []struct {
-//		ClassID string `json:"class_id,omitempty"`
+//		ClassID uuid.UUID `json:"class_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -320,7 +321,7 @@ func (cicq *ClassInvitationCodeQuery) GroupBy(field string, fields ...string) *C
 // Example:
 //
 //	var v []struct {
-//		ClassID string `json:"class_id,omitempty"`
+//		ClassID uuid.UUID `json:"class_id,omitempty"`
 //	}
 //
 //	client.ClassInvitationCode.Query().
@@ -401,8 +402,8 @@ func (cicq *ClassInvitationCodeQuery) sqlAll(ctx context.Context, hooks ...query
 }
 
 func (cicq *ClassInvitationCodeQuery) loadClass(ctx context.Context, query *ClassQuery, nodes []*ClassInvitationCode, init func(*ClassInvitationCode), assign func(*ClassInvitationCode, *Class)) error {
-	ids := make([]string, 0, len(nodes))
-	nodeids := make(map[string][]*ClassInvitationCode)
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*ClassInvitationCode)
 	for i := range nodes {
 		fk := nodes[i].ClassID
 		if _, ok := nodeids[fk]; !ok {
@@ -440,7 +441,7 @@ func (cicq *ClassInvitationCodeQuery) sqlCount(ctx context.Context) (int, error)
 }
 
 func (cicq *ClassInvitationCodeQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(classinvitationcode.Table, classinvitationcode.Columns, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString))
+	_spec := sqlgraph.NewQuerySpec(classinvitationcode.Table, classinvitationcode.Columns, sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID))
 	_spec.From = cicq.sql
 	if unique := cicq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

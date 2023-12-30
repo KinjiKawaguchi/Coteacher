@@ -15,6 +15,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // TeacherQuery is the builder for querying Teacher entities.
@@ -131,8 +132,8 @@ func (tq *TeacherQuery) FirstX(ctx context.Context) *Teacher {
 
 // FirstID returns the first Teacher ID from the query.
 // Returns a *NotFoundError when no Teacher ID was found.
-func (tq *TeacherQuery) FirstID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (tq *TeacherQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = tq.Limit(1).IDs(setContextOp(ctx, tq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -144,7 +145,7 @@ func (tq *TeacherQuery) FirstID(ctx context.Context) (id string, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (tq *TeacherQuery) FirstIDX(ctx context.Context) string {
+func (tq *TeacherQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := tq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -182,8 +183,8 @@ func (tq *TeacherQuery) OnlyX(ctx context.Context) *Teacher {
 // OnlyID is like Only, but returns the only Teacher ID in the query.
 // Returns a *NotSingularError when more than one Teacher ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (tq *TeacherQuery) OnlyID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (tq *TeacherQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = tq.Limit(2).IDs(setContextOp(ctx, tq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -199,7 +200,7 @@ func (tq *TeacherQuery) OnlyID(ctx context.Context) (id string, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (tq *TeacherQuery) OnlyIDX(ctx context.Context) string {
+func (tq *TeacherQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := tq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -227,7 +228,7 @@ func (tq *TeacherQuery) AllX(ctx context.Context) []*Teacher {
 }
 
 // IDs executes the query and returns a list of Teacher IDs.
-func (tq *TeacherQuery) IDs(ctx context.Context) (ids []string, err error) {
+func (tq *TeacherQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 	if tq.ctx.Unique == nil && tq.path != nil {
 		tq.Unique(true)
 	}
@@ -239,7 +240,7 @@ func (tq *TeacherQuery) IDs(ctx context.Context) (ids []string, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (tq *TeacherQuery) IDsX(ctx context.Context) []string {
+func (tq *TeacherQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := tq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -432,8 +433,8 @@ func (tq *TeacherQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Teac
 }
 
 func (tq *TeacherQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Teacher, init func(*Teacher), assign func(*Teacher, *User)) error {
-	ids := make([]string, 0, len(nodes))
-	nodeids := make(map[string][]*Teacher)
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*Teacher)
 	for i := range nodes {
 		if nodes[i].user_teacher == nil {
 			continue
@@ -465,7 +466,7 @@ func (tq *TeacherQuery) loadUser(ctx context.Context, query *UserQuery, nodes []
 }
 func (tq *TeacherQuery) loadClasses(ctx context.Context, query *ClassQuery, nodes []*Teacher, init func(*Teacher), assign func(*Teacher, *Class)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[string]*Teacher)
+	nodeids := make(map[uuid.UUID]*Teacher)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -504,7 +505,7 @@ func (tq *TeacherQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (tq *TeacherQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(teacher.Table, teacher.Columns, sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString))
+	_spec := sqlgraph.NewQuerySpec(teacher.Table, teacher.Columns, sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID))
 	_spec.From = tq.sql
 	if unique := tq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

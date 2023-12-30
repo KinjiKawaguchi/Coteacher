@@ -8,6 +8,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
@@ -56,12 +57,12 @@ func IDLTE(id int) predicate.StudentClass {
 }
 
 // StudentID applies equality check predicate on the "student_id" field. It's identical to StudentIDEQ.
-func StudentID(v string) predicate.StudentClass {
+func StudentID(v uuid.UUID) predicate.StudentClass {
 	return predicate.StudentClass(sql.FieldEQ(FieldStudentID, v))
 }
 
 // ClassID applies equality check predicate on the "class_id" field. It's identical to ClassIDEQ.
-func ClassID(v string) predicate.StudentClass {
+func ClassID(v uuid.UUID) predicate.StudentClass {
 	return predicate.StudentClass(sql.FieldEQ(FieldClassID, v))
 }
 
@@ -76,133 +77,43 @@ func UpdatedAt(v time.Time) predicate.StudentClass {
 }
 
 // StudentIDEQ applies the EQ predicate on the "student_id" field.
-func StudentIDEQ(v string) predicate.StudentClass {
+func StudentIDEQ(v uuid.UUID) predicate.StudentClass {
 	return predicate.StudentClass(sql.FieldEQ(FieldStudentID, v))
 }
 
 // StudentIDNEQ applies the NEQ predicate on the "student_id" field.
-func StudentIDNEQ(v string) predicate.StudentClass {
+func StudentIDNEQ(v uuid.UUID) predicate.StudentClass {
 	return predicate.StudentClass(sql.FieldNEQ(FieldStudentID, v))
 }
 
 // StudentIDIn applies the In predicate on the "student_id" field.
-func StudentIDIn(vs ...string) predicate.StudentClass {
+func StudentIDIn(vs ...uuid.UUID) predicate.StudentClass {
 	return predicate.StudentClass(sql.FieldIn(FieldStudentID, vs...))
 }
 
 // StudentIDNotIn applies the NotIn predicate on the "student_id" field.
-func StudentIDNotIn(vs ...string) predicate.StudentClass {
+func StudentIDNotIn(vs ...uuid.UUID) predicate.StudentClass {
 	return predicate.StudentClass(sql.FieldNotIn(FieldStudentID, vs...))
 }
 
-// StudentIDGT applies the GT predicate on the "student_id" field.
-func StudentIDGT(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldGT(FieldStudentID, v))
-}
-
-// StudentIDGTE applies the GTE predicate on the "student_id" field.
-func StudentIDGTE(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldGTE(FieldStudentID, v))
-}
-
-// StudentIDLT applies the LT predicate on the "student_id" field.
-func StudentIDLT(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldLT(FieldStudentID, v))
-}
-
-// StudentIDLTE applies the LTE predicate on the "student_id" field.
-func StudentIDLTE(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldLTE(FieldStudentID, v))
-}
-
-// StudentIDContains applies the Contains predicate on the "student_id" field.
-func StudentIDContains(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldContains(FieldStudentID, v))
-}
-
-// StudentIDHasPrefix applies the HasPrefix predicate on the "student_id" field.
-func StudentIDHasPrefix(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldHasPrefix(FieldStudentID, v))
-}
-
-// StudentIDHasSuffix applies the HasSuffix predicate on the "student_id" field.
-func StudentIDHasSuffix(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldHasSuffix(FieldStudentID, v))
-}
-
-// StudentIDEqualFold applies the EqualFold predicate on the "student_id" field.
-func StudentIDEqualFold(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldEqualFold(FieldStudentID, v))
-}
-
-// StudentIDContainsFold applies the ContainsFold predicate on the "student_id" field.
-func StudentIDContainsFold(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldContainsFold(FieldStudentID, v))
-}
-
 // ClassIDEQ applies the EQ predicate on the "class_id" field.
-func ClassIDEQ(v string) predicate.StudentClass {
+func ClassIDEQ(v uuid.UUID) predicate.StudentClass {
 	return predicate.StudentClass(sql.FieldEQ(FieldClassID, v))
 }
 
 // ClassIDNEQ applies the NEQ predicate on the "class_id" field.
-func ClassIDNEQ(v string) predicate.StudentClass {
+func ClassIDNEQ(v uuid.UUID) predicate.StudentClass {
 	return predicate.StudentClass(sql.FieldNEQ(FieldClassID, v))
 }
 
 // ClassIDIn applies the In predicate on the "class_id" field.
-func ClassIDIn(vs ...string) predicate.StudentClass {
+func ClassIDIn(vs ...uuid.UUID) predicate.StudentClass {
 	return predicate.StudentClass(sql.FieldIn(FieldClassID, vs...))
 }
 
 // ClassIDNotIn applies the NotIn predicate on the "class_id" field.
-func ClassIDNotIn(vs ...string) predicate.StudentClass {
+func ClassIDNotIn(vs ...uuid.UUID) predicate.StudentClass {
 	return predicate.StudentClass(sql.FieldNotIn(FieldClassID, vs...))
-}
-
-// ClassIDGT applies the GT predicate on the "class_id" field.
-func ClassIDGT(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldGT(FieldClassID, v))
-}
-
-// ClassIDGTE applies the GTE predicate on the "class_id" field.
-func ClassIDGTE(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldGTE(FieldClassID, v))
-}
-
-// ClassIDLT applies the LT predicate on the "class_id" field.
-func ClassIDLT(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldLT(FieldClassID, v))
-}
-
-// ClassIDLTE applies the LTE predicate on the "class_id" field.
-func ClassIDLTE(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldLTE(FieldClassID, v))
-}
-
-// ClassIDContains applies the Contains predicate on the "class_id" field.
-func ClassIDContains(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldContains(FieldClassID, v))
-}
-
-// ClassIDHasPrefix applies the HasPrefix predicate on the "class_id" field.
-func ClassIDHasPrefix(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldHasPrefix(FieldClassID, v))
-}
-
-// ClassIDHasSuffix applies the HasSuffix predicate on the "class_id" field.
-func ClassIDHasSuffix(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldHasSuffix(FieldClassID, v))
-}
-
-// ClassIDEqualFold applies the EqualFold predicate on the "class_id" field.
-func ClassIDEqualFold(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldEqualFold(FieldClassID, v))
-}
-
-// ClassIDContainsFold applies the ContainsFold predicate on the "class_id" field.
-func ClassIDContainsFold(v string) predicate.StudentClass {
-	return predicate.StudentClass(sql.FieldContainsFold(FieldClassID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

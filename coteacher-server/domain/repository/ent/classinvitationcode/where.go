@@ -8,65 +8,56 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id string) predicate.ClassInvitationCode {
+func ID(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id string) predicate.ClassInvitationCode {
+func IDEQ(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id string) predicate.ClassInvitationCode {
+func IDNEQ(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...string) predicate.ClassInvitationCode {
+func IDIn(ids ...uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...string) predicate.ClassInvitationCode {
+func IDNotIn(ids ...uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id string) predicate.ClassInvitationCode {
+func IDGT(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id string) predicate.ClassInvitationCode {
+func IDGTE(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id string) predicate.ClassInvitationCode {
+func IDLT(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id string) predicate.ClassInvitationCode {
+func IDLTE(id uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldLTE(FieldID, id))
 }
 
-// IDEqualFold applies the EqualFold predicate on the ID field.
-func IDEqualFold(id string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldEqualFold(FieldID, id))
-}
-
-// IDContainsFold applies the ContainsFold predicate on the ID field.
-func IDContainsFold(id string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldContainsFold(FieldID, id))
-}
-
 // ClassID applies equality check predicate on the "class_id" field. It's identical to ClassIDEQ.
-func ClassID(v string) predicate.ClassInvitationCode {
+func ClassID(v uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldEQ(FieldClassID, v))
 }
 
@@ -96,68 +87,23 @@ func UpdatedAt(v time.Time) predicate.ClassInvitationCode {
 }
 
 // ClassIDEQ applies the EQ predicate on the "class_id" field.
-func ClassIDEQ(v string) predicate.ClassInvitationCode {
+func ClassIDEQ(v uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldEQ(FieldClassID, v))
 }
 
 // ClassIDNEQ applies the NEQ predicate on the "class_id" field.
-func ClassIDNEQ(v string) predicate.ClassInvitationCode {
+func ClassIDNEQ(v uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldNEQ(FieldClassID, v))
 }
 
 // ClassIDIn applies the In predicate on the "class_id" field.
-func ClassIDIn(vs ...string) predicate.ClassInvitationCode {
+func ClassIDIn(vs ...uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldIn(FieldClassID, vs...))
 }
 
 // ClassIDNotIn applies the NotIn predicate on the "class_id" field.
-func ClassIDNotIn(vs ...string) predicate.ClassInvitationCode {
+func ClassIDNotIn(vs ...uuid.UUID) predicate.ClassInvitationCode {
 	return predicate.ClassInvitationCode(sql.FieldNotIn(FieldClassID, vs...))
-}
-
-// ClassIDGT applies the GT predicate on the "class_id" field.
-func ClassIDGT(v string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldGT(FieldClassID, v))
-}
-
-// ClassIDGTE applies the GTE predicate on the "class_id" field.
-func ClassIDGTE(v string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldGTE(FieldClassID, v))
-}
-
-// ClassIDLT applies the LT predicate on the "class_id" field.
-func ClassIDLT(v string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldLT(FieldClassID, v))
-}
-
-// ClassIDLTE applies the LTE predicate on the "class_id" field.
-func ClassIDLTE(v string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldLTE(FieldClassID, v))
-}
-
-// ClassIDContains applies the Contains predicate on the "class_id" field.
-func ClassIDContains(v string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldContains(FieldClassID, v))
-}
-
-// ClassIDHasPrefix applies the HasPrefix predicate on the "class_id" field.
-func ClassIDHasPrefix(v string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldHasPrefix(FieldClassID, v))
-}
-
-// ClassIDHasSuffix applies the HasSuffix predicate on the "class_id" field.
-func ClassIDHasSuffix(v string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldHasSuffix(FieldClassID, v))
-}
-
-// ClassIDEqualFold applies the EqualFold predicate on the "class_id" field.
-func ClassIDEqualFold(v string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldEqualFold(FieldClassID, v))
-}
-
-// ClassIDContainsFold applies the ContainsFold predicate on the "class_id" field.
-func ClassIDContainsFold(v string) predicate.ClassInvitationCode {
-	return predicate.ClassInvitationCode(sql.FieldContainsFold(FieldClassID, v))
 }
 
 // InvitationCodeEQ applies the EQ predicate on the "invitation_code" field.

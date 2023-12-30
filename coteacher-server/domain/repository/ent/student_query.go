@@ -15,6 +15,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // StudentQuery is the builder for querying Student entities.
@@ -131,8 +132,8 @@ func (sq *StudentQuery) FirstX(ctx context.Context) *Student {
 
 // FirstID returns the first Student ID from the query.
 // Returns a *NotFoundError when no Student ID was found.
-func (sq *StudentQuery) FirstID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (sq *StudentQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = sq.Limit(1).IDs(setContextOp(ctx, sq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -144,7 +145,7 @@ func (sq *StudentQuery) FirstID(ctx context.Context) (id string, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (sq *StudentQuery) FirstIDX(ctx context.Context) string {
+func (sq *StudentQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := sq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -182,8 +183,8 @@ func (sq *StudentQuery) OnlyX(ctx context.Context) *Student {
 // OnlyID is like Only, but returns the only Student ID in the query.
 // Returns a *NotSingularError when more than one Student ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (sq *StudentQuery) OnlyID(ctx context.Context) (id string, err error) {
-	var ids []string
+func (sq *StudentQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = sq.Limit(2).IDs(setContextOp(ctx, sq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -199,7 +200,7 @@ func (sq *StudentQuery) OnlyID(ctx context.Context) (id string, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (sq *StudentQuery) OnlyIDX(ctx context.Context) string {
+func (sq *StudentQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := sq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -227,7 +228,7 @@ func (sq *StudentQuery) AllX(ctx context.Context) []*Student {
 }
 
 // IDs executes the query and returns a list of Student IDs.
-func (sq *StudentQuery) IDs(ctx context.Context) (ids []string, err error) {
+func (sq *StudentQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 	if sq.ctx.Unique == nil && sq.path != nil {
 		sq.Unique(true)
 	}
@@ -239,7 +240,7 @@ func (sq *StudentQuery) IDs(ctx context.Context) (ids []string, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (sq *StudentQuery) IDsX(ctx context.Context) []string {
+func (sq *StudentQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := sq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -432,8 +433,8 @@ func (sq *StudentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stud
 }
 
 func (sq *StudentQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Student, init func(*Student), assign func(*Student, *User)) error {
-	ids := make([]string, 0, len(nodes))
-	nodeids := make(map[string][]*Student)
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*Student)
 	for i := range nodes {
 		if nodes[i].user_student == nil {
 			continue
@@ -465,7 +466,7 @@ func (sq *StudentQuery) loadUser(ctx context.Context, query *UserQuery, nodes []
 }
 func (sq *StudentQuery) loadStudentClasses(ctx context.Context, query *StudentClassQuery, nodes []*Student, init func(*Student), assign func(*Student, *StudentClass)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[string]*Student)
+	nodeids := make(map[uuid.UUID]*Student)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -504,7 +505,7 @@ func (sq *StudentQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (sq *StudentQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(student.Table, student.Columns, sqlgraph.NewFieldSpec(student.FieldID, field.TypeString))
+	_spec := sqlgraph.NewQuerySpec(student.Table, student.Columns, sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID))
 	_spec.From = sq.sql
 	if unique := sq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

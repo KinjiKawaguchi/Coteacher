@@ -13,6 +13,8 @@ import (
 	entstudentclass "coteacher/domain/repository/ent/studentclass"
 	entuser "coteacher/domain/repository/ent/user"
 	pb "coteacher/proto-gen/go/coteacher/v1"
+
+	"github.com/google/uuid"
 )
 
 type Interactor struct {
@@ -25,10 +27,21 @@ func NewInteractor(entClient *ent.Client, logger *slog.Logger) *Interactor {
 }
 
 func (i *Interactor) CreateStudentClass(ctx context.Context, req *pb.CreateStudentClassRequest) (*pb.CreateStudentClassResponse, error) {
+
+	studentID, err := uuid.Parse(req.StudentId)
+	if err != nil {
+		return nil, err
+	}
+
 	now := time.Now()
+	classID, err := uuid.Parse(req.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
 	q := i.entClient.StudentClass.Create().
-		SetStudentID(req.StudentId).
-		SetClassID(req.ClassId).
+		SetStudentID(studentID).
+		SetClassID(classID).
 		SetCreatedAt(now).
 		SetUpdatedAt(now)
 
@@ -43,18 +56,27 @@ func (i *Interactor) CreateStudentClass(ctx context.Context, req *pb.CreateStude
 }
 
 func (i *Interactor) GetStudentListByClassID(ctx context.Context, req *pb.GetStudentListByClassIDRequest) (*pb.GetStudentListByClassIDResponse, error) {
+	classID, err := uuid.Parse(req.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
 	studentclasses, err := i.entClient.StudentClass.
 		Query().
-		Where(entstudentclass.ClassID(req.ClassId)).
+		Where(entstudentclass.ClassID(classID)).
 		All(ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	studentIDs := make([]string, len(studentclasses))
+	studentIDs := make([]uuid.UUID, len(studentclasses))
 	for i, studentclass := range studentclasses {
-		studentIDs[i] = studentclass.StudentID
+		studentID, err := uuid.Parse(studentclass.StudentID.String())
+		if err != nil {
+			return nil, err
+		}
+		studentIDs[i] = studentID
 	}
 
 	students, err := i.entClient.User.
@@ -77,23 +99,31 @@ func (i *Interactor) GetStudentListByClassID(ctx context.Context, req *pb.GetStu
 }
 
 func (i *Interactor) GetClassListByStudentID(ctx context.Context, req *pb.GetClassListByStudentIDRequest) (*pb.GetClassListByStudentIDResponse, error) {
+	studentID, err := uuid.Parse(req.StudentId)
+	if err != nil {
+		return nil, err
+	}
+
 	studentclasses, err := i.entClient.StudentClass.
 		Query().
-		Where(entstudentclass.StudentID(req.StudentId)).
+		Where(entstudentclass.StudentID(studentID)).
 		All(ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	classIds := make([]string, len(studentclasses))
+	classIDs := make([]uuid.UUID, len(studentclasses))
 	for i, studentclass := range studentclasses {
-		classIds[i] = studentclass.ClassID
+		classIDs[i], err = uuid.Parse(studentclass.ClassID.String())
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	classes, err := i.entClient.Class.
 		Query().
-		Where(entclass.IDIn(classIds...)).
+		Where(entclass.IDIn(classIDs...)).
 		All(ctx)
 
 	if err != nil {
@@ -111,9 +141,19 @@ func (i *Interactor) GetClassListByStudentID(ctx context.Context, req *pb.GetCla
 }
 
 func (i *Interactor) DeleteStudentClass(ctx context.Context, req *pb.DeleteStudentClassRequest) (*pb.DeleteStudentClassResponse, error) {
-	err := i.entClient.StudentClass.DeleteOne(&ent.StudentClass{
-		StudentID: req.StudentId,
-		ClassID:   req.ClassId,
+	studentID, err := uuid.Parse(req.StudentId)
+	if err != nil {
+		return nil, err
+	}
+
+	classID, err := uuid.Parse(req.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
+	err = i.entClient.StudentClass.DeleteOne(&ent.StudentClass{
+		StudentID: studentID,
+		ClassID:   classID,
 	}).Exec(ctx)
 	if err != nil {
 		return nil, err

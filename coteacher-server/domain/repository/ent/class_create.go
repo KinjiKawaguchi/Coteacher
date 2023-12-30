@@ -14,6 +14,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // ClassCreate is the builder for creating a Class entity.
@@ -30,8 +31,8 @@ func (cc *ClassCreate) SetName(s string) *ClassCreate {
 }
 
 // SetTeacherID sets the "teacher_id" field.
-func (cc *ClassCreate) SetTeacherID(s string) *ClassCreate {
-	cc.mutation.SetTeacherID(s)
+func (cc *ClassCreate) SetTeacherID(u uuid.UUID) *ClassCreate {
+	cc.mutation.SetTeacherID(u)
 	return cc
 }
 
@@ -48,8 +49,16 @@ func (cc *ClassCreate) SetUpdatedAt(t time.Time) *ClassCreate {
 }
 
 // SetID sets the "id" field.
-func (cc *ClassCreate) SetID(s string) *ClassCreate {
-	cc.mutation.SetID(s)
+func (cc *ClassCreate) SetID(u uuid.UUID) *ClassCreate {
+	cc.mutation.SetID(u)
+	return cc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (cc *ClassCreate) SetNillableID(u *uuid.UUID) *ClassCreate {
+	if u != nil {
+		cc.SetID(*u)
+	}
 	return cc
 }
 
@@ -74,14 +83,14 @@ func (cc *ClassCreate) AddClassStudents(s ...*StudentClass) *ClassCreate {
 }
 
 // AddInvitationCodeIDs adds the "invitationCodes" edge to the ClassInvitationCode entity by IDs.
-func (cc *ClassCreate) AddInvitationCodeIDs(ids ...string) *ClassCreate {
+func (cc *ClassCreate) AddInvitationCodeIDs(ids ...uuid.UUID) *ClassCreate {
 	cc.mutation.AddInvitationCodeIDs(ids...)
 	return cc
 }
 
 // AddInvitationCodes adds the "invitationCodes" edges to the ClassInvitationCode entity.
 func (cc *ClassCreate) AddInvitationCodes(c ...*ClassInvitationCode) *ClassCreate {
-	ids := make([]string, len(c))
+	ids := make([]uuid.UUID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -95,6 +104,7 @@ func (cc *ClassCreate) Mutation() *ClassMutation {
 
 // Save creates the Class in the database.
 func (cc *ClassCreate) Save(ctx context.Context) (*Class, error) {
+	cc.defaults()
 	return withHooks(ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
 
@@ -117,6 +127,14 @@ func (cc *ClassCreate) Exec(ctx context.Context) error {
 func (cc *ClassCreate) ExecX(ctx context.Context) {
 	if err := cc.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (cc *ClassCreate) defaults() {
+	if _, ok := cc.mutation.ID(); !ok {
+		v := class.DefaultID()
+		cc.mutation.SetID(v)
 	}
 }
 
@@ -152,10 +170,10 @@ func (cc *ClassCreate) sqlSave(ctx context.Context) (*Class, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected Class.ID type: %T", _spec.ID.Value)
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
 		}
 	}
 	cc.mutation.id = &_node.ID
@@ -166,11 +184,11 @@ func (cc *ClassCreate) sqlSave(ctx context.Context) (*Class, error) {
 func (cc *ClassCreate) createSpec() (*Class, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Class{config: cc.config}
-		_spec = sqlgraph.NewCreateSpec(class.Table, sqlgraph.NewFieldSpec(class.FieldID, field.TypeString))
+		_spec = sqlgraph.NewCreateSpec(class.Table, sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID))
 	)
 	if id, ok := cc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := cc.mutation.Name(); ok {
 		_spec.SetField(class.FieldName, field.TypeString, value)
@@ -192,7 +210,7 @@ func (cc *ClassCreate) createSpec() (*Class, *sqlgraph.CreateSpec) {
 			Columns: []string{class.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -225,7 +243,7 @@ func (cc *ClassCreate) createSpec() (*Class, *sqlgraph.CreateSpec) {
 			Columns: []string{class.InvitationCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -254,6 +272,7 @@ func (ccb *ClassCreateBulk) Save(ctx context.Context) ([]*Class, error) {
 	for i := range ccb.builders {
 		func(i int, root context.Context) {
 			builder := ccb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ClassMutation)
 				if !ok {

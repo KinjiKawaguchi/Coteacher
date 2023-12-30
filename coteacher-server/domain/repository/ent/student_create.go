@@ -12,6 +12,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // StudentCreate is the builder for creating a Student entity.
@@ -22,13 +23,13 @@ type StudentCreate struct {
 }
 
 // SetID sets the "id" field.
-func (sc *StudentCreate) SetID(s string) *StudentCreate {
-	sc.mutation.SetID(s)
+func (sc *StudentCreate) SetID(u uuid.UUID) *StudentCreate {
+	sc.mutation.SetID(u)
 	return sc
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (sc *StudentCreate) SetUserID(id string) *StudentCreate {
+func (sc *StudentCreate) SetUserID(id uuid.UUID) *StudentCreate {
 	sc.mutation.SetUserID(id)
 	return sc
 }
@@ -105,10 +106,10 @@ func (sc *StudentCreate) sqlSave(ctx context.Context) (*Student, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(string); ok {
-			_node.ID = id
-		} else {
-			return nil, fmt.Errorf("unexpected Student.ID type: %T", _spec.ID.Value)
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
 		}
 	}
 	sc.mutation.id = &_node.ID
@@ -119,11 +120,11 @@ func (sc *StudentCreate) sqlSave(ctx context.Context) (*Student, error) {
 func (sc *StudentCreate) createSpec() (*Student, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Student{config: sc.config}
-		_spec = sqlgraph.NewCreateSpec(student.Table, sqlgraph.NewFieldSpec(student.FieldID, field.TypeString))
+		_spec = sqlgraph.NewCreateSpec(student.Table, sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID))
 	)
 	if id, ok := sc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if nodes := sc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -133,7 +134,7 @@ func (sc *StudentCreate) createSpec() (*Student, *sqlgraph.CreateSpec) {
 			Columns: []string{student.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

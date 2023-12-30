@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
+	"github.com/google/uuid"
 
 	"context"
 	"coteacher/domain/repository/ent"
@@ -25,10 +26,16 @@ func NewInteractor(entClient *ent.Client, logger *slog.Logger) *Interactor {
 }
 
 func (i *Interactor) CreateClass(ctx context.Context, req *pb.CreateClassRequest) (*pb.CreateClassResponse, error) {
+
 	now := time.Now()
+	teacherID, err := uuid.Parse(req.TeacherId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid teacher ID"))
+	}
+
 	q := i.entClient.Class.Create().
 		SetName(req.Name).
-		SetTeacherID(req.TeacherId).
+		SetTeacherID(teacherID).
 		SetCreatedAt(now).
 		SetUpdatedAt(now)
 
@@ -48,7 +55,7 @@ func (i *Interactor) CreateClass(ctx context.Context, req *pb.CreateClassRequest
 
 func (i *Interactor) GetClassByID(ctx context.Context, req *pb.GetClassByIDRequest) (*pb.GetClassByIDResponse, error) {
 	q := i.entClient.Class.Query()
-	class, err := q.Where(entclass.ID(req.Id)).Only(ctx)
+	class, err := q.Where(entclass.ID(uuid.MustParse(req.Id))).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.New("class not found"))
@@ -60,9 +67,14 @@ func (i *Interactor) GetClassByID(ctx context.Context, req *pb.GetClassByIDReque
 }
 
 func (i *Interactor) GetClassListByTeacherID(ctx context.Context, req *pb.GetClassListByTeacherIDRequest) (*pb.GetClassListByTeacherIDResponse, error) {
+	teacherID, err := uuid.Parse(req.TeacherId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid teacher ID"))
+	}
+
 	classes, err := i.entClient.Class.
 		Query().
-		Where(entclass.TeacherID(req.TeacherId)).
+		Where(entclass.TeacherID(teacherID)).
 		All(ctx)
 
 	if err != nil {
@@ -83,9 +95,19 @@ func (i *Interactor) GetClassListByTeacherID(ctx context.Context, req *pb.GetCla
 }
 
 func (i *Interactor) UpdateClass(ctx context.Context, req *pb.UpdateClassRequest) (*pb.UpdateClassResponse, error) {
-	class, err := i.entClient.Class.UpdateOneID(req.Id).
+	classID, err := uuid.Parse(req.Id)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid class ID"))
+	}
+
+	teacherID, err := uuid.Parse(req.TeacherId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid teacher ID"))
+	}
+
+	class, err := i.entClient.Class.UpdateOneID(classID).
 		SetName(req.Name).
-		SetTeacherID(req.TeacherId).
+		SetTeacherID(teacherID).
 		Save(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
@@ -98,7 +120,12 @@ func (i *Interactor) UpdateClass(ctx context.Context, req *pb.UpdateClassRequest
 }
 
 func (i *Interactor) DeleteClass(ctx context.Context, req *pb.DeleteClassRequest) (*pb.DeleteClassResponse, error) {
-	err := i.entClient.Class.DeleteOneID(req.Id).Exec(ctx)
+	classID, err := uuid.Parse(req.Id)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid class ID"))
+	}
+
+	err = i.entClient.Class.DeleteOneID(classID).Exec(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.New("class not found"))

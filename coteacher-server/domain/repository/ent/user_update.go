@@ -15,6 +15,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -78,22 +79,14 @@ func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 	return uu
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableUpdatedAt(t *time.Time) *UserUpdate {
-	if t != nil {
-		uu.SetUpdatedAt(*t)
-	}
-	return uu
-}
-
 // SetTeacherID sets the "teacher" edge to the Teacher entity by ID.
-func (uu *UserUpdate) SetTeacherID(id string) *UserUpdate {
+func (uu *UserUpdate) SetTeacherID(id uuid.UUID) *UserUpdate {
 	uu.mutation.SetTeacherID(id)
 	return uu
 }
 
 // SetNillableTeacherID sets the "teacher" edge to the Teacher entity by ID if the given value is not nil.
-func (uu *UserUpdate) SetNillableTeacherID(id *string) *UserUpdate {
+func (uu *UserUpdate) SetNillableTeacherID(id *uuid.UUID) *UserUpdate {
 	if id != nil {
 		uu = uu.SetTeacherID(*id)
 	}
@@ -106,13 +99,13 @@ func (uu *UserUpdate) SetTeacher(t *Teacher) *UserUpdate {
 }
 
 // SetStudentID sets the "student" edge to the Student entity by ID.
-func (uu *UserUpdate) SetStudentID(id string) *UserUpdate {
+func (uu *UserUpdate) SetStudentID(id uuid.UUID) *UserUpdate {
 	uu.mutation.SetStudentID(id)
 	return uu
 }
 
 // SetNillableStudentID sets the "student" edge to the Student entity by ID if the given value is not nil.
-func (uu *UserUpdate) SetNillableStudentID(id *string) *UserUpdate {
+func (uu *UserUpdate) SetNillableStudentID(id *uuid.UUID) *UserUpdate {
 	if id != nil {
 		uu = uu.SetStudentID(*id)
 	}
@@ -143,6 +136,7 @@ func (uu *UserUpdate) ClearStudent() *UserUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uu *UserUpdate) Save(ctx context.Context) (int, error) {
+	uu.defaults()
 	return withHooks(ctx, uu.sqlSave, uu.mutation, uu.hooks)
 }
 
@@ -168,8 +162,16 @@ func (uu *UserUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (uu *UserUpdate) defaults() {
+	if _, ok := uu.mutation.UpdatedAt(); !ok {
+		v := user.UpdateDefaultUpdatedAt()
+		uu.mutation.SetUpdatedAt(v)
+	}
+}
+
 func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
+	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID))
 	if ps := uu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -197,7 +199,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -210,7 +212,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -226,7 +228,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -239,7 +241,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -315,22 +317,14 @@ func (uuo *UserUpdateOne) SetUpdatedAt(t time.Time) *UserUpdateOne {
 	return uuo
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableUpdatedAt(t *time.Time) *UserUpdateOne {
-	if t != nil {
-		uuo.SetUpdatedAt(*t)
-	}
-	return uuo
-}
-
 // SetTeacherID sets the "teacher" edge to the Teacher entity by ID.
-func (uuo *UserUpdateOne) SetTeacherID(id string) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetTeacherID(id uuid.UUID) *UserUpdateOne {
 	uuo.mutation.SetTeacherID(id)
 	return uuo
 }
 
 // SetNillableTeacherID sets the "teacher" edge to the Teacher entity by ID if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableTeacherID(id *string) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetNillableTeacherID(id *uuid.UUID) *UserUpdateOne {
 	if id != nil {
 		uuo = uuo.SetTeacherID(*id)
 	}
@@ -343,13 +337,13 @@ func (uuo *UserUpdateOne) SetTeacher(t *Teacher) *UserUpdateOne {
 }
 
 // SetStudentID sets the "student" edge to the Student entity by ID.
-func (uuo *UserUpdateOne) SetStudentID(id string) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetStudentID(id uuid.UUID) *UserUpdateOne {
 	uuo.mutation.SetStudentID(id)
 	return uuo
 }
 
 // SetNillableStudentID sets the "student" edge to the Student entity by ID if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableStudentID(id *string) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetNillableStudentID(id *uuid.UUID) *UserUpdateOne {
 	if id != nil {
 		uuo = uuo.SetStudentID(*id)
 	}
@@ -393,6 +387,7 @@ func (uuo *UserUpdateOne) Select(field string, fields ...string) *UserUpdateOne 
 
 // Save executes the query and returns the updated User entity.
 func (uuo *UserUpdateOne) Save(ctx context.Context) (*User, error) {
+	uuo.defaults()
 	return withHooks(ctx, uuo.sqlSave, uuo.mutation, uuo.hooks)
 }
 
@@ -418,8 +413,16 @@ func (uuo *UserUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (uuo *UserUpdateOne) defaults() {
+	if _, ok := uuo.mutation.UpdatedAt(); !ok {
+		v := user.UpdateDefaultUpdatedAt()
+		uuo.mutation.SetUpdatedAt(v)
+	}
+}
+
 func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
-	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
+	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID))
 	id, ok := uuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "User.id" for update`)}
@@ -464,7 +467,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -477,7 +480,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.TeacherColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -493,7 +496,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -506,7 +509,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.StudentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(student.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

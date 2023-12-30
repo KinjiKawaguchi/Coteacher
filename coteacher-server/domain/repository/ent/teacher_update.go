@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // TeacherUpdate is the builder for updating Teacher entities.
@@ -30,7 +31,7 @@ func (tu *TeacherUpdate) Where(ps ...predicate.Teacher) *TeacherUpdate {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (tu *TeacherUpdate) SetUserID(id string) *TeacherUpdate {
+func (tu *TeacherUpdate) SetUserID(id uuid.UUID) *TeacherUpdate {
 	tu.mutation.SetUserID(id)
 	return tu
 }
@@ -41,14 +42,14 @@ func (tu *TeacherUpdate) SetUser(u *User) *TeacherUpdate {
 }
 
 // AddClassIDs adds the "classes" edge to the Class entity by IDs.
-func (tu *TeacherUpdate) AddClassIDs(ids ...string) *TeacherUpdate {
+func (tu *TeacherUpdate) AddClassIDs(ids ...uuid.UUID) *TeacherUpdate {
 	tu.mutation.AddClassIDs(ids...)
 	return tu
 }
 
 // AddClasses adds the "classes" edges to the Class entity.
 func (tu *TeacherUpdate) AddClasses(c ...*Class) *TeacherUpdate {
-	ids := make([]string, len(c))
+	ids := make([]uuid.UUID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -73,14 +74,14 @@ func (tu *TeacherUpdate) ClearClasses() *TeacherUpdate {
 }
 
 // RemoveClassIDs removes the "classes" edge to Class entities by IDs.
-func (tu *TeacherUpdate) RemoveClassIDs(ids ...string) *TeacherUpdate {
+func (tu *TeacherUpdate) RemoveClassIDs(ids ...uuid.UUID) *TeacherUpdate {
 	tu.mutation.RemoveClassIDs(ids...)
 	return tu
 }
 
 // RemoveClasses removes "classes" edges to Class entities.
 func (tu *TeacherUpdate) RemoveClasses(c ...*Class) *TeacherUpdate {
-	ids := make([]string, len(c))
+	ids := make([]uuid.UUID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -126,7 +127,7 @@ func (tu *TeacherUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := tu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(teacher.Table, teacher.Columns, sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString))
+	_spec := sqlgraph.NewUpdateSpec(teacher.Table, teacher.Columns, sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID))
 	if ps := tu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -142,7 +143,7 @@ func (tu *TeacherUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{teacher.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -155,7 +156,7 @@ func (tu *TeacherUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{teacher.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -171,7 +172,7 @@ func (tu *TeacherUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{teacher.ClassesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -184,7 +185,7 @@ func (tu *TeacherUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{teacher.ClassesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -200,7 +201,7 @@ func (tu *TeacherUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{teacher.ClassesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -229,7 +230,7 @@ type TeacherUpdateOne struct {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (tuo *TeacherUpdateOne) SetUserID(id string) *TeacherUpdateOne {
+func (tuo *TeacherUpdateOne) SetUserID(id uuid.UUID) *TeacherUpdateOne {
 	tuo.mutation.SetUserID(id)
 	return tuo
 }
@@ -240,14 +241,14 @@ func (tuo *TeacherUpdateOne) SetUser(u *User) *TeacherUpdateOne {
 }
 
 // AddClassIDs adds the "classes" edge to the Class entity by IDs.
-func (tuo *TeacherUpdateOne) AddClassIDs(ids ...string) *TeacherUpdateOne {
+func (tuo *TeacherUpdateOne) AddClassIDs(ids ...uuid.UUID) *TeacherUpdateOne {
 	tuo.mutation.AddClassIDs(ids...)
 	return tuo
 }
 
 // AddClasses adds the "classes" edges to the Class entity.
 func (tuo *TeacherUpdateOne) AddClasses(c ...*Class) *TeacherUpdateOne {
-	ids := make([]string, len(c))
+	ids := make([]uuid.UUID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -272,14 +273,14 @@ func (tuo *TeacherUpdateOne) ClearClasses() *TeacherUpdateOne {
 }
 
 // RemoveClassIDs removes the "classes" edge to Class entities by IDs.
-func (tuo *TeacherUpdateOne) RemoveClassIDs(ids ...string) *TeacherUpdateOne {
+func (tuo *TeacherUpdateOne) RemoveClassIDs(ids ...uuid.UUID) *TeacherUpdateOne {
 	tuo.mutation.RemoveClassIDs(ids...)
 	return tuo
 }
 
 // RemoveClasses removes "classes" edges to Class entities.
 func (tuo *TeacherUpdateOne) RemoveClasses(c ...*Class) *TeacherUpdateOne {
-	ids := make([]string, len(c))
+	ids := make([]uuid.UUID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -338,7 +339,7 @@ func (tuo *TeacherUpdateOne) sqlSave(ctx context.Context) (_node *Teacher, err e
 	if err := tuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(teacher.Table, teacher.Columns, sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeString))
+	_spec := sqlgraph.NewUpdateSpec(teacher.Table, teacher.Columns, sqlgraph.NewFieldSpec(teacher.FieldID, field.TypeUUID))
 	id, ok := tuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Teacher.id" for update`)}
@@ -371,7 +372,7 @@ func (tuo *TeacherUpdateOne) sqlSave(ctx context.Context) (_node *Teacher, err e
 			Columns: []string{teacher.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -384,7 +385,7 @@ func (tuo *TeacherUpdateOne) sqlSave(ctx context.Context) (_node *Teacher, err e
 			Columns: []string{teacher.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -400,7 +401,7 @@ func (tuo *TeacherUpdateOne) sqlSave(ctx context.Context) (_node *Teacher, err e
 			Columns: []string{teacher.ClassesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -413,7 +414,7 @@ func (tuo *TeacherUpdateOne) sqlSave(ctx context.Context) (_node *Teacher, err e
 			Columns: []string{teacher.ClassesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -429,7 +430,7 @@ func (tuo *TeacherUpdateOne) sqlSave(ctx context.Context) (_node *Teacher, err e
 			Columns: []string{teacher.ClassesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(class.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

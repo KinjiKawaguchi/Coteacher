@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	entgo.io/ent v0.12.5
-	github.com/google/uuid v1.3.1 // indirect
+	github.com/google/uuid v1.3.1
 )
 
 require (
