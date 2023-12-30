@@ -134,14 +134,19 @@ message DeleteClassResponse {
 message CreateUserRequest {
   string name = 1;
   string email = 2;
-  oneof role {
-    Teacher teacher = 3;
-    Student student = 4;
-  }
+  UserType user_type = 3;
 }
+
+enum UserType {
+  USER_TYPE_UNSPECIFIED = 0;
+  USER_TYPE_STUDENT = 1;
+  USER_TYPE_TEACHER = 2;
+}
+
 
 message CreateUserResponse {
   User user = 1;
+  UserType user_type = 2;
 }
 
 message GetUserByIDRequest {
@@ -150,6 +155,7 @@ message GetUserByIDRequest {
 
 message GetUserByIDResponse {
   User user = 1;
+  UserType user_type = 2;
 }
 
 message GetUserByEmailRequest {
@@ -158,20 +164,20 @@ message GetUserByEmailRequest {
 
 message GetUserByEmailResponse {
   User user = 1;
+  UserType user_type = 2;
 }
 
 message UpdateUserRequest {
   string id = 1;
   string name = 2;
   string email = 3;
-  oneof role {
-    Teacher teacher = 4;
-    Student student = 5;
-  }
+  UserType user_type = 4;
 }
 
 message UpdateUserResponse {
   User user = 1;
+  UserType user_type = 2;
+
 }
 
 message DeleteUserRequest {
@@ -180,4 +186,5 @@ message DeleteUserRequest {
 
 message DeleteUserResponse {
   User user = 1;
+  UserType user_type = 2;
 }
