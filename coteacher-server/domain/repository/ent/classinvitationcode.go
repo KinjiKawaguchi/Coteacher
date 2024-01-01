@@ -3,8 +3,8 @@
 package ent
 
 import (
-	"coteacher/domain/repository/ent/class"
-	"coteacher/domain/repository/ent/classinvitationcode"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
 	"fmt"
 	"strings"
 	"time"

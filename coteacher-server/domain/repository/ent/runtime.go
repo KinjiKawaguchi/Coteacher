@@ -3,10 +3,10 @@
 package ent
 
 import (
-	"coteacher/domain/repository/ent/class"
-	"coteacher/domain/repository/ent/classinvitationcode"
-	"coteacher/domain/repository/ent/schema"
-	"coteacher/domain/repository/ent/user"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/schema"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"time"
 
 	"github.com/google/uuid"

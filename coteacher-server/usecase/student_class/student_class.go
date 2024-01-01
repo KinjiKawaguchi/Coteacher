@@ -5,14 +5,16 @@ import (
 
 	"golang.org/x/exp/slog"
 
-	utils "coteacher/usecase/utils"
+	utils "github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/utils"
 
 	"context"
-	"coteacher/domain/repository/ent"
-	entclass "coteacher/domain/repository/ent/class"
-	entstudentclass "coteacher/domain/repository/ent/studentclass"
-	entuser "coteacher/domain/repository/ent/user"
-	pb "coteacher/proto-gen/go/coteacher/v1"
+
+	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
+
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
+	entclass "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	entstudentclass "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
+	entuser "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 
 	"github.com/google/uuid"
 )

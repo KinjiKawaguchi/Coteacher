@@ -4,9 +4,9 @@ package ent
 
 import (
 	"context"
-	"coteacher/domain/repository/ent/student"
-	"coteacher/domain/repository/ent/studentclass"
-	"coteacher/domain/repository/ent/user"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"errors"
 	"fmt"
 

@@ -3,9 +3,11 @@ package grpc
 import (
 	"context"
 
-	"coteacher/domain/repository/ent"
-	coteacherv1 "coteacher/proto-gen/go/coteacher/v1"
-	"coteacher/usecase/student_class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/student_class"
+
+	coteacherv1 "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
+
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 
 	"golang.org/x/exp/slog"
 )

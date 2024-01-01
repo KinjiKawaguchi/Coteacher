@@ -1,7 +1,7 @@
 package grpc_server
 
 import (
-	"coteacher/domain/repository/ent"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 
 	"golang.org/x/exp/slog"
 )

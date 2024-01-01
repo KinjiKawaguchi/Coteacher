@@ -4,10 +4,10 @@ package ent
 
 import (
 	"context"
-	"coteacher/domain/repository/ent/class"
-	"coteacher/domain/repository/ent/classinvitationcode"
-	"coteacher/domain/repository/ent/studentclass"
-	"coteacher/domain/repository/ent/teacher"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
 	"errors"
 	"fmt"
 	"time"

@@ -2,7 +2,7 @@ module github.com/KinjiKawaguchi/Coteacher/coteacher-server
 
 replace github.com/KinjiKawaguchi/Coteacher/proto-gen/go => ../proto-gen/go
 
-go 1.21.4
+go 1.21.5
 
 require (
 	entgo.io/ent v0.12.5
@@ -25,6 +25,7 @@ require (
 
 require (
 	connectrpc.com/connect v1.14.0
+	github.com/KinjiKawaguchi/Coteacher/proto-gen/go v0.0.0-20240101022540-1dc707daf93b
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.1
 	github.com/kelseyhightower/envconfig v1.4.0

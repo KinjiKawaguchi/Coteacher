@@ -4,8 +4,8 @@ package ent
 
 import (
 	"context"
-	"coteacher/domain/repository/ent/predicate"
-	"coteacher/domain/repository/ent/user"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"

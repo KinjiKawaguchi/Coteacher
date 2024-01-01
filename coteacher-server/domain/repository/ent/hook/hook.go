@@ -4,7 +4,7 @@ package hook
 
 import (
 	"context"
-	"coteacher/domain/repository/ent"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 	"fmt"
 )
 

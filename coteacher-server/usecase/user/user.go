@@ -4,16 +4,20 @@ import (
 	"errors"
 	"time"
 
-	utils "coteacher/usecase/utils"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/class"
+
+	utils "github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/utils"
 
 	"connectrpc.com/connect"
 
 	"context"
-	"coteacher/domain/repository/ent"
-	entstudent "coteacher/domain/repository/ent/student"
-	entteacher "coteacher/domain/repository/ent/teacher"
-	entuser "coteacher/domain/repository/ent/user"
-	pb "coteacher/proto-gen/go/coteacher/v1"
+
+	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
+
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
+	entstudent "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
+	entteacher "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
+	entuser "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 
 	"golang.org/x/exp/slog"
 
@@ -233,6 +237,9 @@ func (i *Interactor) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) 
 	switch {
 	case userType == pb.UserType_USER_TYPE_TEACHER:
 		err = i.entClient.Teacher.DeleteOneID(id).Exec(ctx)
+		class.NewInteractor(i.entClient, i.logger).DeleteClass(ctx, &pb.DeleteClassRequest{
+			Id: req.Id,
+		})
 	case userType == pb.UserType_USER_TYPE_STUDENT:
 		err = i.entClient.Student.DeleteOneID(id).Exec(ctx)
 	default:

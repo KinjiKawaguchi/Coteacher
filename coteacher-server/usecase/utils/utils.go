@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"coteacher/domain/repository/ent"
-	pb "coteacher/proto-gen/go/coteacher/v1"
+	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
+
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

@@ -3,7 +3,7 @@
 package class
 
 import (
-	"coteacher/domain/repository/ent/predicate"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"

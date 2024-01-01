@@ -7,7 +7,7 @@ import (
 	"log"
 	"time"
 
-	pb "coteacher/proto-gen/go/coteacher/v1"
+	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
 )
 
 type Interactor struct{}

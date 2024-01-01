@@ -3,8 +3,9 @@ package grpc
 import (
 	"context"
 
-	pb "coteacher/proto-gen/go/coteacher/v1"
-	"coteacher/usecase/healthcheck"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/healthcheck"
+
+	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
 )
 
 type healthcheckServiceServer struct {

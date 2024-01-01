@@ -2,9 +2,11 @@ package grpc_server
 
 import (
 	"context"
+	"log"
 
-	grpc_interfaces "coteacher/interfaces/grpc"
-	pb "coteacher/proto-gen/go/coteacher/v1"
+	grpc_interfaces "github.com/KinjiKawaguchi/Coteacher/coteacher-server/interfaces/grpc"
+
+	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"golang.org/x/exp/slog"
@@ -25,6 +27,8 @@ func New(opts ...optionFunc) *grpc.Server {
 		grpc.ChainStreamInterceptor(logging.StreamServerInterceptor(interceptorLogger(opt.logger))),
 	)
 
+	log.Println("Starting gRPC server...[grpc_server.go]")
+
 	srv := grpc.NewServer(serverOptions...)
 	reflection.Register(srv) // for grpcui
 	healthcheckSrv := grpc_interfaces.NewHealthcheckServiceServer()
@@ -38,10 +42,13 @@ func New(opts ...optionFunc) *grpc.Server {
 	studentClassSrv := grpc_interfaces.NewStudentClassServiceServer(opt.entClient, opt.logger)
 	pb.RegisterStudentClassServiceServer(srv, studentClassSrv)
 
+	log.Println("gRPC server started. [grpc_server.go]")
+
 	return srv
 }
 
 func interceptorLogger(l *slog.Logger) logging.Logger {
+	log.Println("interceptorLogger [grpc_server.go]")
 	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
 		l.Log(ctx, slog.Level(lvl), msg, fields...)
 	})

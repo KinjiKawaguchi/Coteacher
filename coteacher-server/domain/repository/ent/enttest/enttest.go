@@ -4,11 +4,11 @@ package enttest
 
 import (
 	"context"
-	"coteacher/domain/repository/ent"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 	// required by schema hooks.
-	_ "coteacher/domain/repository/ent/runtime"
+	_ "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/runtime"
 
-	"coteacher/domain/repository/ent/migrate"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/migrate"
 
 	"entgo.io/ent/dialect/sql/schema"
 )

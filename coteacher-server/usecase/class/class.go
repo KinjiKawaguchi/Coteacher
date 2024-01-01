@@ -1,17 +1,22 @@
 package class
 
 import (
-	utils "coteacher/usecase/utils"
 	"errors"
 	"time"
+
+	utils "github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/utils"
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
 
 	"context"
-	"coteacher/domain/repository/ent"
-	entclass "coteacher/domain/repository/ent/class"
-	pb "coteacher/proto-gen/go/coteacher/v1"
+
+	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
+
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
+	entclass "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	entclassinvitationcode "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
+	entstudentclass "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
 
 	"golang.org/x/exp/slog"
 )
@@ -108,6 +113,7 @@ func (i *Interactor) UpdateClass(ctx context.Context, req *pb.UpdateClassRequest
 	class, err := i.entClient.Class.UpdateOneID(classID).
 		SetName(req.Name).
 		SetTeacherID(teacherID).
+		SetUpdatedAt(time.Now()).
 		Save(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
@@ -125,11 +131,34 @@ func (i *Interactor) DeleteClass(ctx context.Context, req *pb.DeleteClassRequest
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid class ID"))
 	}
 
+	class, err := i.entClient.Class.Query().Where(entclass.ID(classID)).Only(ctx)
+
+	// 関係のあるclassinvitationcodeを削除
+	_, err = i.entClient.ClassInvitationCode.Delete().Where(entclassinvitationcode.ClassID(classID)).Exec(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, errors.New("class not found"))
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	// studentclassとの関係を削除
+	_, err = i.entClient.StudentClass.Delete().Where(entstudentclass.ClassID(classID)).Exec(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, errors.New("class not found"))
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
 	err = i.entClient.Class.DeleteOneID(classID).Exec(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.New("class not found"))
 		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	return &pb.DeleteClassResponse{}, nil
+	return &pb.DeleteClassResponse{
+		Class: utils.ToPbClass(class),
+	}, nil
 }

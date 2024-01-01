@@ -9,14 +9,14 @@ import (
 	"log"
 	"reflect"
 
-	"coteacher/domain/repository/ent/migrate"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/migrate"
 
-	"coteacher/domain/repository/ent/class"
-	"coteacher/domain/repository/ent/classinvitationcode"
-	"coteacher/domain/repository/ent/student"
-	"coteacher/domain/repository/ent/studentclass"
-	"coteacher/domain/repository/ent/teacher"
-	"coteacher/domain/repository/ent/user"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
