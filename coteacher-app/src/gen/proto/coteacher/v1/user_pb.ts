@@ -212,7 +212,7 @@ export class GetUserByEmailRequest extends Message<GetUserByEmailRequest> {
   /**
    * @generated from field: string email = 1;
    */
-  email = "kawakin0310@gmail.com";
+  email = "";
 
   constructor(data?: PartialMessage<GetUserByEmailRequest>) {
     super();
