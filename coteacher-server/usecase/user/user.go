@@ -38,7 +38,7 @@ func (i *Interactor) CreateUser(ctx context.Context, req *pb.CreateUserRequest) 
 	// Start a transaction because you may need to create a user and a teacher/student.
 	tx, err := i.entClient.Tx(ctx)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	// Create a base user.
@@ -50,7 +50,8 @@ func (i *Interactor) CreateUser(ctx context.Context, req *pb.CreateUserRequest) 
 		SetUpdatedAt(now).
 		Save(ctx)
 	if err != nil {
-		return nil, err
+		tx.Rollback()
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	switch {
@@ -68,16 +69,17 @@ func (i *Interactor) CreateUser(ctx context.Context, req *pb.CreateUserRequest) 
 			Save(ctx)
 	default:
 		tx.Rollback()
-		return nil, errors.New("user role is not specified")
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("user role is not specified"))
 	}
 	if err != nil {
-		return nil, err
+		tx.Rollback()
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	// Commit the transaction if everything is successful.
 	err = tx.Commit()
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	// Return the created user.
@@ -90,13 +92,15 @@ func (i *Interactor) GetUserByID(ctx context.Context, req *pb.GetUserByIDRequest
 	q := i.entClient.User.Query()
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
+
 	user, err := q.Where(entuser.ID(id)).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.New("user not found"))
 		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	return &pb.GetUserByIDResponse{
@@ -112,6 +116,7 @@ func (i *Interactor) GetUserByEmail(ctx context.Context, req *pb.GetUserByEmailR
 		if ent.IsNotFound(err) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.New("user not found"))
 		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	return &pb.GetUserByEmailResponse{
 		User:     utils.ToPbUser(user),
@@ -125,7 +130,7 @@ func (i *Interactor) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) 
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
 		tx.Rollback()
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	user, err := i.entClient.User.UpdateOneID(id).
@@ -135,16 +140,16 @@ func (i *Interactor) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) 
 		Save(ctx)
 	if err != nil {
 		tx.Rollback()
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	if err := i.updateUserRole(ctx, user, req); err != nil {
 		tx.Rollback()
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	if err := tx.Commit(); err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	return &pb.UpdateUserResponse{
 		User:     utils.ToPbUser(user),
@@ -165,7 +170,7 @@ func (i *Interactor) updateUserRole(ctx context.Context, user *ent.User, req *pb
 func (i *Interactor) updateTeacherRole(ctx context.Context, user *ent.User, req *pb.UpdateUserRequest) error {
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
-		return err
+		return connect.NewError(connect.CodeInvalidArgument, err)
 	}
 	exists := i.entClient.Teacher.Query().Where(entteacher.ID(id)).ExistX(ctx)
 	if !exists {
@@ -173,7 +178,7 @@ func (i *Interactor) updateTeacherRole(ctx context.Context, user *ent.User, req 
 		if i.entClient.Student.Query().Where(entstudent.ID(id)).ExistX(ctx) {
 			err := i.entClient.Student.DeleteOneID(id).Exec(ctx)
 			if err != nil {
-				return err
+				return connect.NewError(connect.CodeInternal, err)
 			}
 		}
 
@@ -184,7 +189,7 @@ func (i *Interactor) updateTeacherRole(ctx context.Context, user *ent.User, req 
 			SetUser(user). // Set the user edge here
 			Save(ctx)
 		if err != nil {
-			return err
+			return connect.NewError(connect.CodeInternal, err)
 		}
 	}
 	return nil
@@ -193,7 +198,7 @@ func (i *Interactor) updateTeacherRole(ctx context.Context, user *ent.User, req 
 func (i *Interactor) updateStudentRole(ctx context.Context, user *ent.User, req *pb.UpdateUserRequest) error {
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
-		return err
+		return connect.NewError(connect.CodeInvalidArgument, err)
 	}
 	exists := i.entClient.Student.Query().Where(entstudent.ID(id)).ExistX(ctx)
 	if !exists {
@@ -201,7 +206,7 @@ func (i *Interactor) updateStudentRole(ctx context.Context, user *ent.User, req 
 		if i.entClient.Teacher.Query().Where(entteacher.ID(id)).ExistX(ctx) {
 			err := i.entClient.Teacher.DeleteOneID(id).Exec(ctx)
 			if err != nil {
-				return err
+				return connect.NewError(connect.CodeInternal, err)
 			}
 		}
 
@@ -212,18 +217,16 @@ func (i *Interactor) updateStudentRole(ctx context.Context, user *ent.User, req 
 			SetUser(user). // Set the user edge here
 			Save(ctx)
 		if err != nil {
-			return err
+			return connect.NewError(connect.CodeInternal, err)
 		}
 	}
-
 	return nil
 }
 
 func (i *Interactor) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
 	id, err := uuid.Parse(req.Id)
-
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	user, err := i.entClient.User.Query().Where(entuser.ID(id)).Only(ctx)
@@ -231,28 +234,37 @@ func (i *Interactor) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) 
 		if ent.IsNotFound(err) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.New("user not found"))
 		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	userType := getUserType(i, ctx, user)
 
 	switch {
 	case userType == pb.UserType_USER_TYPE_TEACHER:
 		err = i.entClient.Teacher.DeleteOneID(id).Exec(ctx)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+
 		class.NewInteractor(i.entClient, i.logger).DeleteClass(ctx, &pb.DeleteClassRequest{
 			Id: req.Id,
 		})
+
 	case userType == pb.UserType_USER_TYPE_STUDENT:
 		err = i.entClient.Student.DeleteOneID(id).Exec(ctx)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
 	default:
 		return nil, errors.New("user role is not specified")
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	err = i.entClient.User.DeleteOneID(id).Exec(ctx)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	return &pb.DeleteUserResponse{

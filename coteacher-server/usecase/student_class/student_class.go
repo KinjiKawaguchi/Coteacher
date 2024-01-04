@@ -3,6 +3,7 @@ package student_class
 import (
 	"time"
 
+	"connectrpc.com/connect"
 	"golang.org/x/exp/slog"
 
 	utils "github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/utils"
@@ -32,13 +33,13 @@ func (i *Interactor) CreateStudentClass(ctx context.Context, req *pb.CreateStude
 
 	studentID, err := uuid.Parse(req.StudentId)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	now := time.Now()
 	classID, err := uuid.Parse(req.ClassId)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	q := i.entClient.StudentClass.Create().
@@ -49,7 +50,10 @@ func (i *Interactor) CreateStudentClass(ctx context.Context, req *pb.CreateStude
 
 	student_class, err := q.Save(ctx)
 	if err != nil {
-		return nil, err
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, err)
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	return &pb.CreateStudentClassResponse{
@@ -60,7 +64,7 @@ func (i *Interactor) CreateStudentClass(ctx context.Context, req *pb.CreateStude
 func (i *Interactor) GetStudentListByClassID(ctx context.Context, req *pb.GetStudentListByClassIDRequest) (*pb.GetStudentListByClassIDResponse, error) {
 	classID, err := uuid.Parse(req.ClassId)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	studentclasses, err := i.entClient.StudentClass.
@@ -69,14 +73,14 @@ func (i *Interactor) GetStudentListByClassID(ctx context.Context, req *pb.GetStu
 		All(ctx)
 
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	studentIDs := make([]uuid.UUID, len(studentclasses))
 	for i, studentclass := range studentclasses {
 		studentID, err := uuid.Parse(studentclass.StudentID.String())
 		if err != nil {
-			return nil, err
+			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 		studentIDs[i] = studentID
 	}
@@ -87,7 +91,7 @@ func (i *Interactor) GetStudentListByClassID(ctx context.Context, req *pb.GetStu
 		All(ctx)
 
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	pbStudents := make([]*pb.User, len(students))
@@ -103,7 +107,7 @@ func (i *Interactor) GetStudentListByClassID(ctx context.Context, req *pb.GetStu
 func (i *Interactor) GetClassListByStudentID(ctx context.Context, req *pb.GetClassListByStudentIDRequest) (*pb.GetClassListByStudentIDResponse, error) {
 	studentID, err := uuid.Parse(req.StudentId)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	studentclasses, err := i.entClient.StudentClass.
@@ -112,14 +116,14 @@ func (i *Interactor) GetClassListByStudentID(ctx context.Context, req *pb.GetCla
 		All(ctx)
 
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	classIDs := make([]uuid.UUID, len(studentclasses))
 	for i, studentclass := range studentclasses {
 		classIDs[i], err = uuid.Parse(studentclass.ClassID.String())
 		if err != nil {
-			return nil, err
+			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 	}
 
@@ -129,7 +133,7 @@ func (i *Interactor) GetClassListByStudentID(ctx context.Context, req *pb.GetCla
 		All(ctx)
 
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	pbClasses := make([]*pb.Class, len(classes))
@@ -145,12 +149,12 @@ func (i *Interactor) GetClassListByStudentID(ctx context.Context, req *pb.GetCla
 func (i *Interactor) DeleteStudentClass(ctx context.Context, req *pb.DeleteStudentClassRequest) (*pb.DeleteStudentClassResponse, error) {
 	studentID, err := uuid.Parse(req.StudentId)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	classID, err := uuid.Parse(req.ClassId)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	err = i.entClient.StudentClass.DeleteOne(&ent.StudentClass{
@@ -158,7 +162,7 @@ func (i *Interactor) DeleteStudentClass(ctx context.Context, req *pb.DeleteStude
 		ClassID:   classID,
 	}).Exec(ctx)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	return &pb.DeleteStudentClassResponse{}, nil
 }
