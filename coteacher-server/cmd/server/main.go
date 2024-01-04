@@ -3,15 +3,14 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
-	"net"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/api/grpc_server"
-
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/api/connect_server"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 
 	"github.com/go-sql-driver/mysql" //lint:ignore ST1019 this is just example
@@ -22,7 +21,7 @@ import (
 func main() {
 
 	// Open a connection to the database
-	db, err := sql.Open("mysql", "gftt3k024uo6qeynrxex:pscale_pw_8UCfiF0ZIc2NLZn9Ap42pNNPkRfF3Dl8ofmLCjd414v@tcp(aws.connect.psdb.cloud)/coteacher?tls=true&interpolateParams=true")
+	db, err := sql.Open("mysql", "hi8tn7ia8rpaej3csgfz:pscale_pw_7OOn6ZqjfHkDQu8NxDXQ0zQQzUg0Fz4QNx4jbTCZ35y@tcp(aws.connect.psdb.cloud)/coteacher?tls=true&interpolateParams=true")
 	if err != nil {
 		log.Fatal("failed to open db connection", err)
 	}
@@ -39,8 +38,8 @@ func main() {
 		log.Fatal(err)
 	}
 	mysqlConfig := &mysql.Config{
-		User:                 "gftt3k024uo6qeynrxex",
-		Passwd:               "pscale_pw_8UCfiF0ZIc2NLZn9Ap42pNNPkRfF3Dl8ofmLCjd414v",
+		User:                 "hi8tn7ia8rpaej3csgfz",
+		Passwd:               "pscale_pw_7OOn6ZqjfHkDQu8NxDXQ0zQQzUg0Fz4QNx4jbTCZ35y",
 		Net:                  "tcp",
 		Addr:                 "aws.connect.psdb.cloud",
 		DBName:               "coteacher",
@@ -51,7 +50,7 @@ func main() {
 		InterpolateParams:    true,
 	}
 
-	log.Println("Starting server...")
+	log.Println("Connecting to PlanetScale...")
 
 	entClient, err := ent.Open("mysql", mysqlConfig.FormatDSN())
 	if err != nil {
@@ -71,21 +70,18 @@ func main() {
 	// logger
 	logger := slog.Default()
 
-	log.Println("Starting gRPC server...")
+	log.Println("Starting server...")
 
-	// gRPCサーバの設定
-	srv := grpc_server.New(
-		grpc_server.WithLogger(logger),
-		grpc_server.WithEntClient(entClient),
+	srv := connect_server.New(
+		fmt.Sprintf("0.0.0.0:%s", "50051"),
+		connect_server.WithLogger(logger),
+		connect_server.WithEntClient(entClient),
+		connect_server.WithFrontendURL("http://localhost:3000"),
 	)
-	lsnr, err := net.Listen("tcp", ":50051")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer lsnr.Close()
+
 	go func() {
-		logger.Info("server launched")
-		if err := srv.Serve(lsnr); err != nil {
+		logger.Info("server launched", slog.String("port", "50051"))
+		if err := srv.ListenAndServe(); err != nil {
 			log.Fatal(err)
 		}
 	}()
@@ -93,5 +89,9 @@ func main() {
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
 	<-sigCh
 	logger.Info("server is being stopped")
-	srv.GracefulStop()
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		log.Fatal(err)
+	}
 }

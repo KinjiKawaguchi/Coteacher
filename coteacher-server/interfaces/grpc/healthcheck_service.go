@@ -3,33 +3,22 @@ package grpc
 import (
 	"context"
 
+	"connectrpc.com/connect"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/healthcheck"
 
-	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
+	coteacherv1 "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
+	"github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1/coteacherv1connect"
 )
 
 type healthcheckServiceServer struct {
 	healthcheckInteractor *healthcheck.Interactor
 }
 
-func NewHealthcheckServiceServer() pb.HealthcheckServiceServer {
-	return &healthcheckServiceServer{
-		healthcheckInteractor: healthcheck.NewInteractor(),
-	}
+func NewHealthCheckServiceServer(interactor *healthcheck.Interactor) coteacherv1connect.HealthcheckServiceHandler {
+	return &healthcheckServiceServer{interactor}
 }
 
-func (i *healthcheckServiceServer) Unary(ctx context.Context, req *pb.UnaryRequest) (*pb.UnaryResponse, error) {
-	return i.healthcheckInteractor.Unary(ctx, req)
-}
-
-func (i *healthcheckServiceServer) ServerStreaming(req *pb.ServerStreamingRequest, stream pb.HealthcheckService_ServerStreamingServer) error {
-	return i.healthcheckInteractor.ServerStreaming(req, stream)
-}
-
-func (i *healthcheckServiceServer) ClientStreaming(stream pb.HealthcheckService_ClientStreamingServer) error {
-	return i.healthcheckInteractor.ClientStreaming(stream)
-}
-
-func (i *healthcheckServiceServer) BidirectionalStreaming(stream pb.HealthcheckService_BidirectionalStreamingServer) error {
-	return i.healthcheckInteractor.BidirectionalStreaming(stream)
+func (s *healthcheckServiceServer) Ping(ctx context.Context, req *connect.Request[coteacherv1.PingRequest]) (*connect.Response[coteacherv1.PingResponse], error) {
+	resp := s.healthcheckInteractor.Ping(req.Msg)
+	return connect.NewResponse(resp), nil
 }
