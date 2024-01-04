@@ -463,3 +463,77 @@ export class DeleteUserResponse extends Message<DeleteUserResponse> {
   }
 }
 
+/**
+ * @generated from message coteacher.v1.CheckUserExistsByEmailRequest
+ */
+export class CheckUserExistsByEmailRequest extends Message<CheckUserExistsByEmailRequest> {
+  /**
+   * @generated from field: string email = 1;
+   */
+  email = "";
+
+  constructor(data?: PartialMessage<CheckUserExistsByEmailRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.CheckUserExistsByEmailRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "email", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CheckUserExistsByEmailRequest {
+    return new CheckUserExistsByEmailRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CheckUserExistsByEmailRequest {
+    return new CheckUserExistsByEmailRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CheckUserExistsByEmailRequest {
+    return new CheckUserExistsByEmailRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CheckUserExistsByEmailRequest | PlainMessage<CheckUserExistsByEmailRequest> | undefined, b: CheckUserExistsByEmailRequest | PlainMessage<CheckUserExistsByEmailRequest> | undefined): boolean {
+    return proto3.util.equals(CheckUserExistsByEmailRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.CheckUserExistsByEmailResponse
+ */
+export class CheckUserExistsByEmailResponse extends Message<CheckUserExistsByEmailResponse> {
+  /**
+   * @generated from field: bool exists = 1;
+   */
+  exists = false;
+
+  constructor(data?: PartialMessage<CheckUserExistsByEmailResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.CheckUserExistsByEmailResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "exists", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CheckUserExistsByEmailResponse {
+    return new CheckUserExistsByEmailResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CheckUserExistsByEmailResponse {
+    return new CheckUserExistsByEmailResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CheckUserExistsByEmailResponse {
+    return new CheckUserExistsByEmailResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CheckUserExistsByEmailResponse | PlainMessage<CheckUserExistsByEmailResponse> | undefined, b: CheckUserExistsByEmailResponse | PlainMessage<CheckUserExistsByEmailResponse> | undefined): boolean {
+    return proto3.util.equals(CheckUserExistsByEmailResponse, a, b);
+  }
+}
+

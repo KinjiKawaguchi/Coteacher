@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CreateUserRequest, CreateUserResponse, DeleteUserRequest, DeleteUserResponse, GetUserByEmailRequest, GetUserByEmailResponse, GetUserByIDRequest, GetUserByIDResponse, UpdateUserRequest, UpdateUserResponse } from "./user_pb";
+import { CheckUserExistsByEmailRequest, CheckUserExistsByEmailResponse, CreateUserRequest, CreateUserResponse, DeleteUserRequest, DeleteUserResponse, GetUserByEmailRequest, GetUserByEmailResponse, GetUserByIDRequest, GetUserByIDResponse, UpdateUserRequest, UpdateUserResponse } from "./user_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -55,6 +55,15 @@ export const UserService = {
       name: "DeleteUser",
       I: DeleteUserRequest,
       O: DeleteUserResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc coteacher.v1.UserService.CheckUserExistsByEmail
+     */
+    checkUserExistsByEmail: {
+      name: "CheckUserExistsByEmail",
+      I: CheckUserExistsByEmailRequest,
+      O: CheckUserExistsByEmailResponse,
       kind: MethodKind.Unary,
     },
   }

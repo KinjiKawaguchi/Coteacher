@@ -44,16 +44,20 @@ const (
 	UserServiceUpdateUserProcedure = "/coteacher.v1.UserService/UpdateUser"
 	// UserServiceDeleteUserProcedure is the fully-qualified name of the UserService's DeleteUser RPC.
 	UserServiceDeleteUserProcedure = "/coteacher.v1.UserService/DeleteUser"
+	// UserServiceCheckUserExistsByEmailProcedure is the fully-qualified name of the UserService's
+	// CheckUserExistsByEmail RPC.
+	UserServiceCheckUserExistsByEmailProcedure = "/coteacher.v1.UserService/CheckUserExistsByEmail"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
-	userServiceServiceDescriptor              = v1.File_coteacher_v1_user_proto.Services().ByName("UserService")
-	userServiceCreateUserMethodDescriptor     = userServiceServiceDescriptor.Methods().ByName("CreateUser")
-	userServiceGetUserByIDMethodDescriptor    = userServiceServiceDescriptor.Methods().ByName("GetUserByID")
-	userServiceGetUserByEmailMethodDescriptor = userServiceServiceDescriptor.Methods().ByName("GetUserByEmail")
-	userServiceUpdateUserMethodDescriptor     = userServiceServiceDescriptor.Methods().ByName("UpdateUser")
-	userServiceDeleteUserMethodDescriptor     = userServiceServiceDescriptor.Methods().ByName("DeleteUser")
+	userServiceServiceDescriptor                      = v1.File_coteacher_v1_user_proto.Services().ByName("UserService")
+	userServiceCreateUserMethodDescriptor             = userServiceServiceDescriptor.Methods().ByName("CreateUser")
+	userServiceGetUserByIDMethodDescriptor            = userServiceServiceDescriptor.Methods().ByName("GetUserByID")
+	userServiceGetUserByEmailMethodDescriptor         = userServiceServiceDescriptor.Methods().ByName("GetUserByEmail")
+	userServiceUpdateUserMethodDescriptor             = userServiceServiceDescriptor.Methods().ByName("UpdateUser")
+	userServiceDeleteUserMethodDescriptor             = userServiceServiceDescriptor.Methods().ByName("DeleteUser")
+	userServiceCheckUserExistsByEmailMethodDescriptor = userServiceServiceDescriptor.Methods().ByName("CheckUserExistsByEmail")
 )
 
 // UserServiceClient is a client for the coteacher.v1.UserService service.
@@ -63,6 +67,7 @@ type UserServiceClient interface {
 	GetUserByEmail(context.Context, *connect.Request[v1.GetUserByEmailRequest]) (*connect.Response[v1.GetUserByEmailResponse], error)
 	UpdateUser(context.Context, *connect.Request[v1.UpdateUserRequest]) (*connect.Response[v1.UpdateUserResponse], error)
 	DeleteUser(context.Context, *connect.Request[v1.DeleteUserRequest]) (*connect.Response[v1.DeleteUserResponse], error)
+	CheckUserExistsByEmail(context.Context, *connect.Request[v1.CheckUserExistsByEmailRequest]) (*connect.Response[v1.CheckUserExistsByEmailResponse], error)
 }
 
 // NewUserServiceClient constructs a client for the coteacher.v1.UserService service. By default, it
@@ -105,16 +110,23 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceDeleteUserMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		checkUserExistsByEmail: connect.NewClient[v1.CheckUserExistsByEmailRequest, v1.CheckUserExistsByEmailResponse](
+			httpClient,
+			baseURL+UserServiceCheckUserExistsByEmailProcedure,
+			connect.WithSchema(userServiceCheckUserExistsByEmailMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
-	createUser     *connect.Client[v1.CreateUserRequest, v1.CreateUserResponse]
-	getUserByID    *connect.Client[v1.GetUserByIDRequest, v1.GetUserByIDResponse]
-	getUserByEmail *connect.Client[v1.GetUserByEmailRequest, v1.GetUserByEmailResponse]
-	updateUser     *connect.Client[v1.UpdateUserRequest, v1.UpdateUserResponse]
-	deleteUser     *connect.Client[v1.DeleteUserRequest, v1.DeleteUserResponse]
+	createUser             *connect.Client[v1.CreateUserRequest, v1.CreateUserResponse]
+	getUserByID            *connect.Client[v1.GetUserByIDRequest, v1.GetUserByIDResponse]
+	getUserByEmail         *connect.Client[v1.GetUserByEmailRequest, v1.GetUserByEmailResponse]
+	updateUser             *connect.Client[v1.UpdateUserRequest, v1.UpdateUserResponse]
+	deleteUser             *connect.Client[v1.DeleteUserRequest, v1.DeleteUserResponse]
+	checkUserExistsByEmail *connect.Client[v1.CheckUserExistsByEmailRequest, v1.CheckUserExistsByEmailResponse]
 }
 
 // CreateUser calls coteacher.v1.UserService.CreateUser.
@@ -142,6 +154,11 @@ func (c *userServiceClient) DeleteUser(ctx context.Context, req *connect.Request
 	return c.deleteUser.CallUnary(ctx, req)
 }
 
+// CheckUserExistsByEmail calls coteacher.v1.UserService.CheckUserExistsByEmail.
+func (c *userServiceClient) CheckUserExistsByEmail(ctx context.Context, req *connect.Request[v1.CheckUserExistsByEmailRequest]) (*connect.Response[v1.CheckUserExistsByEmailResponse], error) {
+	return c.checkUserExistsByEmail.CallUnary(ctx, req)
+}
+
 // UserServiceHandler is an implementation of the coteacher.v1.UserService service.
 type UserServiceHandler interface {
 	CreateUser(context.Context, *connect.Request[v1.CreateUserRequest]) (*connect.Response[v1.CreateUserResponse], error)
@@ -149,6 +166,7 @@ type UserServiceHandler interface {
 	GetUserByEmail(context.Context, *connect.Request[v1.GetUserByEmailRequest]) (*connect.Response[v1.GetUserByEmailResponse], error)
 	UpdateUser(context.Context, *connect.Request[v1.UpdateUserRequest]) (*connect.Response[v1.UpdateUserResponse], error)
 	DeleteUser(context.Context, *connect.Request[v1.DeleteUserRequest]) (*connect.Response[v1.DeleteUserResponse], error)
+	CheckUserExistsByEmail(context.Context, *connect.Request[v1.CheckUserExistsByEmailRequest]) (*connect.Response[v1.CheckUserExistsByEmailResponse], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -187,6 +205,12 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceDeleteUserMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	userServiceCheckUserExistsByEmailHandler := connect.NewUnaryHandler(
+		UserServiceCheckUserExistsByEmailProcedure,
+		svc.CheckUserExistsByEmail,
+		connect.WithSchema(userServiceCheckUserExistsByEmailMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/coteacher.v1.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case UserServiceCreateUserProcedure:
@@ -199,6 +223,8 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceUpdateUserHandler.ServeHTTP(w, r)
 		case UserServiceDeleteUserProcedure:
 			userServiceDeleteUserHandler.ServeHTTP(w, r)
+		case UserServiceCheckUserExistsByEmailProcedure:
+			userServiceCheckUserExistsByEmailHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -226,4 +252,8 @@ func (UnimplementedUserServiceHandler) UpdateUser(context.Context, *connect.Requ
 
 func (UnimplementedUserServiceHandler) DeleteUser(context.Context, *connect.Request[v1.DeleteUserRequest]) (*connect.Response[v1.DeleteUserResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.UserService.DeleteUser is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) CheckUserExistsByEmail(context.Context, *connect.Request[v1.CheckUserExistsByEmailRequest]) (*connect.Response[v1.CheckUserExistsByEmailResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.UserService.CheckUserExistsByEmail is not implemented"))
 }

@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserService_CreateUser_FullMethodName     = "/coteacher.v1.UserService/CreateUser"
-	UserService_GetUserByID_FullMethodName    = "/coteacher.v1.UserService/GetUserByID"
-	UserService_GetUserByEmail_FullMethodName = "/coteacher.v1.UserService/GetUserByEmail"
-	UserService_UpdateUser_FullMethodName     = "/coteacher.v1.UserService/UpdateUser"
-	UserService_DeleteUser_FullMethodName     = "/coteacher.v1.UserService/DeleteUser"
+	UserService_CreateUser_FullMethodName             = "/coteacher.v1.UserService/CreateUser"
+	UserService_GetUserByID_FullMethodName            = "/coteacher.v1.UserService/GetUserByID"
+	UserService_GetUserByEmail_FullMethodName         = "/coteacher.v1.UserService/GetUserByEmail"
+	UserService_UpdateUser_FullMethodName             = "/coteacher.v1.UserService/UpdateUser"
+	UserService_DeleteUser_FullMethodName             = "/coteacher.v1.UserService/DeleteUser"
+	UserService_CheckUserExistsByEmail_FullMethodName = "/coteacher.v1.UserService/CheckUserExistsByEmail"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -35,6 +36,7 @@ type UserServiceClient interface {
 	GetUserByEmail(ctx context.Context, in *GetUserByEmailRequest, opts ...grpc.CallOption) (*GetUserByEmailResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
+	CheckUserExistsByEmail(ctx context.Context, in *CheckUserExistsByEmailRequest, opts ...grpc.CallOption) (*CheckUserExistsByEmailResponse, error)
 }
 
 type userServiceClient struct {
@@ -90,6 +92,15 @@ func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReques
 	return out, nil
 }
 
+func (c *userServiceClient) CheckUserExistsByEmail(ctx context.Context, in *CheckUserExistsByEmailRequest, opts ...grpc.CallOption) (*CheckUserExistsByEmailResponse, error) {
+	out := new(CheckUserExistsByEmailResponse)
+	err := c.cc.Invoke(ctx, UserService_CheckUserExistsByEmail_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations should embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type UserServiceServer interface {
 	GetUserByEmail(context.Context, *GetUserByEmailRequest) (*GetUserByEmailResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
+	CheckUserExistsByEmail(context.Context, *CheckUserExistsByEmailRequest) (*CheckUserExistsByEmailResponse, error)
 }
 
 // UnimplementedUserServiceServer should be embedded to have forward compatible implementations.
@@ -119,6 +131,9 @@ func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserReq
 }
 func (UnimplementedUserServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+}
+func (UnimplementedUserServiceServer) CheckUserExistsByEmail(context.Context, *CheckUserExistsByEmailRequest) (*CheckUserExistsByEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckUserExistsByEmail not implemented")
 }
 
 // UnsafeUserServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -222,6 +237,24 @@ func _UserService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_CheckUserExistsByEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckUserExistsByEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CheckUserExistsByEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CheckUserExistsByEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CheckUserExistsByEmail(ctx, req.(*CheckUserExistsByEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -248,6 +281,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUser",
 			Handler:    _UserService_DeleteUser_Handler,
+		},
+		{
+			MethodName: "CheckUserExistsByEmail",
+			Handler:    _UserService_CheckUserExistsByEmail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
