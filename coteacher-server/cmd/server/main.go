@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	Config "github.com/KinjiKawaguchi/Coteacher/coteacher-server/config"
+
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/api/connect_server"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 
@@ -20,8 +22,10 @@ import (
 
 func main() {
 
+	config, _ := Config.New()
+
 	// Open a connection to the database
-	db, err := sql.Open("mysql", "hi8tn7ia8rpaej3csgfz:pscale_pw_7OOn6ZqjfHkDQu8NxDXQ0zQQzUg0Fz4QNx4jbTCZ35y@tcp(aws.connect.psdb.cloud)/coteacher?tls=true&interpolateParams=true")
+	db, err := sql.Open("mysql", config.DSN)
 	if err != nil {
 		log.Fatal("failed to open db connection", err)
 	}
@@ -38,11 +42,11 @@ func main() {
 		log.Fatal(err)
 	}
 	mysqlConfig := &mysql.Config{
-		User:                 "hi8tn7ia8rpaej3csgfz",
-		Passwd:               "pscale_pw_7OOn6ZqjfHkDQu8NxDXQ0zQQzUg0Fz4QNx4jbTCZ35y",
+		User:                 config.DBUser,
+		Passwd:               config.DBPassword,
 		Net:                  "tcp",
-		Addr:                 "aws.connect.psdb.cloud",
-		DBName:               "coteacher",
+		Addr:                 config.DBAddress,
+		DBName:               config.DBName,
 		ParseTime:            true,
 		Loc:                  jst,
 		TLSConfig:            "true", // この行は必要に応じて調整してください。
@@ -73,14 +77,14 @@ func main() {
 	log.Println("Starting server...")
 
 	srv := connect_server.New(
-		fmt.Sprintf("0.0.0.0:%s", "50051"),
+		fmt.Sprintf("0.0.0.0:%s", config.Port),
 		connect_server.WithLogger(logger),
 		connect_server.WithEntClient(entClient),
-		connect_server.WithFrontendURL("http://localhost:3000"),
+		connect_server.WithFrontendURL(config.FrontEndURL),
 	)
 
 	go func() {
-		logger.Info("server launched", slog.String("port", "50051"))
+		logger.Info("server launched", slog.String("port", config.Port))
 		if err := srv.ListenAndServe(); err != nil {
 			log.Fatal(err)
 		}
