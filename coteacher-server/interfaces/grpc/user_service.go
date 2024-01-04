@@ -3,46 +3,57 @@ package grpc
 import (
 	"context"
 
+	"connectrpc.com/connect"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/user"
 
 	coteacherv1 "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
-
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
-
-	"golang.org/x/exp/slog"
+	"github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1/coteacherv1connect"
 )
 
 type userServiceServer struct {
-	userInteractor *user.Interactor
+	interactor *user.Interactor
 }
 
-func NewUserServiceServer(entClient *ent.Client, logger *slog.Logger) coteacherv1.UserServiceServer {
-	return &userServiceServer{
-		userInteractor: user.NewInteractor(entClient, logger),
+func NewUserServiceServer(interactor *user.Interactor) coteacherv1connect.UserServiceHandler {
+	return &userServiceServer{interactor}
+}
+
+func (s *userServiceServer) CreateUser(ctx context.Context, req *connect.Request[coteacherv1.CreateUserRequest]) (*connect.Response[coteacherv1.CreateUserResponse], error) {
+	resp, err := s.interactor.CreateUser(ctx, req.Msg)
+	if err != nil {
+		return nil, err
 	}
+	return connect.NewResponse(resp), nil
 }
 
-// CreateUser implements coteacherv1.UserServiceServer.
-func (i *userServiceServer) CreateUser(ctx context.Context, req *coteacherv1.CreateUserRequest) (*coteacherv1.CreateUserResponse, error) {
-	return i.userInteractor.CreateUser(ctx, req)
+func (s *userServiceServer) GetUserByID(ctx context.Context, req *connect.Request[coteacherv1.GetUserByIDRequest]) (*connect.Response[coteacherv1.GetUserByIDResponse], error) {
+	resp, err := s.interactor.GetUserByID(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
 
-// DeleteUser implements coteacherv1.UserServiceServer.
-func (i *userServiceServer) DeleteUser(ctx context.Context, req *coteacherv1.DeleteUserRequest) (*coteacherv1.DeleteUserResponse, error) {
-	return i.userInteractor.DeleteUser(ctx, req)
+func (s *userServiceServer) GetUserByEmail(ctx context.Context, req *connect.Request[coteacherv1.GetUserByEmailRequest]) (*connect.Response[coteacherv1.GetUserByEmailResponse], error) {
+	resp, err := s.interactor.GetUserByEmail(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
 
-// GetUserByEmail implements coteacherv1.UserServiceServer.
-func (i *userServiceServer) GetUserByEmail(ctx context.Context, req *coteacherv1.GetUserByEmailRequest) (*coteacherv1.GetUserByEmailResponse, error) {
-	return i.userInteractor.GetUserByEmail(ctx, req)
+func (s *userServiceServer) UpdateUser(ctx context.Context, req *connect.Request[coteacherv1.UpdateUserRequest]) (*connect.Response[coteacherv1.UpdateUserResponse], error) {
+	resp, err := s.interactor.UpdateUser(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
 
-// GetUserByID implements coteacherv1.UserServiceServer.
-func (i *userServiceServer) GetUserByID(ctx context.Context, req *coteacherv1.GetUserByIDRequest) (*coteacherv1.GetUserByIDResponse, error) {
-	return i.userInteractor.GetUserByID(ctx, req)
-}
-
-// UpdateUser implements coteacherv1.UserServiceServer.
-func (i *userServiceServer) UpdateUser(ctx context.Context, req *coteacherv1.UpdateUserRequest) (*coteacherv1.UpdateUserResponse, error) {
-	return i.userInteractor.UpdateUser(ctx, req)
+func (s *userServiceServer) DeleteUser(ctx context.Context, req *connect.Request[coteacherv1.DeleteUserRequest]) (*connect.Response[coteacherv1.DeleteUserResponse], error) {
+	resp, err := s.interactor.DeleteUser(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }

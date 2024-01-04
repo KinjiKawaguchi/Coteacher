@@ -3,46 +3,58 @@ package grpc
 import (
 	"context"
 
+	"connectrpc.com/connect"
+
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/class"
 
 	coteacherv1 "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
-
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
-
-	"golang.org/x/exp/slog"
+	"github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1/coteacherv1connect"
 )
 
 type classServiceServer struct {
 	classInteractor *class.Interactor
 }
 
-func NewClassServiceServer(entClient *ent.Client, logger *slog.Logger) coteacherv1.ClassServiceServer {
-	return &classServiceServer{
-		classInteractor: class.NewInteractor(entClient, logger),
+func NewClassServiceServer(interactor *class.Interactor) coteacherv1connect.ClassServiceHandler {
+	return &classServiceServer{interactor}
+}
+
+func (s *classServiceServer) CreateClass(ctx context.Context, req *connect.Request[coteacherv1.CreateClassRequest]) (*connect.Response[coteacherv1.CreateClassResponse], error) {
+	resp, err := s.classInteractor.CreateClass(ctx, req.Msg)
+	if err != nil {
+		return nil, err
 	}
+	return connect.NewResponse(resp), nil
 }
 
-// CreateClass implements coteacherv1.ClassServiceServer.
-func (i *classServiceServer) CreateClass(ctx context.Context, req *coteacherv1.CreateClassRequest) (*coteacherv1.CreateClassResponse, error) {
-	return i.classInteractor.CreateClass(ctx, req)
+func (s *classServiceServer) GetClassByID(ctx context.Context, req *connect.Request[coteacherv1.GetClassByIDRequest]) (*connect.Response[coteacherv1.GetClassByIDResponse], error) {
+	resp, err := s.classInteractor.GetClassByID(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
 
-// GetClassByID implements coteacherv1.ClassServiceServer.
-func (i *classServiceServer) GetClassByID(ctx context.Context, req *coteacherv1.GetClassByIDRequest) (*coteacherv1.GetClassByIDResponse, error) {
-	return i.classInteractor.GetClassByID(ctx, req)
+func (s *classServiceServer) GetClassListByTeacherID(ctx context.Context, req *connect.Request[coteacherv1.GetClassListByTeacherIDRequest]) (*connect.Response[coteacherv1.GetClassListByTeacherIDResponse], error) {
+	resp, err := s.classInteractor.GetClassListByTeacherID(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
 
-// GetClassListByTeacherID implements coteacherv1.ClassServiceServer.
-func (i *classServiceServer) GetClassListByTeacherID(ctx context.Context, req *coteacherv1.GetClassListByTeacherIDRequest) (*coteacherv1.GetClassListByTeacherIDResponse, error) {
-	return i.classInteractor.GetClassListByTeacherID(ctx, req)
+func (s *classServiceServer) UpdateClass(ctx context.Context, req *connect.Request[coteacherv1.UpdateClassRequest]) (*connect.Response[coteacherv1.UpdateClassResponse], error) {
+	resp, err := s.classInteractor.UpdateClass(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
 
-// UpdateClass implements coteacherv1.ClassServiceServer.
-func (i *classServiceServer) UpdateClass(ctx context.Context, req *coteacherv1.UpdateClassRequest) (*coteacherv1.UpdateClassResponse, error) {
-	return i.classInteractor.UpdateClass(ctx, req)
-}
-
-// DeleteClass implements coteacherv1.ClassServiceServer.
-func (i *classServiceServer) DeleteClass(ctx context.Context, req *coteacherv1.DeleteClassRequest) (*coteacherv1.DeleteClassResponse, error) {
-	return i.classInteractor.DeleteClass(ctx, req)
+func (s *classServiceServer) DeleteClass(ctx context.Context, req *connect.Request[coteacherv1.DeleteClassRequest]) (*connect.Response[coteacherv1.DeleteClassResponse], error) {
+	resp, err := s.classInteractor.DeleteClass(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }

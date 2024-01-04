@@ -19,20 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	HealthcheckService_Unary_FullMethodName                  = "/coteacher.v1.HealthcheckService/Unary"
-	HealthcheckService_ServerStreaming_FullMethodName        = "/coteacher.v1.HealthcheckService/ServerStreaming"
-	HealthcheckService_ClientStreaming_FullMethodName        = "/coteacher.v1.HealthcheckService/ClientStreaming"
-	HealthcheckService_BidirectionalStreaming_FullMethodName = "/coteacher.v1.HealthcheckService/BidirectionalStreaming"
+	HealthcheckService_Ping_FullMethodName = "/coteacher.v1.HealthcheckService/Ping"
 )
 
 // HealthcheckServiceClient is the client API for HealthcheckService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HealthcheckServiceClient interface {
-	Unary(ctx context.Context, in *UnaryRequest, opts ...grpc.CallOption) (*UnaryResponse, error)
-	ServerStreaming(ctx context.Context, in *ServerStreamingRequest, opts ...grpc.CallOption) (HealthcheckService_ServerStreamingClient, error)
-	ClientStreaming(ctx context.Context, opts ...grpc.CallOption) (HealthcheckService_ClientStreamingClient, error)
-	BidirectionalStreaming(ctx context.Context, opts ...grpc.CallOption) (HealthcheckService_BidirectionalStreamingClient, error)
+	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
 }
 
 type healthcheckServiceClient struct {
@@ -43,137 +37,28 @@ func NewHealthcheckServiceClient(cc grpc.ClientConnInterface) HealthcheckService
 	return &healthcheckServiceClient{cc}
 }
 
-func (c *healthcheckServiceClient) Unary(ctx context.Context, in *UnaryRequest, opts ...grpc.CallOption) (*UnaryResponse, error) {
-	out := new(UnaryResponse)
-	err := c.cc.Invoke(ctx, HealthcheckService_Unary_FullMethodName, in, out, opts...)
+func (c *healthcheckServiceClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error) {
+	out := new(PingResponse)
+	err := c.cc.Invoke(ctx, HealthcheckService_Ping_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *healthcheckServiceClient) ServerStreaming(ctx context.Context, in *ServerStreamingRequest, opts ...grpc.CallOption) (HealthcheckService_ServerStreamingClient, error) {
-	stream, err := c.cc.NewStream(ctx, &HealthcheckService_ServiceDesc.Streams[0], HealthcheckService_ServerStreaming_FullMethodName, opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &healthcheckServiceServerStreamingClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type HealthcheckService_ServerStreamingClient interface {
-	Recv() (*ServerStreamingResponse, error)
-	grpc.ClientStream
-}
-
-type healthcheckServiceServerStreamingClient struct {
-	grpc.ClientStream
-}
-
-func (x *healthcheckServiceServerStreamingClient) Recv() (*ServerStreamingResponse, error) {
-	m := new(ServerStreamingResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *healthcheckServiceClient) ClientStreaming(ctx context.Context, opts ...grpc.CallOption) (HealthcheckService_ClientStreamingClient, error) {
-	stream, err := c.cc.NewStream(ctx, &HealthcheckService_ServiceDesc.Streams[1], HealthcheckService_ClientStreaming_FullMethodName, opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &healthcheckServiceClientStreamingClient{stream}
-	return x, nil
-}
-
-type HealthcheckService_ClientStreamingClient interface {
-	Send(*ClientStreamingRequest) error
-	CloseAndRecv() (*ClientStreamingResponse, error)
-	grpc.ClientStream
-}
-
-type healthcheckServiceClientStreamingClient struct {
-	grpc.ClientStream
-}
-
-func (x *healthcheckServiceClientStreamingClient) Send(m *ClientStreamingRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *healthcheckServiceClientStreamingClient) CloseAndRecv() (*ClientStreamingResponse, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(ClientStreamingResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *healthcheckServiceClient) BidirectionalStreaming(ctx context.Context, opts ...grpc.CallOption) (HealthcheckService_BidirectionalStreamingClient, error) {
-	stream, err := c.cc.NewStream(ctx, &HealthcheckService_ServiceDesc.Streams[2], HealthcheckService_BidirectionalStreaming_FullMethodName, opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &healthcheckServiceBidirectionalStreamingClient{stream}
-	return x, nil
-}
-
-type HealthcheckService_BidirectionalStreamingClient interface {
-	Send(*BidirectionalStreamingRequest) error
-	Recv() (*BidirectionalStreamingResponse, error)
-	grpc.ClientStream
-}
-
-type healthcheckServiceBidirectionalStreamingClient struct {
-	grpc.ClientStream
-}
-
-func (x *healthcheckServiceBidirectionalStreamingClient) Send(m *BidirectionalStreamingRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *healthcheckServiceBidirectionalStreamingClient) Recv() (*BidirectionalStreamingResponse, error) {
-	m := new(BidirectionalStreamingResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // HealthcheckServiceServer is the server API for HealthcheckService service.
 // All implementations should embed UnimplementedHealthcheckServiceServer
 // for forward compatibility
 type HealthcheckServiceServer interface {
-	Unary(context.Context, *UnaryRequest) (*UnaryResponse, error)
-	ServerStreaming(*ServerStreamingRequest, HealthcheckService_ServerStreamingServer) error
-	ClientStreaming(HealthcheckService_ClientStreamingServer) error
-	BidirectionalStreaming(HealthcheckService_BidirectionalStreamingServer) error
+	Ping(context.Context, *PingRequest) (*PingResponse, error)
 }
 
 // UnimplementedHealthcheckServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedHealthcheckServiceServer struct {
 }
 
-func (UnimplementedHealthcheckServiceServer) Unary(context.Context, *UnaryRequest) (*UnaryResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Unary not implemented")
-}
-func (UnimplementedHealthcheckServiceServer) ServerStreaming(*ServerStreamingRequest, HealthcheckService_ServerStreamingServer) error {
-	return status.Errorf(codes.Unimplemented, "method ServerStreaming not implemented")
-}
-func (UnimplementedHealthcheckServiceServer) ClientStreaming(HealthcheckService_ClientStreamingServer) error {
-	return status.Errorf(codes.Unimplemented, "method ClientStreaming not implemented")
-}
-func (UnimplementedHealthcheckServiceServer) BidirectionalStreaming(HealthcheckService_BidirectionalStreamingServer) error {
-	return status.Errorf(codes.Unimplemented, "method BidirectionalStreaming not implemented")
+func (UnimplementedHealthcheckServiceServer) Ping(context.Context, *PingRequest) (*PingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 
 // UnsafeHealthcheckServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -187,95 +72,22 @@ func RegisterHealthcheckServiceServer(s grpc.ServiceRegistrar, srv HealthcheckSe
 	s.RegisterService(&HealthcheckService_ServiceDesc, srv)
 }
 
-func _HealthcheckService_Unary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UnaryRequest)
+func _HealthcheckService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(HealthcheckServiceServer).Unary(ctx, in)
+		return srv.(HealthcheckServiceServer).Ping(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: HealthcheckService_Unary_FullMethodName,
+		FullMethod: HealthcheckService_Ping_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HealthcheckServiceServer).Unary(ctx, req.(*UnaryRequest))
+		return srv.(HealthcheckServiceServer).Ping(ctx, req.(*PingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
-}
-
-func _HealthcheckService_ServerStreaming_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ServerStreamingRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(HealthcheckServiceServer).ServerStreaming(m, &healthcheckServiceServerStreamingServer{stream})
-}
-
-type HealthcheckService_ServerStreamingServer interface {
-	Send(*ServerStreamingResponse) error
-	grpc.ServerStream
-}
-
-type healthcheckServiceServerStreamingServer struct {
-	grpc.ServerStream
-}
-
-func (x *healthcheckServiceServerStreamingServer) Send(m *ServerStreamingResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func _HealthcheckService_ClientStreaming_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(HealthcheckServiceServer).ClientStreaming(&healthcheckServiceClientStreamingServer{stream})
-}
-
-type HealthcheckService_ClientStreamingServer interface {
-	SendAndClose(*ClientStreamingResponse) error
-	Recv() (*ClientStreamingRequest, error)
-	grpc.ServerStream
-}
-
-type healthcheckServiceClientStreamingServer struct {
-	grpc.ServerStream
-}
-
-func (x *healthcheckServiceClientStreamingServer) SendAndClose(m *ClientStreamingResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *healthcheckServiceClientStreamingServer) Recv() (*ClientStreamingRequest, error) {
-	m := new(ClientStreamingRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func _HealthcheckService_BidirectionalStreaming_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(HealthcheckServiceServer).BidirectionalStreaming(&healthcheckServiceBidirectionalStreamingServer{stream})
-}
-
-type HealthcheckService_BidirectionalStreamingServer interface {
-	Send(*BidirectionalStreamingResponse) error
-	Recv() (*BidirectionalStreamingRequest, error)
-	grpc.ServerStream
-}
-
-type healthcheckServiceBidirectionalStreamingServer struct {
-	grpc.ServerStream
-}
-
-func (x *healthcheckServiceBidirectionalStreamingServer) Send(m *BidirectionalStreamingResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *healthcheckServiceBidirectionalStreamingServer) Recv() (*BidirectionalStreamingRequest, error) {
-	m := new(BidirectionalStreamingRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
 }
 
 // HealthcheckService_ServiceDesc is the grpc.ServiceDesc for HealthcheckService service.
@@ -286,27 +98,10 @@ var HealthcheckService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*HealthcheckServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Unary",
-			Handler:    _HealthcheckService_Unary_Handler,
+			MethodName: "Ping",
+			Handler:    _HealthcheckService_Ping_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "ServerStreaming",
-			Handler:       _HealthcheckService_ServerStreaming_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "ClientStreaming",
-			Handler:       _HealthcheckService_ClientStreaming_Handler,
-			ClientStreams: true,
-		},
-		{
-			StreamName:    "BidirectionalStreaming",
-			Handler:       _HealthcheckService_BidirectionalStreaming_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "coteacher/v1/health_check.proto",
 }

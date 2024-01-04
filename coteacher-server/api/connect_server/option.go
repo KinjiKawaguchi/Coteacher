@@ -1,4 +1,4 @@
-package grpc_server
+package connect_server
 
 import (
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
@@ -7,8 +7,9 @@ import (
 )
 
 type option struct {
-	logger    *slog.Logger
-	entClient *ent.Client
+	logger      *slog.Logger
+	entClient   *ent.Client
+	FrontendURL string
 }
 
 func defaultOption() *option {
@@ -28,5 +29,11 @@ func WithLogger(logger *slog.Logger) optionFunc {
 func WithEntClient(c *ent.Client) optionFunc {
 	return func(o *option) {
 		o.entClient = c
+	}
+}
+
+func WithFrontendURL(url string) optionFunc {
+	return func(o *option) {
+		o.FrontendURL = url
 	}
 }

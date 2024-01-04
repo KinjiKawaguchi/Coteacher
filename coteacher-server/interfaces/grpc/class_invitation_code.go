@@ -3,41 +3,50 @@ package grpc
 import (
 	"context"
 
+	"connectrpc.com/connect"
+
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/class_invitation_code"
 
 	coteacherv1 "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
-
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
-
-	"golang.org/x/exp/slog"
+	"github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1/coteacherv1connect"
 )
 
 type classInvitationCodeServiceServer struct {
-	classInvitationCodeInteractor *class_invitation_code.Interactor
+	interactor *class_invitation_code.Interactor
 }
 
-func NewClassInvitationCodeServiceServer(entClient *ent.Client, logger *slog.Logger) coteacherv1.ClassInvitationCodeServiceServer {
-	return &classInvitationCodeServiceServer{
-		classInvitationCodeInteractor: class_invitation_code.NewInteractor(entClient, logger),
+func NewClassInvitationCodeServiceServer(interactor *class_invitation_code.Interactor) coteacherv1connect.ClassInvitationCodeServiceHandler {
+	return &classInvitationCodeServiceServer{interactor}
+}
+
+func (s *classInvitationCodeServiceServer) CreateClassInvitationCode(ctx context.Context, req *connect.Request[coteacherv1.CreateClassInvitationCodeRequest]) (*connect.Response[coteacherv1.CreateClassInvitationCodeResponse], error) {
+	resp, err := s.interactor.CreateClassInvitationCode(ctx, req.Msg)
+	if err != nil {
+		return nil, err
 	}
+	return connect.NewResponse(resp), nil
 }
 
-// CreateClassInvitationCode implements coteacherv1.ClassInvitationCodeServiceServer.
-func (i *classInvitationCodeServiceServer) CreateClassInvitationCode(ctx context.Context, req *coteacherv1.CreateClassInvitationCodeRequest) (*coteacherv1.CreateClassInvitationCodeResponse, error) {
-	return i.classInvitationCodeInteractor.CreateClassInvitationCode(ctx, req)
+func (s *classInvitationCodeServiceServer) GetClassInvitationCodeByID(ctx context.Context, req *connect.Request[coteacherv1.GetClassInvitationCodeByIDRequest]) (*connect.Response[coteacherv1.GetClassInvitationCodeByIDResponse], error) {
+	resp, err := s.interactor.GetClassInvitationCodeByID(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
 
-// GetClassInvitationCodeByID implements coteacherv1.ClassInvitationCodeServiceServer.
-func (i *classInvitationCodeServiceServer) GetClassInvitationCodeByID(ctx context.Context, req *coteacherv1.GetClassInvitationCodeByIDRequest) (*coteacherv1.GetClassInvitationCodeByIDResponse, error) {
-	return i.classInvitationCodeInteractor.GetClassInvitationCodeByID(ctx, req)
+func (s *classInvitationCodeServiceServer) GetClassInvitationCodeListByClassID(ctx context.Context, req *connect.Request[coteacherv1.GetClassInvitationCodeListByClassIDRequest]) (*connect.Response[coteacherv1.GetClassInvitationCodeListByClassIDResponse], error) {
+	resp, err := s.interactor.GetClassInvitationCodeListByClassID(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
 
-// GetClassInvitationCodeListByClassID implements coteacherv1.ClassInvitationCodeServiceServer.
-func (i *classInvitationCodeServiceServer) GetClassInvitationCodeListByClassID(ctx context.Context, req *coteacherv1.GetClassInvitationCodeListByClassIDRequest) (*coteacherv1.GetClassInvitationCodeListByClassIDResponse, error) {
-	return i.classInvitationCodeInteractor.GetClassInvitationCodeListByClassID(ctx, req)
-}
-
-// UpdateClassInvitationCode implements coteacherv1.ClassInvitationCodeServiceServer.
-func (i *classInvitationCodeServiceServer) UpdateClassInvitationCode(ctx context.Context, req *coteacherv1.UpdateClassInvitationCodeRequest) (*coteacherv1.UpdateClassInvitationCodeResponse, error) {
-	return i.classInvitationCodeInteractor.UpdateClassInvitationCode(ctx, req)
+func (s *classInvitationCodeServiceServer) UpdateClassInvitationCode(ctx context.Context, req *connect.Request[coteacherv1.UpdateClassInvitationCodeRequest]) (*connect.Response[coteacherv1.UpdateClassInvitationCodeResponse], error) {
+	resp, err := s.interactor.UpdateClassInvitationCode(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
