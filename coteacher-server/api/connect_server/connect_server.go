@@ -34,6 +34,8 @@ func New(addr string, opts ...optionFunc) *http.Server {
 	mux.Handle(coteacherv1connect.NewClassInvitationCodeServiceHandler(classinvitationcodeSrv, interceptors))
 	classSrv := grpc_interfaces.NewClassServiceServer(class.NewInteractor(opt.entClient, opt.logger))
 	mux.Handle(coteacherv1connect.NewClassServiceHandler(classSrv, interceptors))
+	healthcheckSrv := grpc_interfaces.NewHealthCheckServiceServer(nil)
+	mux.Handle(coteacherv1connect.NewHealthcheckServiceHandler(healthcheckSrv, interceptors))
 	studentclassSrv := grpc_interfaces.NewStudentClassServiceServer(student_class.NewInteractor(opt.entClient, opt.logger))
 	mux.Handle(coteacherv1connect.NewStudentClassServiceHandler(studentclassSrv, interceptors))
 	userSrv := grpc_interfaces.NewUserServiceServer(user.NewInteractor(opt.entClient, opt.logger))
