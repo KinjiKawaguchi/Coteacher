@@ -49,7 +49,6 @@ func (i *Interactor) CreateClass(ctx context.Context, req *pb.CreateClassRequest
 		if ent.IsNotFound(err) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.New("the task was not found"))
 		}
-		i.logger.Error("failed to get the task", slog.Any("error", err))
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
@@ -65,6 +64,7 @@ func (i *Interactor) GetClassByID(ctx context.Context, req *pb.GetClassByIDReque
 		if ent.IsNotFound(err) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.New("class not found"))
 		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	return &pb.GetClassByIDResponse{
 		Class: utils.ToPbClass(class),
@@ -119,6 +119,7 @@ func (i *Interactor) UpdateClass(ctx context.Context, req *pb.UpdateClassRequest
 		if ent.IsNotFound(err) {
 			return nil, connect.NewError(connect.CodeNotFound, errors.New("class not found"))
 		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	return &pb.UpdateClassResponse{
 		Class: utils.ToPbClass(class),
@@ -132,6 +133,12 @@ func (i *Interactor) DeleteClass(ctx context.Context, req *pb.DeleteClassRequest
 	}
 
 	class, err := i.entClient.Class.Query().Where(entclass.ID(classID)).Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, errors.New("class not found"))
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
 
 	// 関係のあるclassinvitationcodeを削除
 	_, err = i.entClient.ClassInvitationCode.Delete().Where(entclassinvitationcode.ClassID(classID)).Exec(ctx)

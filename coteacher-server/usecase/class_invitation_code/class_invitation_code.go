@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"time"
 
+	"connectrpc.com/connect"
 	"github.com/google/uuid"
 	"golang.org/x/exp/slog"
 
@@ -39,7 +40,7 @@ func (i *Interactor) CreateClassInvitationCode(ctx context.Context, req *pb.Crea
 			Where(entcic.InvitationCode(invitationCode)).
 			Exist(ctx)
 		if err != nil {
-			return nil, err
+			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 		if !exists {
 			break // Unique code found, break the loop
@@ -48,7 +49,7 @@ func (i *Interactor) CreateClassInvitationCode(ctx context.Context, req *pb.Crea
 
 	classID, err := uuid.Parse(req.ClassId)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	cic, err := i.entClient.ClassInvitationCode.Create().
@@ -59,7 +60,7 @@ func (i *Interactor) CreateClassInvitationCode(ctx context.Context, req *pb.Crea
 		SetUpdatedAt(now).
 		Save(ctx)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	return &pb.CreateClassInvitationCodeResponse{
@@ -70,12 +71,15 @@ func (i *Interactor) CreateClassInvitationCode(ctx context.Context, req *pb.Crea
 func (i *Interactor) GetClassInvitationCodeByID(ctx context.Context, req *pb.GetClassInvitationCodeByIDRequest) (*pb.GetClassInvitationCodeByIDResponse, error) {
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	cic, err := i.entClient.ClassInvitationCode.Query().Where(entcic.ID(id)).Only(ctx)
 	if err != nil {
-		return nil, err
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, err)
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	return &pb.GetClassInvitationCodeByIDResponse{
@@ -86,12 +90,15 @@ func (i *Interactor) GetClassInvitationCodeByID(ctx context.Context, req *pb.Get
 func (i *Interactor) GetClassInvitationCodeListByClassID(ctx context.Context, req *pb.GetClassInvitationCodeListByClassIDRequest) (*pb.GetClassInvitationCodeListByClassIDResponse, error) {
 	classID, err := uuid.Parse(req.ClassId)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	cicList, err := i.entClient.ClassInvitationCode.Query().Where(entcic.ClassID(classID)).All(ctx)
 	if err != nil {
-		return nil, err
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, err)
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	pbCicList := make([]*pb.ClassInvitationCode, len(cicList))
@@ -107,7 +114,7 @@ func (i *Interactor) GetClassInvitationCodeListByClassID(ctx context.Context, re
 func (i *Interactor) UpdateClassInvitationCode(ctx context.Context, req *pb.UpdateClassInvitationCodeRequest) (*pb.UpdateClassInvitationCodeResponse, error) {
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	cic, err := i.entClient.ClassInvitationCode.UpdateOneID(id).
@@ -117,7 +124,10 @@ func (i *Interactor) UpdateClassInvitationCode(ctx context.Context, req *pb.Upda
 		Save(ctx)
 
 	if err != nil {
-		return nil, err
+		if ent.IsNotFound(err) {
+			return nil, connect.NewError(connect.CodeNotFound, err)
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	return &pb.UpdateClassInvitationCodeResponse{
