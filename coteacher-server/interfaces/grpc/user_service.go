@@ -57,3 +57,11 @@ func (s *userServiceServer) DeleteUser(ctx context.Context, req *connect.Request
 	}
 	return connect.NewResponse(resp), nil
 }
+
+func (s *userServiceServer) CheckUserExistsByEmail(ctx context.Context, req *connect.Request[coteacherv1.CheckUserExistsByEmailRequest]) (*connect.Response[coteacherv1.CheckUserExistsByEmailResponse], error) {
+	resp, err := s.interactor.CheckUserExistsByEmail(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
+}

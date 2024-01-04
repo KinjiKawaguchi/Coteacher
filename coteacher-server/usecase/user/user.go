@@ -273,6 +273,17 @@ func (i *Interactor) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) 
 	}, nil
 }
 
+func (i *Interactor) CheckUserExistsByEmail(ctx context.Context, req *pb.CheckUserExistsByEmailRequest) (*pb.CheckUserExistsByEmailResponse, error) {
+	q := i.entClient.User.Query()
+	exists, err := q.Where(entuser.Email(req.Email)).Exist(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	return &pb.CheckUserExistsByEmailResponse{
+		Exists: exists,
+	}, nil
+}
+
 func getUserType(i *Interactor, ctx context.Context, user *ent.User) pb.UserType {
 	switch {
 	case i.entClient.Teacher.Query().Where(entteacher.ID(user.ID)).ExistX(ctx):
