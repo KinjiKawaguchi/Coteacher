@@ -50,15 +50,25 @@ func (i *Interactor) CheckStudentExistsByID(ctx context.Context, req *pb.CheckSt
 
 func (i *Interactor) CheckStudentExistsByEmail(ctx context.Context, req *pb.CheckStudentExistsByEmailRequest) (*pb.CheckStudentExistsByEmailResponse, error) {
 	//EmailがUserTableでマッチするUserIDががstudentIDに存在するかを返す
-
-	id := i.entClient.User.Query().
+	user, err := i.entClient.User.Query().
 		Where(entuser.Email(req.Email)).
-		Select(entuser.FieldID).
-		FirstIDX(ctx)
+		Only(ctx)
+
+	if err != nil {
+		if ent.IsNotFound(err) {
+			// ユーザーが見つからない場合は、教師として存在しない
+			return &pb.CheckStudentExistsByEmailResponse{
+				Exists: false,
+			}, nil
+		}
+		// その他のエラー
+		return nil, err
+	}
 
 	exists, err := i.entClient.Student.Query().
-		Where(entstudent.ID(id)).
+		Where(entstudent.HasUserWith(entuser.IDEQ(user.ID))).
 		Exist(ctx)
+
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}

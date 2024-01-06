@@ -41,17 +41,27 @@ func (i *Interactor) CheckTeacherExistsByID(ctx context.Context, req *pb.CheckTe
 		Exists: exists,
 	}, nil
 }
-
 func (i *Interactor) CheckTeacherExistsByEmail(ctx context.Context, req *pb.CheckTeacherExistsByEmailRequest) (*pb.CheckTeacherExistsByEmailResponse, error) {
-	//EmailがUserTableでマッチするUserIDががTeacherIDに存在するかを返す
+	// 指定されたメールアドレスでユーザーを検索
+	user, err := i.entClient.User.
+		Query().
+		Where(entuser.EmailEQ(req.Email)).
+		Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			// ユーザーが見つからない場合は、教師として存在しない
+			return &pb.CheckTeacherExistsByEmailResponse{
+				Exists: false,
+			}, nil
+		}
+		// その他のエラー
+		return nil, err
+	}
 
-	id := i.entClient.User.Query().
-		Where(entuser.Email(req.Email)).
-		Select(entuser.FieldID).
-		FirstIDX(ctx)
-
-	exists, err := i.entClient.Teacher.Query().
-		Where(entteacher.ID(id)).
+	// ユーザーが教師として存在するか確認
+	exists, err := i.entClient.Teacher.
+		Query().
+		Where(entteacher.HasUserWith(entuser.IDEQ(user.ID))).
 		Exist(ctx)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
