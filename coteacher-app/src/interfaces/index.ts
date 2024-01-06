@@ -1,12 +1,12 @@
 export type Class = {
-  ID: string;
-  Name: string;
-  TeacherID: string;
+  id: string;
+  name: string;
+  teacherId: string;
 };
 
 export type User = {
-  Type: 'Student' | 'Teacher';
-  ID: string;
-  Name: string;
-  Email: string;
+  id: string;
+  name: string;
+  email: string;
+  user_type: number;
 };

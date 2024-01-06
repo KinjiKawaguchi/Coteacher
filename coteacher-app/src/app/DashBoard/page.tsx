@@ -6,16 +6,16 @@ import TeacherDashBoard from '@/components/pages/DashBoard/TeacherDashBoard';
 export default function DashBoard() {
   const [userType, setUserType] = useState('');
 
-  useEffect(() => {;
+  useEffect(() => {
     // Check if running in a browser environment
     if (typeof window !== 'undefined') {
       setUserType(localStorage.getItem('UserType') || '');
     }
   }, []);
 
-  if (userType === 'Student') {
+  if (userType === '1') {
     return <StudentDashBoard />;
-  } else if (userType === 'Teacher') {
+  } else if (userType === '2') {
     // Assuming 'Teacher' is the other user type
     return <TeacherDashBoard />;
   }
