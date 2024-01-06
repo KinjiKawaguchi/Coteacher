@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package coteacher.v1;
+
+import "coteacher/v1/resources.proto";
+
+service StudentService {
+  rpc CheckStudentExistsByID(CheckStudentExistsByIDRequest) returns (CheckStudentExistsByIDResponse);
+  rpc CheckStudentExistsByEmail(CheckStudentExistsByEmailRequest) returns (CheckStudentExistsByEmailResponse);
+  rpc ParticipateClass(ParticipateClassRequest) returns (ParticipateClassResponse);
+}
+
+message CheckStudentExistsByIDRequest {
+  string id = 1;
+}
+
+message CheckStudentExistsByIDResponse {
+  bool exists = 1;
+}
+
+message CheckStudentExistsByEmailRequest {
+  string email = 1;
+}
+
+message CheckStudentExistsByEmailResponse {
+  bool exists = 1;
+}
+
+message ParticipateClassRequest {
+  string user_id = 1;
+  string invitaion_code = 2;
+}
+
+message ParticipateClassResponse {
+  Class class = 1;
+}

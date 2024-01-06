@@ -16,8 +16,8 @@ import {
 
 import { EMAIL_REGEX } from '@/constants';
 import { sendEmailLink } from '@/libs/utils/auth/auth';
-import { checkTeacherExist } from '@/libs/services/api';
 import toast from '@/libs/utils/toast';
+import { teacherRepo } from '@/repository/teacher';
 
 type TeacherAuthProps = {
   onClose: () => void;
@@ -45,7 +45,8 @@ export default function TeacherAuth({ onClose }: TeacherAuthProps) {
       });
       return;
     }
-    if (await checkTeacherExist(email)) {
+    const isTeacherExists = await teacherRepo.checkTeacherExistsByEmail(email);
+    if (isTeacherExists) {
       sendEmailLink(email, 'Teacher');
     } else {
       toast({
@@ -56,41 +57,41 @@ export default function TeacherAuth({ onClose }: TeacherAuthProps) {
     }
   };
 
-    return (
-      <>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>先生ログイン</ModalHeader>
-          <ModalCloseButton onClick={onClose} />
-          <ModalBody>
-            <VStack spacing={8} textAlign="center">
-              入力したメールアドレスにログインリンクを送信します
-              <Alert status="info">
-                <AlertIcon />
-                現在、あなたの先生では先生アカウントの新規登録を受け付けておりません。
-              </Alert>
-              <Input
-                placeholder="example@example.com"
-                value={email}
-                onChange={handleEmailChange}
-                onKeyDown={handleKeyDown}
-              />
-            </VStack>
-          </ModalBody>
-          <ModalFooter>
-            <Flex w="100%" justifyContent="center">
-              <Button
-                colorScheme="teal"
-                size="lg"
-                borderRadius="30px"
-                variant="outline"
-                onClick={handleSendEmailLink}
-              >
-                ログインリンクを送信
-              </Button>
-            </Flex>
-          </ModalFooter>
-        </ModalContent>
-      </>
-    );
+  return (
+    <>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>先生ログイン</ModalHeader>
+        <ModalCloseButton onClick={onClose} />
+        <ModalBody>
+          <VStack spacing={8} textAlign="center">
+            入力したメールアドレスにログインリンクを送信します
+            <Alert status="info">
+              <AlertIcon />
+              現在、あなたの先生では先生アカウントの新規登録を受け付けておりません。
+            </Alert>
+            <Input
+              placeholder="example@example.com"
+              value={email}
+              onChange={handleEmailChange}
+              onKeyDown={handleKeyDown}
+            />
+          </VStack>
+        </ModalBody>
+        <ModalFooter>
+          <Flex w="100%" justifyContent="center">
+            <Button
+              colorScheme="teal"
+              size="lg"
+              borderRadius="30px"
+              variant="outline"
+              onClick={handleSendEmailLink}
+            >
+              ログインリンクを送信
+            </Button>
+          </Flex>
+        </ModalFooter>
+      </ModalContent>
+    </>
+  );
 }

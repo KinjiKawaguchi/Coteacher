@@ -4,7 +4,6 @@ import React, { useState, ChangeEvent, KeyboardEvent, FC } from 'react';
 import { useRouter } from 'next/navigation';
 import withAuth from '@/libs/utils/HOC/withAuth';
 import theme from '@/theme';
-import { createStudent } from '@/libs/services/api';
 import {
   ChakraProvider,
   Button,
@@ -14,6 +13,7 @@ import {
   Input,
   Spinner,
 } from '@chakra-ui/react';
+import { userRepo } from '@/repository/user';
 
 const RegisterStudentView: FC = () => {
   const [name, setName] = useState<string>('');
@@ -35,8 +35,8 @@ const RegisterStudentView: FC = () => {
     if (name.length >= 4 && !isRegistered) {
       try {
         setIsRegistering(true);
-        const res = await createStudent(name);
-        if (res && res.ok) {
+        const user = await userRepo.createUser(name,1);
+        if (user) {
           setIsRegistered(true);
           navigator.push('/DashBoard');
         }

@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CreateUserRequest, CreateUserResponse, DeleteUserRequest, DeleteUserResponse, GetUserByEmailRequest, GetUserByEmailResponse, GetUserByIDRequest, GetUserByIDResponse, UpdateUserRequest, UpdateUserResponse } from "./user_pb";
+import { CheckUserExistsByEmailRequest, CheckUserExistsByEmailResponse, CreateUserRequest, CreateUserResponse, DeleteUserRequest, DeleteUserResponse, GetUserByEmailRequest, GetUserByEmailResponse, GetUserByIDRequest, GetUserByIDResponse, UpdateUserRequest, UpdateUserResponse } from "./user_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 import { createQueryService } from "@connectrpc/connect-query";
 
@@ -60,6 +60,15 @@ export const UserService = {
       O: DeleteUserResponse,
       kind: MethodKind.Unary,
     },
+    /**
+     * @generated from rpc coteacher.v1.UserService.CheckUserExistsByEmail
+     */
+    checkUserExistsByEmail: {
+      name: "CheckUserExistsByEmail",
+      I: CheckUserExistsByEmailRequest,
+      O: CheckUserExistsByEmailResponse,
+      kind: MethodKind.Unary,
+    },
   }
 } as const;
 
@@ -97,3 +106,10 @@ export const updateUser = createQueryService({
 export const deleteUser = createQueryService({
   service: UserService,
 }).deleteUser;
+
+/**
+ * @generated from rpc coteacher.v1.UserService.CheckUserExistsByEmail
+ */
+export const checkUserExistsByEmail = createQueryService({
+  service: UserService,
+}).checkUserExistsByEmail;

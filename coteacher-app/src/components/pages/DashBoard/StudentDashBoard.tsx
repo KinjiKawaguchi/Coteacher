@@ -11,21 +11,16 @@ import {
 import theme from '@/theme';
 import ClassBox from './ClassBox';
 import withAuthAndAccountCheck from '@/libs/utils/HOC/withAccountCheck';
-import { getParticipatingClass } from '@/libs/services/api';
 import ParticipateClass from '@/components/layout/modal/ParticipateClass';
 import UserHeader from '@/components/layout/header/UserHeader';
-
-type Class = {
-  ID: string;
-  Name: string;
-  TeacherID: string;
-};
+import { studentClassRepo } from '@/repository/studentClass';
+import { Class } from '@/interfaces';
 
 const StudentDashBoard = () => {
   const [classes, setClasses] = useState<Class[]>([]);
 
   const fetchClasses = async () => {
-    const { classes: resClasses } = await getParticipatingClass();
+    const resClasses = await studentClassRepo.getClassListByStudentId(null);
     setClasses(resClasses || []);
   };
 
@@ -43,7 +38,7 @@ const StudentDashBoard = () => {
         <UserHeader />
         <HStack spacing={4} wrap="wrap" justify="center">
           {memoizedClasses.map(cls => (
-            <ClassBox key={cls.ID} name={cls.Name} />
+            <ClassBox key={cls.id} name={cls.name} />
           ))}
           <ClassBox key="new-class" name="" onClick={onOpen} />{' '}
           <Modal isOpen={isOpen} onClose={onClose} isCentered>

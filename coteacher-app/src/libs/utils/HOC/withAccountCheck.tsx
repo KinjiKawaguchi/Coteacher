@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // Corrected import
 import { auth } from '@/libs/utils/auth/FirebaseConfig';
-import { checkUserExist } from '@/libs/services/api';
 import { Spinner } from '@chakra-ui/react'; // Chakra UI Spinner import
+import { userRepo } from '@/repository/user';
 
 const withAuthAndAccountCheck = <P extends object>(
   Component: React.ComponentType<P>
@@ -17,7 +17,10 @@ const withAuthAndAccountCheck = <P extends object>(
         if (user) {
           if (user.email) {
             try {
-              const isUserExists = await checkUserExist(user.email);
+              const isUserExists = await userRepo.checkUserExistsByEmail(
+                user.email
+              );
+              console.log('isUserExists', isUserExists); // Debugging
               if (!isUserExists) {
                 router.push('/UserRegister');
               } else {

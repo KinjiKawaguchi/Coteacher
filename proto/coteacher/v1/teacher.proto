@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package coteacher.v1;
+
+service TeacherService {
+  rpc CheckTeacherExistsByID(CheckTeacherExistsByIDRequest) returns (CheckTeacherExistsByIDResponse);
+  rpc CheckTeacherExistsByEmail(CheckTeacherExistsByEmailRequest) returns (CheckTeacherExistsByEmailResponse);
+}
+
+message CheckTeacherExistsByIDRequest {
+  string id = 1;
+}
+
+message CheckTeacherExistsByIDResponse {
+  bool exists = 1;
+}
+
+message CheckTeacherExistsByEmailRequest {
+  string email = 1;
+}
+
+message CheckTeacherExistsByEmailResponse {
+  bool exists = 1;
+}

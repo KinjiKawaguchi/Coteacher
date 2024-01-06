@@ -13,7 +13,7 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import toast from '@/libs/utils/toast';
-import { participateClass } from '@/libs/services/api';
+import { studentRepo } from '@/repository/student';
 
 type ParticipateClassProps = {
   onClose: () => void;
@@ -42,40 +42,41 @@ export default function ParticipateClass({
   const handleSubmit = async () => {
     try {
       setIsParticipating(true);
-      const res = await participateClass(invitationCode);
+      const res = await studentRepo.participateClass(invitationCode);
 
-      if (res.status === 200) {
+      if (res) {
         // Success toast
         toast({
           status: 'success',
           title: 'Success',
-          description: res.message,
+          description: res.name + 'に参加しました。',
         });
         await fetchClasses();
         onClose();
-      } else {
-        // Error toasts
-        let toastStatus = 'error';
-        let toastTitle = 'Error';
-        const toastDescription = res.error;
-
-        if (res.status === 404) {
-          toastTitle = '無効なコードです。';
-        } else if (res.status === 409) {
-          toastStatus = 'warning';
-          toastTitle = '既に参加している授業です。';
-        } else if (res.status === 500) {
-          toastTitle = 'Server Error';
-        } else if (res.status === 'network-error') {
-          toastTitle = 'Network Error';
-        }
-
-        toast({
-          status: toastStatus as 'success' | 'error' | 'warning' | 'info',
-          title: toastTitle,
-          description: toastDescription,
-        });
       }
+      // TODO: ここを動作させる
+      // } else {
+      //   // Error toasts
+      //   let toastStatus = 'error';
+      //   let toastTitle = 'Error';
+      //   const toastDescription = res.error;
+
+      //   if (res.status === 404) {
+      //     toastTitle = '無効なコードです。';
+      //   } else if (res.status === 409) {
+      //     toastStatus = 'warning';
+      //     toastTitle = '既に参加している授業です。';
+      //   } else if (res.status === 500) {
+      //     toastTitle = 'Server Error';
+      //   } else if (res.status === 'network-error') {
+      //     toastTitle = 'Network Error';
+      //   }
+
+      //   toast({
+      //     status: toastStatus as 'success' | 'error' | 'warning' | 'info',
+      //     title: toastTitle,
+      //     description: toastDescription,
+      //   });
     } catch (error) {
       console.error(error);
     } finally {

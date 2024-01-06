@@ -13,7 +13,7 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import toast from '@/libs/utils/toast';
-import { CreateClassRequest } from '@/libs/services/api';
+import { classRepo } from '@/repository/class';
 
 type ParticipateClassProps = {
   onClose: () => void;
@@ -42,39 +42,39 @@ export default function CreateClass({
   const handleSubmit = async () => {
     try {
       setIsCreating(true);
-      const res = await CreateClassRequest(className);
 
-      if (res.status === 200) {
+      const c = await classRepo.createClass(className);
+
+      if (c) {
         // Success toast
         toast({
           status: 'success',
           title: 'Success',
-          description: res.message,
+          description: '授業を作成しました。',
         });
         await fetchClasses();
         onClose();
       } else {
         // Error toasts
-        let toastStatus = 'error';
-        let toastTitle = 'Error';
-        const toastDescription = res.error;
-
-        if (res.status === 404) {
-          toastTitle = '無効なコードです。';
-        } else if (res.status === 409) {
-          toastStatus = 'warning';
-          toastTitle = '既に参加している授業です。';
-        } else if (res.status === 500) {
-          toastTitle = 'Server Error';
-        } else if (res.status === 'network-error') {
-          toastTitle = 'Network Error';
-        }
-
-        toast({
-          status: toastStatus as 'success' | 'error' | 'warning' | 'info',
-          title: toastTitle,
-          description: toastDescription,
-        });
+        // let toastStatus = 'error';
+        // let toastTitle = 'Error';
+        // const toastDescription = "授業の作成に失敗しました";
+        // TODO: ここを有効化する
+        // if (res.status === 404) {
+        //   toastTitle = '無効なコードです。';
+        // } else if (res.status === 409) {
+        //   toastStatus = 'warning';
+        //   toastTitle = '既に参加している授業です。';
+        // } else if (res.status === 500) {
+        //   toastTitle = 'Server Error';
+        // } else if (res.status === 'network-error') {
+        //   toastTitle = 'Network Error';
+        // }
+        // toast({
+        //   status: toastStatus as 'success' | 'error' | 'warning' | 'info',
+        //   title: toastTitle,
+        //   description: toastDescription,
+        // });
       }
     } catch (error) {
       console.error(error);

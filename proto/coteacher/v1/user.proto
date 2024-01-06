@@ -10,6 +10,7 @@ service UserService {
   rpc GetUserByEmail(GetUserByEmailRequest) returns (GetUserByEmailResponse);
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+  rpc CheckUserExistsByEmail(CheckUserExistsByEmailRequest) returns (CheckUserExistsByEmailResponse);
 }
 
 message CreateUserRequest {
@@ -68,4 +69,12 @@ message DeleteUserRequest {
 message DeleteUserResponse {
   User user = 1;
   UserType user_type = 2;
+}
+
+message CheckUserExistsByEmailRequest {
+  string email = 1;
+}
+
+message CheckUserExistsByEmailResponse {
+  bool exists = 1;
 }

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/libs/utils/auth/FirebaseConfig';
-import { checkUserExist } from '@/libs/services/api';
+import { userRepo } from '@/repository/user';
 
 function Callback() {
   const router = useRouter();
@@ -19,7 +19,8 @@ function Callback() {
           .then(async () => {
             window.localStorage.setItem('email', email);
             window.localStorage.removeItem('login-email');
-            const isUserExists = await checkUserExist(email);
+            const isUserExists = await userRepo.checkUserExistsByEmail(email);
+            registerLocalStorage();
             if (isUserExists) {
               router.push('/DashBoard');
             } else {
@@ -43,6 +44,16 @@ function Callback() {
 
   if (isLoading) {
     return <div>読込中...</div>; // 直接「読込中」と表示
+  }
+  function registerLocalStorage() {
+    userRepo.getUserByEmail(localStorage.getItem('email') || '').then(user => {
+      if (user) {
+        localStorage.setItem('UserID', user.id);
+        localStorage.setItem('UserEmail', user.email);
+        localStorage.setItem('UserName', user.name);
+        localStorage.setItem('UserType', user.user_type.toString());
+      }
+    });
   }
 }
 

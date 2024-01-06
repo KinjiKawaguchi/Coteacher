@@ -11,23 +11,18 @@ import {
 import theme from '@/theme';
 import ClassBox from './ClassBox';
 import withAuthAndAccountCheck from '@/libs/utils/HOC/withAccountCheck';
-import { getOwnClass } from '@/libs/services/api';
 import UserHeader from '@/components/layout/header/UserHeader';
 import CreateClass from '@/components/layout/modal/CreateClass';
-
-type Class = {
-  ID: string;
-  Name: string;
-  TeacherID: string;
-};
+import { classRepo } from '@/repository/class';
+import { Class } from '@/interfaces';
 
 const TeacherDashBoard = () => {
   const [classes, setClasses] = useState<Class[]>([]);
 
   const fetchClasses = async () => {
-    const { classes: resClasses } = await getOwnClass();
-    setClasses(resClasses || []);
-  }
+    const classes = await classRepo.getClassListByTeacherId(null);
+    setClasses(classes || []);
+  };
 
   useEffect(() => {
     fetchClasses();
@@ -43,7 +38,7 @@ const TeacherDashBoard = () => {
         <UserHeader />
         <HStack spacing={4} wrap="wrap" justify="center">
           {memoizedClasses.map(cls => (
-            <ClassBox key={cls.ID} name={cls.Name} />
+            <ClassBox key={cls.id} name={cls.name} />
           ))}
           <ClassBox key="new-class" name="" onClick={onOpen} />{' '}
           <Modal isOpen={isOpen} onClose={onClose} isCentered>
