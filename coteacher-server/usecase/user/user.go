@@ -98,7 +98,7 @@ func (i *Interactor) GetUserByID(ctx context.Context, req *pb.GetUserByIDRequest
 	user, err := q.Where(entuser.ID(id)).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.New("user not found"))
+			return nil, nil
 		}
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -114,7 +114,7 @@ func (i *Interactor) GetUserByEmail(ctx context.Context, req *pb.GetUserByEmailR
 	user, err := q.Where(entuser.Email(req.Email)).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, connect.NewError(connect.CodeNotFound, errors.New("user not found"))
+			return nil, nil
 		}
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}

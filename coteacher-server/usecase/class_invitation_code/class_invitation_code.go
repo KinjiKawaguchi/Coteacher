@@ -77,7 +77,7 @@ func (i *Interactor) GetClassInvitationCodeByID(ctx context.Context, req *pb.Get
 	cic, err := i.entClient.ClassInvitationCode.Query().Where(entcic.ID(id)).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, connect.NewError(connect.CodeNotFound, err)
+			return nil, nil
 		}
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -96,7 +96,7 @@ func (i *Interactor) GetClassInvitationCodeListByClassID(ctx context.Context, re
 	cicList, err := i.entClient.ClassInvitationCode.Query().Where(entcic.ClassID(classID)).All(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, connect.NewError(connect.CodeNotFound, err)
+			return nil, nil
 		}
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
