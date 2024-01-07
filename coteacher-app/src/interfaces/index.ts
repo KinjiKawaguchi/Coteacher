@@ -10,3 +10,11 @@ export type User = {
   email: string;
   user_type: number;
 };
+
+export type ClassInvitationCode = {
+  id: string;
+  classId: string;
+  invitationCode: string;
+  expirationDate: Date;
+  isActive: boolean;
+}

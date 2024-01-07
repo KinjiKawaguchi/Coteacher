@@ -38,9 +38,9 @@ const StudentDashBoard = () => {
         <UserHeader />
         <HStack spacing={4} wrap="wrap" justify="center">
           {memoizedClasses.map(cls => (
-            <ClassBox key={cls.id} name={cls.name} />
+            <ClassBox key={cls.id} id={cls.id} name={cls.name} />
           ))}
-          <ClassBox key="new-class" name="" onClick={onOpen} />{' '}
+          <ClassBox key="new-class" id="" name="" onClick={onOpen} />{' '}
           <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ParticipateClass onClose={onClose} fetchClasses={fetchClasses} />
           </Modal>
