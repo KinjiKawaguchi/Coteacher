@@ -41,3 +41,11 @@ func (s *studentServiceServer) ParticipateClass(ctx context.Context, req *connec
 	}
 	return connect.NewResponse(resp), nil
 }
+
+func (s *studentServiceServer) QuitClass(ctx context.Context, req *connect.Request[coteacherv1.QuitClassRequest]) (*connect.Response[coteacherv1.QuitClassResponse], error) {
+	resp, err := s.interactor.QuitClass(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
+}

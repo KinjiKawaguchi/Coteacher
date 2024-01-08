@@ -8,6 +8,7 @@ service StudentService {
   rpc CheckStudentExistsByID(CheckStudentExistsByIDRequest) returns (CheckStudentExistsByIDResponse);
   rpc CheckStudentExistsByEmail(CheckStudentExistsByEmailRequest) returns (CheckStudentExistsByEmailResponse);
   rpc ParticipateClass(ParticipateClassRequest) returns (ParticipateClassResponse);
+  rpc QuitClass(QuitClassRequest) returns (QuitClassResponse);
 }
 
 message CheckStudentExistsByIDRequest {
@@ -32,5 +33,14 @@ message ParticipateClassRequest {
 }
 
 message ParticipateClassResponse {
+  Class class = 1;
+}
+
+message QuitClassRequest {
+  string user_id = 1;
+  string class_id = 2;
+}
+
+message QuitClassResponse {
   Class class = 1;
 }

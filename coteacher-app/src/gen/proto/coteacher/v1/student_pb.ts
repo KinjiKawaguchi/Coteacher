@@ -235,3 +235,83 @@ export class ParticipateClassResponse extends Message<ParticipateClassResponse> 
   }
 }
 
+/**
+ * @generated from message coteacher.v1.QuitClassRequest
+ */
+export class QuitClassRequest extends Message<QuitClassRequest> {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId = "";
+
+  /**
+   * @generated from field: string class_id = 2;
+   */
+  classId = "";
+
+  constructor(data?: PartialMessage<QuitClassRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.QuitClassRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "user_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "class_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): QuitClassRequest {
+    return new QuitClassRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): QuitClassRequest {
+    return new QuitClassRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): QuitClassRequest {
+    return new QuitClassRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: QuitClassRequest | PlainMessage<QuitClassRequest> | undefined, b: QuitClassRequest | PlainMessage<QuitClassRequest> | undefined): boolean {
+    return proto3.util.equals(QuitClassRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.QuitClassResponse
+ */
+export class QuitClassResponse extends Message<QuitClassResponse> {
+  /**
+   * @generated from field: coteacher.v1.Class class = 1;
+   */
+  class?: Class;
+
+  constructor(data?: PartialMessage<QuitClassResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.QuitClassResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "class", kind: "message", T: Class },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): QuitClassResponse {
+    return new QuitClassResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): QuitClassResponse {
+    return new QuitClassResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): QuitClassResponse {
+    return new QuitClassResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: QuitClassResponse | PlainMessage<QuitClassResponse> | undefined, b: QuitClassResponse | PlainMessage<QuitClassResponse> | undefined): boolean {
+    return proto3.util.equals(QuitClassResponse, a, b);
+  }
+}
+

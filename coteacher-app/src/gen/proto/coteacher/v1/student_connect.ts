@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CheckStudentExistsByEmailRequest, CheckStudentExistsByEmailResponse, CheckStudentExistsByIDRequest, CheckStudentExistsByIDResponse, ParticipateClassRequest, ParticipateClassResponse } from "./student_pb";
+import { CheckStudentExistsByEmailRequest, CheckStudentExistsByEmailResponse, CheckStudentExistsByIDRequest, CheckStudentExistsByIDResponse, ParticipateClassRequest, ParticipateClassResponse, QuitClassRequest, QuitClassResponse } from "./student_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -37,6 +37,15 @@ export const StudentService = {
       name: "ParticipateClass",
       I: ParticipateClassRequest,
       O: ParticipateClassResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc coteacher.v1.StudentService.QuitClass
+     */
+    quitClass: {
+      name: "QuitClass",
+      I: QuitClassRequest,
+      O: QuitClassResponse,
       kind: MethodKind.Unary,
     },
   }
