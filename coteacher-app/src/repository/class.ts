@@ -8,6 +8,7 @@ import { ClassService } from '@/gen/proto/coteacher/v1/class_connect';
 import {
   CreateClassRequest,
   GetClassListByTeacherIDRequest,
+  DeleteClassRequest,
 } from '@/gen/proto/coteacher/v1/class_pb';
 import { Class } from '@/interfaces';
 
@@ -32,6 +33,12 @@ class ClassRepository {
       teacherId: res.class.teacherId,
     };
     return c;
+  }
+
+  async deleteClass(classId: string): Promise<void> {
+    const req = new DeleteClassRequest();
+    req.id = classId;
+    await this.cli.deleteClass(req);
   }
 
   async getClassListByTeacherId(teacherId: string | null): Promise<Class[]> {

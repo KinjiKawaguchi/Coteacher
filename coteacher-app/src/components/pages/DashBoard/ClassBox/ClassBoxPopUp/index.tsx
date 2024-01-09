@@ -10,6 +10,8 @@ import {
 } from '@chakra-ui/react';
 import { FaEllipsisH, FaPassport, FaTrashAlt } from 'react-icons/fa';
 import { classInvitationCodeRepo } from '@/repository/classInvitationCode';
+import { studentRepo } from '@/repository/student';
+import { classRepo } from '@/repository/class';
 
 interface ClassBoxPopUpProps {
   classId: string;
@@ -20,11 +22,33 @@ const issueInvitationCode = async (classId: string) => {
   alert(cic.invitationCode);
 };
 
+const quitClass = async (classId: string) => {
+  await studentRepo.quitClass(classId);
+  alert('授業から退出しました。');
+  // リロード
+  window.location.reload(); // TODO: リロードせずに内容を変更
+};
+
+const deleteClass = async (classId: string) => {
+  await classRepo.deleteClass(classId);
+  alert('授業を削除しました。');
+  // リロード
+  window.location.reload(); // TODO: リロードせずに内容を変更
+};
+
 const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
   const userType = localStorage.getItem('UserType');
 
   const handleIssueInvitationCode = async () => {
     await issueInvitationCode(classId);
+  };
+
+  const handleQuitClass = async () => {
+    await quitClass(classId);
+  };
+
+  const handleDeleteClass = async () => {
+    await deleteClass(classId);
   };
 
   return (
@@ -40,6 +64,7 @@ const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
                 leftIcon={<FaTrashAlt />}
                 colorScheme="teal"
                 variant="solid"
+                onClick={handleQuitClass}
               >
                 授業から退出
               </Button>
@@ -58,6 +83,7 @@ const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
                   leftIcon={<FaTrashAlt />}
                   colorScheme="teal"
                   variant="solid"
+                  onClick={handleDeleteClass}
                 >
                   授業を削除
                 </Button>
