@@ -28,8 +28,12 @@ const ClassBox = ({ id, name, onClick }: ClassBoxProps) => {
       onClick={onClick}
     >
       <HStack justifyContent="space-between" mb={2}>
-        <FaBook size="24" color={text} aria-hidden="true" />
-        <ClassBoxPopUp classId={id} />
+        {id !== '' && (
+          <>
+            <FaBook size="24" color={text} aria-hidden="true" />
+            <ClassBoxPopUp classId={id} />
+          </>
+        )}
       </HStack>
       <Text
         fontSize={['md', 'lg']}
