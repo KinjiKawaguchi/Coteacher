@@ -6,7 +6,7 @@ import ClassBoxPopUp from './ClassBoxPopUp';
 interface ClassBoxProps {
   id: string;
   name: string;
-  onClick?: () => void; // Add this line
+  onClick?: () => void;
 }
 
 const ClassBox = ({ id, name, onClick }: ClassBoxProps) => {
@@ -16,7 +16,8 @@ const ClassBox = ({ id, name, onClick }: ClassBoxProps) => {
   return (
     <Box
       p={4}
-      w={['150px', '200px']}
+      w={['150px', '200px']} // 幅を固定
+      h="auto" // 高さは内容に応じて自動調整
       bg={bg}
       boxShadow="md"
       borderRadius="lg"
@@ -26,11 +27,17 @@ const ClassBox = ({ id, name, onClick }: ClassBoxProps) => {
       role="group"
       onClick={onClick}
     >
-      <HStack justifyContent="center" mb={2}>
+      <HStack justifyContent="space-between" mb={2}>
         <FaBook size="24" color={text} aria-hidden="true" />
         <ClassBoxPopUp classId={id} />
       </HStack>
-      <Text fontSize={['md', 'lg']} fontWeight="bold" color={text}>
+      <Text
+        fontSize={['md', 'lg']}
+        fontWeight="bold"
+        color={text}
+        noOfLines={1}
+        isTruncated
+      >
         {name || '+'}
       </Text>
     </Box>
