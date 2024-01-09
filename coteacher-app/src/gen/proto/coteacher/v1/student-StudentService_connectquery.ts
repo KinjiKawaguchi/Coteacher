@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CheckStudentExistsByEmailRequest, CheckStudentExistsByEmailResponse, CheckStudentExistsByIDRequest, CheckStudentExistsByIDResponse, ParticipateClassRequest, ParticipateClassResponse } from "./student_pb";
+import { CheckStudentExistsByEmailRequest, CheckStudentExistsByEmailResponse, CheckStudentExistsByIDRequest, CheckStudentExistsByIDResponse, ParticipateClassRequest, ParticipateClassResponse, QuitClassRequest, QuitClassResponse } from "./student_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 import { createQueryService } from "@connectrpc/connect-query";
 
@@ -42,6 +42,15 @@ export const StudentService = {
       O: ParticipateClassResponse,
       kind: MethodKind.Unary,
     },
+    /**
+     * @generated from rpc coteacher.v1.StudentService.QuitClass
+     */
+    quitClass: {
+      name: "QuitClass",
+      I: QuitClassRequest,
+      O: QuitClassResponse,
+      kind: MethodKind.Unary,
+    },
   }
 } as const;
 
@@ -65,3 +74,10 @@ export const checkStudentExistsByEmail = createQueryService({
 export const participateClass = createQueryService({
   service: StudentService,
 }).participateClass;
+
+/**
+ * @generated from rpc coteacher.v1.StudentService.QuitClass
+ */
+export const quitClass = createQueryService({
+  service: StudentService,
+}).quitClass;

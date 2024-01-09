@@ -22,6 +22,7 @@ const (
 	StudentService_CheckStudentExistsByID_FullMethodName    = "/coteacher.v1.StudentService/CheckStudentExistsByID"
 	StudentService_CheckStudentExistsByEmail_FullMethodName = "/coteacher.v1.StudentService/CheckStudentExistsByEmail"
 	StudentService_ParticipateClass_FullMethodName          = "/coteacher.v1.StudentService/ParticipateClass"
+	StudentService_QuitClass_FullMethodName                 = "/coteacher.v1.StudentService/QuitClass"
 )
 
 // StudentServiceClient is the client API for StudentService service.
@@ -31,6 +32,7 @@ type StudentServiceClient interface {
 	CheckStudentExistsByID(ctx context.Context, in *CheckStudentExistsByIDRequest, opts ...grpc.CallOption) (*CheckStudentExistsByIDResponse, error)
 	CheckStudentExistsByEmail(ctx context.Context, in *CheckStudentExistsByEmailRequest, opts ...grpc.CallOption) (*CheckStudentExistsByEmailResponse, error)
 	ParticipateClass(ctx context.Context, in *ParticipateClassRequest, opts ...grpc.CallOption) (*ParticipateClassResponse, error)
+	QuitClass(ctx context.Context, in *QuitClassRequest, opts ...grpc.CallOption) (*QuitClassResponse, error)
 }
 
 type studentServiceClient struct {
@@ -68,6 +70,15 @@ func (c *studentServiceClient) ParticipateClass(ctx context.Context, in *Partici
 	return out, nil
 }
 
+func (c *studentServiceClient) QuitClass(ctx context.Context, in *QuitClassRequest, opts ...grpc.CallOption) (*QuitClassResponse, error) {
+	out := new(QuitClassResponse)
+	err := c.cc.Invoke(ctx, StudentService_QuitClass_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StudentServiceServer is the server API for StudentService service.
 // All implementations should embed UnimplementedStudentServiceServer
 // for forward compatibility
@@ -75,6 +86,7 @@ type StudentServiceServer interface {
 	CheckStudentExistsByID(context.Context, *CheckStudentExistsByIDRequest) (*CheckStudentExistsByIDResponse, error)
 	CheckStudentExistsByEmail(context.Context, *CheckStudentExistsByEmailRequest) (*CheckStudentExistsByEmailResponse, error)
 	ParticipateClass(context.Context, *ParticipateClassRequest) (*ParticipateClassResponse, error)
+	QuitClass(context.Context, *QuitClassRequest) (*QuitClassResponse, error)
 }
 
 // UnimplementedStudentServiceServer should be embedded to have forward compatible implementations.
@@ -89,6 +101,9 @@ func (UnimplementedStudentServiceServer) CheckStudentExistsByEmail(context.Conte
 }
 func (UnimplementedStudentServiceServer) ParticipateClass(context.Context, *ParticipateClassRequest) (*ParticipateClassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ParticipateClass not implemented")
+}
+func (UnimplementedStudentServiceServer) QuitClass(context.Context, *QuitClassRequest) (*QuitClassResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuitClass not implemented")
 }
 
 // UnsafeStudentServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -156,6 +171,24 @@ func _StudentService_ParticipateClass_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StudentService_QuitClass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuitClassRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StudentServiceServer).QuitClass(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StudentService_QuitClass_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StudentServiceServer).QuitClass(ctx, req.(*QuitClassRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StudentService_ServiceDesc is the grpc.ServiceDesc for StudentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -174,6 +207,10 @@ var StudentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ParticipateClass",
 			Handler:    _StudentService_ParticipateClass_Handler,
+		},
+		{
+			MethodName: "QuitClass",
+			Handler:    _StudentService_QuitClass_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

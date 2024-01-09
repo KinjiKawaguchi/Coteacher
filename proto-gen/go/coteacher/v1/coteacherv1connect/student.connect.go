@@ -42,6 +42,9 @@ const (
 	// StudentServiceParticipateClassProcedure is the fully-qualified name of the StudentService's
 	// ParticipateClass RPC.
 	StudentServiceParticipateClassProcedure = "/coteacher.v1.StudentService/ParticipateClass"
+	// StudentServiceQuitClassProcedure is the fully-qualified name of the StudentService's QuitClass
+	// RPC.
+	StudentServiceQuitClassProcedure = "/coteacher.v1.StudentService/QuitClass"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
@@ -50,6 +53,7 @@ var (
 	studentServiceCheckStudentExistsByIDMethodDescriptor    = studentServiceServiceDescriptor.Methods().ByName("CheckStudentExistsByID")
 	studentServiceCheckStudentExistsByEmailMethodDescriptor = studentServiceServiceDescriptor.Methods().ByName("CheckStudentExistsByEmail")
 	studentServiceParticipateClassMethodDescriptor          = studentServiceServiceDescriptor.Methods().ByName("ParticipateClass")
+	studentServiceQuitClassMethodDescriptor                 = studentServiceServiceDescriptor.Methods().ByName("QuitClass")
 )
 
 // StudentServiceClient is a client for the coteacher.v1.StudentService service.
@@ -57,6 +61,7 @@ type StudentServiceClient interface {
 	CheckStudentExistsByID(context.Context, *connect.Request[v1.CheckStudentExistsByIDRequest]) (*connect.Response[v1.CheckStudentExistsByIDResponse], error)
 	CheckStudentExistsByEmail(context.Context, *connect.Request[v1.CheckStudentExistsByEmailRequest]) (*connect.Response[v1.CheckStudentExistsByEmailResponse], error)
 	ParticipateClass(context.Context, *connect.Request[v1.ParticipateClassRequest]) (*connect.Response[v1.ParticipateClassResponse], error)
+	QuitClass(context.Context, *connect.Request[v1.QuitClassRequest]) (*connect.Response[v1.QuitClassResponse], error)
 }
 
 // NewStudentServiceClient constructs a client for the coteacher.v1.StudentService service. By
@@ -87,6 +92,12 @@ func NewStudentServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(studentServiceParticipateClassMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		quitClass: connect.NewClient[v1.QuitClassRequest, v1.QuitClassResponse](
+			httpClient,
+			baseURL+StudentServiceQuitClassProcedure,
+			connect.WithSchema(studentServiceQuitClassMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -95,6 +106,7 @@ type studentServiceClient struct {
 	checkStudentExistsByID    *connect.Client[v1.CheckStudentExistsByIDRequest, v1.CheckStudentExistsByIDResponse]
 	checkStudentExistsByEmail *connect.Client[v1.CheckStudentExistsByEmailRequest, v1.CheckStudentExistsByEmailResponse]
 	participateClass          *connect.Client[v1.ParticipateClassRequest, v1.ParticipateClassResponse]
+	quitClass                 *connect.Client[v1.QuitClassRequest, v1.QuitClassResponse]
 }
 
 // CheckStudentExistsByID calls coteacher.v1.StudentService.CheckStudentExistsByID.
@@ -112,11 +124,17 @@ func (c *studentServiceClient) ParticipateClass(ctx context.Context, req *connec
 	return c.participateClass.CallUnary(ctx, req)
 }
 
+// QuitClass calls coteacher.v1.StudentService.QuitClass.
+func (c *studentServiceClient) QuitClass(ctx context.Context, req *connect.Request[v1.QuitClassRequest]) (*connect.Response[v1.QuitClassResponse], error) {
+	return c.quitClass.CallUnary(ctx, req)
+}
+
 // StudentServiceHandler is an implementation of the coteacher.v1.StudentService service.
 type StudentServiceHandler interface {
 	CheckStudentExistsByID(context.Context, *connect.Request[v1.CheckStudentExistsByIDRequest]) (*connect.Response[v1.CheckStudentExistsByIDResponse], error)
 	CheckStudentExistsByEmail(context.Context, *connect.Request[v1.CheckStudentExistsByEmailRequest]) (*connect.Response[v1.CheckStudentExistsByEmailResponse], error)
 	ParticipateClass(context.Context, *connect.Request[v1.ParticipateClassRequest]) (*connect.Response[v1.ParticipateClassResponse], error)
+	QuitClass(context.Context, *connect.Request[v1.QuitClassRequest]) (*connect.Response[v1.QuitClassResponse], error)
 }
 
 // NewStudentServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -143,6 +161,12 @@ func NewStudentServiceHandler(svc StudentServiceHandler, opts ...connect.Handler
 		connect.WithSchema(studentServiceParticipateClassMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	studentServiceQuitClassHandler := connect.NewUnaryHandler(
+		StudentServiceQuitClassProcedure,
+		svc.QuitClass,
+		connect.WithSchema(studentServiceQuitClassMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/coteacher.v1.StudentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case StudentServiceCheckStudentExistsByIDProcedure:
@@ -151,6 +175,8 @@ func NewStudentServiceHandler(svc StudentServiceHandler, opts ...connect.Handler
 			studentServiceCheckStudentExistsByEmailHandler.ServeHTTP(w, r)
 		case StudentServiceParticipateClassProcedure:
 			studentServiceParticipateClassHandler.ServeHTTP(w, r)
+		case StudentServiceQuitClassProcedure:
+			studentServiceQuitClassHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -170,4 +196,8 @@ func (UnimplementedStudentServiceHandler) CheckStudentExistsByEmail(context.Cont
 
 func (UnimplementedStudentServiceHandler) ParticipateClass(context.Context, *connect.Request[v1.ParticipateClassRequest]) (*connect.Response[v1.ParticipateClassResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.StudentService.ParticipateClass is not implemented"))
+}
+
+func (UnimplementedStudentServiceHandler) QuitClass(context.Context, *connect.Request[v1.QuitClassRequest]) (*connect.Response[v1.QuitClassResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.StudentService.QuitClass is not implemented"))
 }

@@ -137,3 +137,42 @@ func (i *Interactor) ParticipateClass(ctx context.Context, req *pb.ParticipateCl
 		Class: utils.ToPbClass(class),
 	}, nil
 }
+
+func (i *Interactor) QuitClass(ctx context.Context, req *pb.QuitClassRequest) (*pb.QuitClassResponse, error) {
+	studentID, err := uuid.Parse(req.UserId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	classID, err := uuid.Parse(req.ClassId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	// 学生がクラスに参加しているか確認
+	exists, err := i.entClient.StudentClass.
+		Query().
+		Where(entstudentclass.StudentID(studentID)).
+		Where(entstudentclass.ClassID(classID)).
+		Exist(ctx)
+
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	if !exists {
+		return nil, connect.NewError(connect.CodeNotFound, err)
+	}
+
+	// 学生をクラスから削除
+	_, err = i.entClient.StudentClass.Delete().
+		Where(entstudentclass.StudentID(studentID)).
+		Where(entstudentclass.ClassID(classID)).
+		Exec(ctx)
+
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return &pb.QuitClassResponse{}, nil
+}

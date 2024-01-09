@@ -4,6 +4,7 @@ import {
   CheckStudentExistsByEmailRequest,
   CheckStudentExistsByIDRequest,
   ParticipateClassRequest,
+  QuitClassRequest,
 } from '@/gen/proto/coteacher/v1/student_pb';
 import { Class } from '@/interfaces';
 import {
@@ -55,6 +56,15 @@ class StudentRepository {
       teacherId: res.class.teacherId,
     };
     return c;
+  }
+
+  async quitClass(classId: string): Promise<void> {
+    const req = new QuitClassRequest();
+    req.classId = classId;
+    req.userId = localStorage.getItem('UserID') || '';
+    await this.cli.quitClass(req);
+
+    return;
   }
 }
 
