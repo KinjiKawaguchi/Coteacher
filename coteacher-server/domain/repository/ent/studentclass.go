@@ -3,15 +3,15 @@
 package ent
 
 import (
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
 	"github.com/google/uuid"
 )
 

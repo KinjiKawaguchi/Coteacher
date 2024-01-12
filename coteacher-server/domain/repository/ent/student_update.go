@@ -4,16 +4,17 @@ package ent
 
 import (
 	"context"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"errors"
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/response"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -56,6 +57,21 @@ func (su *StudentUpdate) AddStudentClasses(s ...*StudentClass) *StudentUpdate {
 	return su.AddStudentClassIDs(ids...)
 }
 
+// AddResponseIDs adds the "responses" edge to the Response entity by IDs.
+func (su *StudentUpdate) AddResponseIDs(ids ...uuid.UUID) *StudentUpdate {
+	su.mutation.AddResponseIDs(ids...)
+	return su
+}
+
+// AddResponses adds the "responses" edges to the Response entity.
+func (su *StudentUpdate) AddResponses(r ...*Response) *StudentUpdate {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return su.AddResponseIDs(ids...)
+}
+
 // Mutation returns the StudentMutation object of the builder.
 func (su *StudentUpdate) Mutation() *StudentMutation {
 	return su.mutation
@@ -86,6 +102,27 @@ func (su *StudentUpdate) RemoveStudentClasses(s ...*StudentClass) *StudentUpdate
 		ids[i] = s[i].ID
 	}
 	return su.RemoveStudentClassIDs(ids...)
+}
+
+// ClearResponses clears all "responses" edges to the Response entity.
+func (su *StudentUpdate) ClearResponses() *StudentUpdate {
+	su.mutation.ClearResponses()
+	return su
+}
+
+// RemoveResponseIDs removes the "responses" edge to Response entities by IDs.
+func (su *StudentUpdate) RemoveResponseIDs(ids ...uuid.UUID) *StudentUpdate {
+	su.mutation.RemoveResponseIDs(ids...)
+	return su
+}
+
+// RemoveResponses removes "responses" edges to Response entities.
+func (su *StudentUpdate) RemoveResponses(r ...*Response) *StudentUpdate {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return su.RemoveResponseIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -209,6 +246,51 @@ func (su *StudentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.ResponsesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   student.ResponsesTable,
+			Columns: []string{student.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedResponsesIDs(); len(nodes) > 0 && !su.mutation.ResponsesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   student.ResponsesTable,
+			Columns: []string{student.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.ResponsesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   student.ResponsesTable,
+			Columns: []string{student.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{student.Label}
@@ -255,6 +337,21 @@ func (suo *StudentUpdateOne) AddStudentClasses(s ...*StudentClass) *StudentUpdat
 	return suo.AddStudentClassIDs(ids...)
 }
 
+// AddResponseIDs adds the "responses" edge to the Response entity by IDs.
+func (suo *StudentUpdateOne) AddResponseIDs(ids ...uuid.UUID) *StudentUpdateOne {
+	suo.mutation.AddResponseIDs(ids...)
+	return suo
+}
+
+// AddResponses adds the "responses" edges to the Response entity.
+func (suo *StudentUpdateOne) AddResponses(r ...*Response) *StudentUpdateOne {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return suo.AddResponseIDs(ids...)
+}
+
 // Mutation returns the StudentMutation object of the builder.
 func (suo *StudentUpdateOne) Mutation() *StudentMutation {
 	return suo.mutation
@@ -285,6 +382,27 @@ func (suo *StudentUpdateOne) RemoveStudentClasses(s ...*StudentClass) *StudentUp
 		ids[i] = s[i].ID
 	}
 	return suo.RemoveStudentClassIDs(ids...)
+}
+
+// ClearResponses clears all "responses" edges to the Response entity.
+func (suo *StudentUpdateOne) ClearResponses() *StudentUpdateOne {
+	suo.mutation.ClearResponses()
+	return suo
+}
+
+// RemoveResponseIDs removes the "responses" edge to Response entities by IDs.
+func (suo *StudentUpdateOne) RemoveResponseIDs(ids ...uuid.UUID) *StudentUpdateOne {
+	suo.mutation.RemoveResponseIDs(ids...)
+	return suo
+}
+
+// RemoveResponses removes "responses" edges to Response entities.
+func (suo *StudentUpdateOne) RemoveResponses(r ...*Response) *StudentUpdateOne {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return suo.RemoveResponseIDs(ids...)
 }
 
 // Where appends a list predicates to the StudentUpdate builder.
@@ -431,6 +549,51 @@ func (suo *StudentUpdateOne) sqlSave(ctx context.Context) (_node *Student, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(studentclass.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.ResponsesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   student.ResponsesTable,
+			Columns: []string{student.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedResponsesIDs(); len(nodes) > 0 && !suo.mutation.ResponsesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   student.ResponsesTable,
+			Columns: []string{student.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.ResponsesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   student.ResponsesTable,
+			Columns: []string{student.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

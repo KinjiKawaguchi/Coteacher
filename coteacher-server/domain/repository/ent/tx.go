@@ -12,16 +12,30 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// Answer is the client for interacting with the Answer builders.
+	Answer *AnswerClient
 	// Class is the client for interacting with the Class builders.
 	Class *ClassClient
 	// ClassInvitationCode is the client for interacting with the ClassInvitationCode builders.
 	ClassInvitationCode *ClassInvitationCodeClient
+	// Form is the client for interacting with the Form builders.
+	Form *FormClient
+	// Question is the client for interacting with the Question builders.
+	Question *QuestionClient
+	// QuestionOption is the client for interacting with the QuestionOption builders.
+	QuestionOption *QuestionOptionClient
+	// Response is the client for interacting with the Response builders.
+	Response *ResponseClient
+	// SelectedOption is the client for interacting with the SelectedOption builders.
+	SelectedOption *SelectedOptionClient
 	// Student is the client for interacting with the Student builders.
 	Student *StudentClient
 	// StudentClass is the client for interacting with the StudentClass builders.
 	StudentClass *StudentClassClient
 	// Teacher is the client for interacting with the Teacher builders.
 	Teacher *TeacherClient
+	// TextQuestion is the client for interacting with the TextQuestion builders.
+	TextQuestion *TextQuestionClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -155,11 +169,18 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.Answer = NewAnswerClient(tx.config)
 	tx.Class = NewClassClient(tx.config)
 	tx.ClassInvitationCode = NewClassInvitationCodeClient(tx.config)
+	tx.Form = NewFormClient(tx.config)
+	tx.Question = NewQuestionClient(tx.config)
+	tx.QuestionOption = NewQuestionOptionClient(tx.config)
+	tx.Response = NewResponseClient(tx.config)
+	tx.SelectedOption = NewSelectedOptionClient(tx.config)
 	tx.Student = NewStudentClient(tx.config)
 	tx.StudentClass = NewStudentClassClient(tx.config)
 	tx.Teacher = NewTeacherClient(tx.config)
+	tx.TextQuestion = NewTextQuestionClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 
@@ -170,7 +191,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Class.QueryXXX(), the query will be executed
+// applies a query, for example: Answer.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

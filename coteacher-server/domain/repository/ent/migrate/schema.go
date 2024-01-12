@@ -8,6 +8,33 @@ import (
 )
 
 var (
+	// AnswersColumns holds the columns for the "answers" table.
+	AnswersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "answer_text", Type: field.TypeString, Size: 2147483647},
+		{Name: "question_id", Type: field.TypeUUID},
+		{Name: "response_id", Type: field.TypeUUID},
+	}
+	// AnswersTable holds the schema information for the "answers" table.
+	AnswersTable = &schema.Table{
+		Name:       "answers",
+		Columns:    AnswersColumns,
+		PrimaryKey: []*schema.Column{AnswersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "answers_questions_answer",
+				Columns:    []*schema.Column{AnswersColumns[2]},
+				RefColumns: []*schema.Column{QuestionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "answers_responses_answer",
+				Columns:    []*schema.Column{AnswersColumns[3]},
+				RefColumns: []*schema.Column{ResponsesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// ClassesColumns holds the columns for the "classes" table.
 	ClassesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -50,6 +77,133 @@ var (
 				Symbol:     "class_invitation_codes_classes_invitationCodes",
 				Columns:    []*schema.Column{ClassInvitationCodesColumns[6]},
 				RefColumns: []*schema.Column{ClassesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// FormsColumns holds the columns for the "forms" table.
+	FormsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Size: 2147483647},
+		{Name: "usage_limit", Type: field.TypeInt},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "class_id", Type: field.TypeUUID},
+	}
+	// FormsTable holds the schema information for the "forms" table.
+	FormsTable = &schema.Table{
+		Name:       "forms",
+		Columns:    FormsColumns,
+		PrimaryKey: []*schema.Column{FormsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "forms_classes_forms",
+				Columns:    []*schema.Column{FormsColumns[6]},
+				RefColumns: []*schema.Column{ClassesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// QuestionsColumns holds the columns for the "questions" table.
+	QuestionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "question_type", Type: field.TypeEnum, Enums: []string{"checkbox", "list", "radio", "multiple_choice", "paragraph_text", "text"}},
+		{Name: "question_text", Type: field.TypeString, Size: 2147483647},
+		{Name: "is_required", Type: field.TypeBool},
+		{Name: "for_ai_processing", Type: field.TypeBool},
+		{Name: "order", Type: field.TypeInt},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "form_id", Type: field.TypeUUID},
+	}
+	// QuestionsTable holds the schema information for the "questions" table.
+	QuestionsTable = &schema.Table{
+		Name:       "questions",
+		Columns:    QuestionsColumns,
+		PrimaryKey: []*schema.Column{QuestionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "questions_forms_questions",
+				Columns:    []*schema.Column{QuestionsColumns[8]},
+				RefColumns: []*schema.Column{FormsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// QuestionOptionsColumns holds the columns for the "question_options" table.
+	QuestionOptionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "option_text", Type: field.TypeString, Size: 2147483647},
+		{Name: "order", Type: field.TypeInt},
+		{Name: "question_id", Type: field.TypeUUID},
+	}
+	// QuestionOptionsTable holds the schema information for the "question_options" table.
+	QuestionOptionsTable = &schema.Table{
+		Name:       "question_options",
+		Columns:    QuestionOptionsColumns,
+		PrimaryKey: []*schema.Column{QuestionOptionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "question_options_questions_questionOption",
+				Columns:    []*schema.Column{QuestionOptionsColumns[3]},
+				RefColumns: []*schema.Column{QuestionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// ResponsesColumns holds the columns for the "responses" table.
+	ResponsesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "ai_response", Type: field.TypeString, Size: 2147483647},
+		{Name: "submitted_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "form_id", Type: field.TypeUUID},
+		{Name: "student_id", Type: field.TypeUUID},
+	}
+	// ResponsesTable holds the schema information for the "responses" table.
+	ResponsesTable = &schema.Table{
+		Name:       "responses",
+		Columns:    ResponsesColumns,
+		PrimaryKey: []*schema.Column{ResponsesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "responses_forms_responses",
+				Columns:    []*schema.Column{ResponsesColumns[5]},
+				RefColumns: []*schema.Column{FormsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "responses_students_responses",
+				Columns:    []*schema.Column{ResponsesColumns[6]},
+				RefColumns: []*schema.Column{StudentsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// SelectedOptionsColumns holds the columns for the "selected_options" table.
+	SelectedOptionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "answer_id", Type: field.TypeUUID},
+		{Name: "option_id", Type: field.TypeUUID},
+	}
+	// SelectedOptionsTable holds the schema information for the "selected_options" table.
+	SelectedOptionsTable = &schema.Table{
+		Name:       "selected_options",
+		Columns:    SelectedOptionsColumns,
+		PrimaryKey: []*schema.Column{SelectedOptionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "selected_options_answers_selectedOption",
+				Columns:    []*schema.Column{SelectedOptionsColumns[1]},
+				RefColumns: []*schema.Column{AnswersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "selected_options_question_options_selectedOption",
+				Columns:    []*schema.Column{SelectedOptionsColumns[2]},
+				RefColumns: []*schema.Column{QuestionOptionsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
@@ -120,6 +274,26 @@ var (
 			},
 		},
 	}
+	// TextQuestionsColumns holds the columns for the "text_questions" table.
+	TextQuestionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "max_length", Type: field.TypeInt},
+		{Name: "question_id", Type: field.TypeUUID},
+	}
+	// TextQuestionsTable holds the schema information for the "text_questions" table.
+	TextQuestionsTable = &schema.Table{
+		Name:       "text_questions",
+		Columns:    TextQuestionsColumns,
+		PrimaryKey: []*schema.Column{TextQuestionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "text_questions_questions_textQuestion",
+				Columns:    []*schema.Column{TextQuestionsColumns[2]},
+				RefColumns: []*schema.Column{QuestionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -136,20 +310,37 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AnswersTable,
 		ClassesTable,
 		ClassInvitationCodesTable,
+		FormsTable,
+		QuestionsTable,
+		QuestionOptionsTable,
+		ResponsesTable,
+		SelectedOptionsTable,
 		StudentsTable,
 		StudentClassesTable,
 		TeachersTable,
+		TextQuestionsTable,
 		UsersTable,
 	}
 )
 
 func init() {
+	AnswersTable.ForeignKeys[0].RefTable = QuestionsTable
+	AnswersTable.ForeignKeys[1].RefTable = ResponsesTable
 	ClassesTable.ForeignKeys[0].RefTable = TeachersTable
 	ClassInvitationCodesTable.ForeignKeys[0].RefTable = ClassesTable
+	FormsTable.ForeignKeys[0].RefTable = ClassesTable
+	QuestionsTable.ForeignKeys[0].RefTable = FormsTable
+	QuestionOptionsTable.ForeignKeys[0].RefTable = QuestionsTable
+	ResponsesTable.ForeignKeys[0].RefTable = FormsTable
+	ResponsesTable.ForeignKeys[1].RefTable = StudentsTable
+	SelectedOptionsTable.ForeignKeys[0].RefTable = AnswersTable
+	SelectedOptionsTable.ForeignKeys[1].RefTable = QuestionOptionsTable
 	StudentsTable.ForeignKeys[0].RefTable = UsersTable
 	StudentClassesTable.ForeignKeys[0].RefTable = ClassesTable
 	StudentClassesTable.ForeignKeys[1].RefTable = StudentsTable
 	TeachersTable.ForeignKeys[0].RefTable = UsersTable
+	TextQuestionsTable.ForeignKeys[0].RefTable = QuestionsTable
 }

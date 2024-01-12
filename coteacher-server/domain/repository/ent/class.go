@@ -3,14 +3,14 @@
 package ent
 
 import (
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
 	"github.com/google/uuid"
 )
 
@@ -41,9 +41,11 @@ type ClassEdges struct {
 	ClassStudents []*StudentClass `json:"classStudents,omitempty"`
 	// InvitationCodes holds the value of the invitationCodes edge.
 	InvitationCodes []*ClassInvitationCode `json:"invitationCodes,omitempty"`
+	// Forms holds the value of the forms edge.
+	Forms []*Form `json:"forms,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // TeacherOrErr returns the Teacher value or an error if the edge
@@ -75,6 +77,15 @@ func (e ClassEdges) InvitationCodesOrErr() ([]*ClassInvitationCode, error) {
 		return e.InvitationCodes, nil
 	}
 	return nil, &NotLoadedError{edge: "invitationCodes"}
+}
+
+// FormsOrErr returns the Forms value or an error if the edge
+// was not loaded in eager-loading.
+func (e ClassEdges) FormsOrErr() ([]*Form, error) {
+	if e.loadedTypes[3] {
+		return e.Forms, nil
+	}
+	return nil, &NotLoadedError{edge: "forms"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -159,6 +170,11 @@ func (c *Class) QueryClassStudents() *StudentClassQuery {
 // QueryInvitationCodes queries the "invitationCodes" edge of the Class entity.
 func (c *Class) QueryInvitationCodes() *ClassInvitationCodeQuery {
 	return NewClassClient(c.config).QueryInvitationCodes(c)
+}
+
+// QueryForms queries the "forms" edge of the Class entity.
+func (c *Class) QueryForms() *FormQuery {
+	return NewClassClient(c.config).QueryForms(c)
 }
 
 // Update returns a builder for updating this Class.

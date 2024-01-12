@@ -4,11 +4,6 @@ package ent
 
 import (
 	"context"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
 	"errors"
 	"fmt"
 	"time"
@@ -16,6 +11,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/form"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
 	"github.com/google/uuid"
 )
 
@@ -123,6 +124,21 @@ func (cu *ClassUpdate) AddInvitationCodes(c ...*ClassInvitationCode) *ClassUpdat
 	return cu.AddInvitationCodeIDs(ids...)
 }
 
+// AddFormIDs adds the "forms" edge to the Form entity by IDs.
+func (cu *ClassUpdate) AddFormIDs(ids ...uuid.UUID) *ClassUpdate {
+	cu.mutation.AddFormIDs(ids...)
+	return cu
+}
+
+// AddForms adds the "forms" edges to the Form entity.
+func (cu *ClassUpdate) AddForms(f ...*Form) *ClassUpdate {
+	ids := make([]uuid.UUID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return cu.AddFormIDs(ids...)
+}
+
 // Mutation returns the ClassMutation object of the builder.
 func (cu *ClassUpdate) Mutation() *ClassMutation {
 	return cu.mutation
@@ -174,6 +190,27 @@ func (cu *ClassUpdate) RemoveInvitationCodes(c ...*ClassInvitationCode) *ClassUp
 		ids[i] = c[i].ID
 	}
 	return cu.RemoveInvitationCodeIDs(ids...)
+}
+
+// ClearForms clears all "forms" edges to the Form entity.
+func (cu *ClassUpdate) ClearForms() *ClassUpdate {
+	cu.mutation.ClearForms()
+	return cu
+}
+
+// RemoveFormIDs removes the "forms" edge to Form entities by IDs.
+func (cu *ClassUpdate) RemoveFormIDs(ids ...uuid.UUID) *ClassUpdate {
+	cu.mutation.RemoveFormIDs(ids...)
+	return cu
+}
+
+// RemoveForms removes "forms" edges to Form entities.
+func (cu *ClassUpdate) RemoveForms(f ...*Form) *ClassUpdate {
+	ids := make([]uuid.UUID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return cu.RemoveFormIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -351,6 +388,51 @@ func (cu *ClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.FormsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.FormsTable,
+			Columns: []string{class.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedFormsIDs(); len(nodes) > 0 && !cu.mutation.FormsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.FormsTable,
+			Columns: []string{class.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.FormsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.FormsTable,
+			Columns: []string{class.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{class.Label}
@@ -462,6 +544,21 @@ func (cuo *ClassUpdateOne) AddInvitationCodes(c ...*ClassInvitationCode) *ClassU
 	return cuo.AddInvitationCodeIDs(ids...)
 }
 
+// AddFormIDs adds the "forms" edge to the Form entity by IDs.
+func (cuo *ClassUpdateOne) AddFormIDs(ids ...uuid.UUID) *ClassUpdateOne {
+	cuo.mutation.AddFormIDs(ids...)
+	return cuo
+}
+
+// AddForms adds the "forms" edges to the Form entity.
+func (cuo *ClassUpdateOne) AddForms(f ...*Form) *ClassUpdateOne {
+	ids := make([]uuid.UUID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return cuo.AddFormIDs(ids...)
+}
+
 // Mutation returns the ClassMutation object of the builder.
 func (cuo *ClassUpdateOne) Mutation() *ClassMutation {
 	return cuo.mutation
@@ -513,6 +610,27 @@ func (cuo *ClassUpdateOne) RemoveInvitationCodes(c ...*ClassInvitationCode) *Cla
 		ids[i] = c[i].ID
 	}
 	return cuo.RemoveInvitationCodeIDs(ids...)
+}
+
+// ClearForms clears all "forms" edges to the Form entity.
+func (cuo *ClassUpdateOne) ClearForms() *ClassUpdateOne {
+	cuo.mutation.ClearForms()
+	return cuo
+}
+
+// RemoveFormIDs removes the "forms" edge to Form entities by IDs.
+func (cuo *ClassUpdateOne) RemoveFormIDs(ids ...uuid.UUID) *ClassUpdateOne {
+	cuo.mutation.RemoveFormIDs(ids...)
+	return cuo
+}
+
+// RemoveForms removes "forms" edges to Form entities.
+func (cuo *ClassUpdateOne) RemoveForms(f ...*Form) *ClassUpdateOne {
+	ids := make([]uuid.UUID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return cuo.RemoveFormIDs(ids...)
 }
 
 // Where appends a list predicates to the ClassUpdate builder.
@@ -713,6 +831,51 @@ func (cuo *ClassUpdateOne) sqlSave(ctx context.Context) (_node *Class, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.FormsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.FormsTable,
+			Columns: []string{class.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedFormsIDs(); len(nodes) > 0 && !cuo.mutation.FormsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.FormsTable,
+			Columns: []string{class.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.FormsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.FormsTable,
+			Columns: []string{class.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

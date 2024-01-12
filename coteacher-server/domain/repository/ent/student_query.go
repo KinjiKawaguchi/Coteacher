@@ -4,10 +4,6 @@ package ent
 
 import (
 	"context"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"database/sql/driver"
 	"fmt"
 	"math"
@@ -15,6 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/response"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -27,6 +28,7 @@ type StudentQuery struct {
 	predicates         []predicate.Student
 	withUser           *UserQuery
 	withStudentClasses *StudentClassQuery
+	withResponses      *ResponseQuery
 	withFKs            bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -101,6 +103,28 @@ func (sq *StudentQuery) QueryStudentClasses() *StudentClassQuery {
 			sqlgraph.From(student.Table, student.FieldID, selector),
 			sqlgraph.To(studentclass.Table, studentclass.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, student.StudentClassesTable, student.StudentClassesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryResponses chains the current query on the "responses" edge.
+func (sq *StudentQuery) QueryResponses() *ResponseQuery {
+	query := (&ResponseClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(student.Table, student.FieldID, selector),
+			sqlgraph.To(response.Table, response.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, student.ResponsesTable, student.ResponsesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -302,6 +326,7 @@ func (sq *StudentQuery) Clone() *StudentQuery {
 		predicates:         append([]predicate.Student{}, sq.predicates...),
 		withUser:           sq.withUser.Clone(),
 		withStudentClasses: sq.withStudentClasses.Clone(),
+		withResponses:      sq.withResponses.Clone(),
 		// clone intermediate query.
 		sql:  sq.sql.Clone(),
 		path: sq.path,
@@ -327,6 +352,17 @@ func (sq *StudentQuery) WithStudentClasses(opts ...func(*StudentClassQuery)) *St
 		opt(query)
 	}
 	sq.withStudentClasses = query
+	return sq
+}
+
+// WithResponses tells the query-builder to eager-load the nodes that are connected to
+// the "responses" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StudentQuery) WithResponses(opts ...func(*ResponseQuery)) *StudentQuery {
+	query := (&ResponseClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withResponses = query
 	return sq
 }
 
@@ -387,9 +423,10 @@ func (sq *StudentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stud
 		nodes       = []*Student{}
 		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			sq.withUser != nil,
 			sq.withStudentClasses != nil,
+			sq.withResponses != nil,
 		}
 	)
 	if sq.withUser != nil {
@@ -426,6 +463,13 @@ func (sq *StudentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stud
 		if err := sq.loadStudentClasses(ctx, query, nodes,
 			func(n *Student) { n.Edges.StudentClasses = []*StudentClass{} },
 			func(n *Student, e *StudentClass) { n.Edges.StudentClasses = append(n.Edges.StudentClasses, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withResponses; query != nil {
+		if err := sq.loadResponses(ctx, query, nodes,
+			func(n *Student) { n.Edges.Responses = []*Response{} },
+			func(n *Student, e *Response) { n.Edges.Responses = append(n.Edges.Responses, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -479,6 +523,36 @@ func (sq *StudentQuery) loadStudentClasses(ctx context.Context, query *StudentCl
 	}
 	query.Where(predicate.StudentClass(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(student.StudentClassesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.StudentID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "student_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (sq *StudentQuery) loadResponses(ctx context.Context, query *ResponseQuery, nodes []*Student, init func(*Student), assign func(*Student, *Response)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Student)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(response.FieldStudentID)
+	}
+	query.Where(predicate.Response(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(student.ResponsesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

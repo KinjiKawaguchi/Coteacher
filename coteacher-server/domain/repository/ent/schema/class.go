@@ -33,5 +33,6 @@ func (Class) Edges() []ent.Edge {
 			Required(), // ここで必須にする
 		edge.To("classStudents", StudentClass.Type), // このエッジを追加
 		edge.To("invitationCodes", ClassInvitationCode.Type),
+		edge.To("forms", Form.Type),
 	}
 }

@@ -27,5 +27,6 @@ func (Student) Edges() []ent.Edge {
 			Unique().
 			Required(),
 		edge.To("studentClasses", StudentClass.Type), // このエッジを追加
+		edge.To("responses", Response.Type),
 	}
 }

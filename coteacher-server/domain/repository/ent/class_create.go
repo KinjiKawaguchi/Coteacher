@@ -4,16 +4,17 @@ package ent
 
 import (
 	"context"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
 	"errors"
 	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/form"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
 	"github.com/google/uuid"
 )
 
@@ -95,6 +96,21 @@ func (cc *ClassCreate) AddInvitationCodes(c ...*ClassInvitationCode) *ClassCreat
 		ids[i] = c[i].ID
 	}
 	return cc.AddInvitationCodeIDs(ids...)
+}
+
+// AddFormIDs adds the "forms" edge to the Form entity by IDs.
+func (cc *ClassCreate) AddFormIDs(ids ...uuid.UUID) *ClassCreate {
+	cc.mutation.AddFormIDs(ids...)
+	return cc
+}
+
+// AddForms adds the "forms" edges to the Form entity.
+func (cc *ClassCreate) AddForms(f ...*Form) *ClassCreate {
+	ids := make([]uuid.UUID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return cc.AddFormIDs(ids...)
 }
 
 // Mutation returns the ClassMutation object of the builder.
@@ -244,6 +260,22 @@ func (cc *ClassCreate) createSpec() (*Class, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(classinvitationcode.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.FormsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   class.FormsTable,
+			Columns: []string{class.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

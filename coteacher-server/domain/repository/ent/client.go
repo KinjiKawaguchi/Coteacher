@@ -10,19 +10,25 @@ import (
 	"reflect"
 
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/migrate"
-
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
+	"github.com/google/uuid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/google/uuid"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/answer"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/form"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/question"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/questionoption"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/response"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/selectedoption"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/textquestion"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 )
 
 // Client is the client that holds all ent builders.
@@ -30,16 +36,30 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Answer is the client for interacting with the Answer builders.
+	Answer *AnswerClient
 	// Class is the client for interacting with the Class builders.
 	Class *ClassClient
 	// ClassInvitationCode is the client for interacting with the ClassInvitationCode builders.
 	ClassInvitationCode *ClassInvitationCodeClient
+	// Form is the client for interacting with the Form builders.
+	Form *FormClient
+	// Question is the client for interacting with the Question builders.
+	Question *QuestionClient
+	// QuestionOption is the client for interacting with the QuestionOption builders.
+	QuestionOption *QuestionOptionClient
+	// Response is the client for interacting with the Response builders.
+	Response *ResponseClient
+	// SelectedOption is the client for interacting with the SelectedOption builders.
+	SelectedOption *SelectedOptionClient
 	// Student is the client for interacting with the Student builders.
 	Student *StudentClient
 	// StudentClass is the client for interacting with the StudentClass builders.
 	StudentClass *StudentClassClient
 	// Teacher is the client for interacting with the Teacher builders.
 	Teacher *TeacherClient
+	// TextQuestion is the client for interacting with the TextQuestion builders.
+	TextQuestion *TextQuestionClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -53,11 +73,18 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Answer = NewAnswerClient(c.config)
 	c.Class = NewClassClient(c.config)
 	c.ClassInvitationCode = NewClassInvitationCodeClient(c.config)
+	c.Form = NewFormClient(c.config)
+	c.Question = NewQuestionClient(c.config)
+	c.QuestionOption = NewQuestionOptionClient(c.config)
+	c.Response = NewResponseClient(c.config)
+	c.SelectedOption = NewSelectedOptionClient(c.config)
 	c.Student = NewStudentClient(c.config)
 	c.StudentClass = NewStudentClassClient(c.config)
 	c.Teacher = NewTeacherClient(c.config)
+	c.TextQuestion = NewTextQuestionClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -151,11 +178,18 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:                 ctx,
 		config:              cfg,
+		Answer:              NewAnswerClient(cfg),
 		Class:               NewClassClient(cfg),
 		ClassInvitationCode: NewClassInvitationCodeClient(cfg),
+		Form:                NewFormClient(cfg),
+		Question:            NewQuestionClient(cfg),
+		QuestionOption:      NewQuestionOptionClient(cfg),
+		Response:            NewResponseClient(cfg),
+		SelectedOption:      NewSelectedOptionClient(cfg),
 		Student:             NewStudentClient(cfg),
 		StudentClass:        NewStudentClassClient(cfg),
 		Teacher:             NewTeacherClient(cfg),
+		TextQuestion:        NewTextQuestionClient(cfg),
 		User:                NewUserClient(cfg),
 	}, nil
 }
@@ -176,11 +210,18 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:                 ctx,
 		config:              cfg,
+		Answer:              NewAnswerClient(cfg),
 		Class:               NewClassClient(cfg),
 		ClassInvitationCode: NewClassInvitationCodeClient(cfg),
+		Form:                NewFormClient(cfg),
+		Question:            NewQuestionClient(cfg),
+		QuestionOption:      NewQuestionOptionClient(cfg),
+		Response:            NewResponseClient(cfg),
+		SelectedOption:      NewSelectedOptionClient(cfg),
 		Student:             NewStudentClient(cfg),
 		StudentClass:        NewStudentClassClient(cfg),
 		Teacher:             NewTeacherClient(cfg),
+		TextQuestion:        NewTextQuestionClient(cfg),
 		User:                NewUserClient(cfg),
 	}, nil
 }
@@ -188,7 +229,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Class.
+//		Answer.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -211,7 +252,9 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Class, c.ClassInvitationCode, c.Student, c.StudentClass, c.Teacher, c.User,
+		c.Answer, c.Class, c.ClassInvitationCode, c.Form, c.Question, c.QuestionOption,
+		c.Response, c.SelectedOption, c.Student, c.StudentClass, c.Teacher,
+		c.TextQuestion, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -221,7 +264,9 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Class, c.ClassInvitationCode, c.Student, c.StudentClass, c.Teacher, c.User,
+		c.Answer, c.Class, c.ClassInvitationCode, c.Form, c.Question, c.QuestionOption,
+		c.Response, c.SelectedOption, c.Student, c.StudentClass, c.Teacher,
+		c.TextQuestion, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -230,20 +275,215 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AnswerMutation:
+		return c.Answer.mutate(ctx, m)
 	case *ClassMutation:
 		return c.Class.mutate(ctx, m)
 	case *ClassInvitationCodeMutation:
 		return c.ClassInvitationCode.mutate(ctx, m)
+	case *FormMutation:
+		return c.Form.mutate(ctx, m)
+	case *QuestionMutation:
+		return c.Question.mutate(ctx, m)
+	case *QuestionOptionMutation:
+		return c.QuestionOption.mutate(ctx, m)
+	case *ResponseMutation:
+		return c.Response.mutate(ctx, m)
+	case *SelectedOptionMutation:
+		return c.SelectedOption.mutate(ctx, m)
 	case *StudentMutation:
 		return c.Student.mutate(ctx, m)
 	case *StudentClassMutation:
 		return c.StudentClass.mutate(ctx, m)
 	case *TeacherMutation:
 		return c.Teacher.mutate(ctx, m)
+	case *TextQuestionMutation:
+		return c.TextQuestion.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AnswerClient is a client for the Answer schema.
+type AnswerClient struct {
+	config
+}
+
+// NewAnswerClient returns a client for the Answer from the given config.
+func NewAnswerClient(c config) *AnswerClient {
+	return &AnswerClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `answer.Hooks(f(g(h())))`.
+func (c *AnswerClient) Use(hooks ...Hook) {
+	c.hooks.Answer = append(c.hooks.Answer, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `answer.Intercept(f(g(h())))`.
+func (c *AnswerClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Answer = append(c.inters.Answer, interceptors...)
+}
+
+// Create returns a builder for creating a Answer entity.
+func (c *AnswerClient) Create() *AnswerCreate {
+	mutation := newAnswerMutation(c.config, OpCreate)
+	return &AnswerCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Answer entities.
+func (c *AnswerClient) CreateBulk(builders ...*AnswerCreate) *AnswerCreateBulk {
+	return &AnswerCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AnswerClient) MapCreateBulk(slice any, setFunc func(*AnswerCreate, int)) *AnswerCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AnswerCreateBulk{err: fmt.Errorf("calling to AnswerClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AnswerCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AnswerCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Answer.
+func (c *AnswerClient) Update() *AnswerUpdate {
+	mutation := newAnswerMutation(c.config, OpUpdate)
+	return &AnswerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AnswerClient) UpdateOne(a *Answer) *AnswerUpdateOne {
+	mutation := newAnswerMutation(c.config, OpUpdateOne, withAnswer(a))
+	return &AnswerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AnswerClient) UpdateOneID(id uuid.UUID) *AnswerUpdateOne {
+	mutation := newAnswerMutation(c.config, OpUpdateOne, withAnswerID(id))
+	return &AnswerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Answer.
+func (c *AnswerClient) Delete() *AnswerDelete {
+	mutation := newAnswerMutation(c.config, OpDelete)
+	return &AnswerDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AnswerClient) DeleteOne(a *Answer) *AnswerDeleteOne {
+	return c.DeleteOneID(a.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AnswerClient) DeleteOneID(id uuid.UUID) *AnswerDeleteOne {
+	builder := c.Delete().Where(answer.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AnswerDeleteOne{builder}
+}
+
+// Query returns a query builder for Answer.
+func (c *AnswerClient) Query() *AnswerQuery {
+	return &AnswerQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAnswer},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Answer entity by its id.
+func (c *AnswerClient) Get(ctx context.Context, id uuid.UUID) (*Answer, error) {
+	return c.Query().Where(answer.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AnswerClient) GetX(ctx context.Context, id uuid.UUID) *Answer {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryQuestion queries the question edge of a Answer.
+func (c *AnswerClient) QueryQuestion(a *Answer) *QuestionQuery {
+	query := (&QuestionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(answer.Table, answer.FieldID, id),
+			sqlgraph.To(question.Table, question.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, answer.QuestionTable, answer.QuestionColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryResponse queries the response edge of a Answer.
+func (c *AnswerClient) QueryResponse(a *Answer) *ResponseQuery {
+	query := (&ResponseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(answer.Table, answer.FieldID, id),
+			sqlgraph.To(response.Table, response.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, answer.ResponseTable, answer.ResponseColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySelectedOption queries the selectedOption edge of a Answer.
+func (c *AnswerClient) QuerySelectedOption(a *Answer) *SelectedOptionQuery {
+	query := (&SelectedOptionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(answer.Table, answer.FieldID, id),
+			sqlgraph.To(selectedoption.Table, selectedoption.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, answer.SelectedOptionTable, answer.SelectedOptionColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AnswerClient) Hooks() []Hook {
+	return c.hooks.Answer
+}
+
+// Interceptors returns the client interceptors.
+func (c *AnswerClient) Interceptors() []Interceptor {
+	return c.inters.Answer
+}
+
+func (c *AnswerClient) mutate(ctx context.Context, m *AnswerMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AnswerCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AnswerUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AnswerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AnswerDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Answer mutation op: %q", m.Op())
 	}
 }
 
@@ -396,6 +636,22 @@ func (c *ClassClient) QueryInvitationCodes(cl *Class) *ClassInvitationCodeQuery 
 			sqlgraph.From(class.Table, class.FieldID, id),
 			sqlgraph.To(classinvitationcode.Table, classinvitationcode.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, class.InvitationCodesTable, class.InvitationCodesColumn),
+		)
+		fromV = sqlgraph.Neighbors(cl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryForms queries the forms edge of a Class.
+func (c *ClassClient) QueryForms(cl *Class) *FormQuery {
+	query := (&FormClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := cl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(class.Table, class.FieldID, id),
+			sqlgraph.To(form.Table, form.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, class.FormsTable, class.FormsColumn),
 		)
 		fromV = sqlgraph.Neighbors(cl.driver.Dialect(), step)
 		return fromV, nil
@@ -577,6 +833,895 @@ func (c *ClassInvitationCodeClient) mutate(ctx context.Context, m *ClassInvitati
 	}
 }
 
+// FormClient is a client for the Form schema.
+type FormClient struct {
+	config
+}
+
+// NewFormClient returns a client for the Form from the given config.
+func NewFormClient(c config) *FormClient {
+	return &FormClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `form.Hooks(f(g(h())))`.
+func (c *FormClient) Use(hooks ...Hook) {
+	c.hooks.Form = append(c.hooks.Form, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `form.Intercept(f(g(h())))`.
+func (c *FormClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Form = append(c.inters.Form, interceptors...)
+}
+
+// Create returns a builder for creating a Form entity.
+func (c *FormClient) Create() *FormCreate {
+	mutation := newFormMutation(c.config, OpCreate)
+	return &FormCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Form entities.
+func (c *FormClient) CreateBulk(builders ...*FormCreate) *FormCreateBulk {
+	return &FormCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *FormClient) MapCreateBulk(slice any, setFunc func(*FormCreate, int)) *FormCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &FormCreateBulk{err: fmt.Errorf("calling to FormClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*FormCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &FormCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Form.
+func (c *FormClient) Update() *FormUpdate {
+	mutation := newFormMutation(c.config, OpUpdate)
+	return &FormUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FormClient) UpdateOne(f *Form) *FormUpdateOne {
+	mutation := newFormMutation(c.config, OpUpdateOne, withForm(f))
+	return &FormUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FormClient) UpdateOneID(id uuid.UUID) *FormUpdateOne {
+	mutation := newFormMutation(c.config, OpUpdateOne, withFormID(id))
+	return &FormUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Form.
+func (c *FormClient) Delete() *FormDelete {
+	mutation := newFormMutation(c.config, OpDelete)
+	return &FormDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *FormClient) DeleteOne(f *Form) *FormDeleteOne {
+	return c.DeleteOneID(f.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *FormClient) DeleteOneID(id uuid.UUID) *FormDeleteOne {
+	builder := c.Delete().Where(form.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FormDeleteOne{builder}
+}
+
+// Query returns a query builder for Form.
+func (c *FormClient) Query() *FormQuery {
+	return &FormQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeForm},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Form entity by its id.
+func (c *FormClient) Get(ctx context.Context, id uuid.UUID) (*Form, error) {
+	return c.Query().Where(form.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FormClient) GetX(ctx context.Context, id uuid.UUID) *Form {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryClass queries the class edge of a Form.
+func (c *FormClient) QueryClass(f *Form) *ClassQuery {
+	query := (&ClassClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(form.Table, form.FieldID, id),
+			sqlgraph.To(class.Table, class.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, form.ClassTable, form.ClassColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryQuestions queries the questions edge of a Form.
+func (c *FormClient) QueryQuestions(f *Form) *QuestionQuery {
+	query := (&QuestionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(form.Table, form.FieldID, id),
+			sqlgraph.To(question.Table, question.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, form.QuestionsTable, form.QuestionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryResponses queries the responses edge of a Form.
+func (c *FormClient) QueryResponses(f *Form) *ResponseQuery {
+	query := (&ResponseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(form.Table, form.FieldID, id),
+			sqlgraph.To(response.Table, response.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, form.ResponsesTable, form.ResponsesColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *FormClient) Hooks() []Hook {
+	return c.hooks.Form
+}
+
+// Interceptors returns the client interceptors.
+func (c *FormClient) Interceptors() []Interceptor {
+	return c.inters.Form
+}
+
+func (c *FormClient) mutate(ctx context.Context, m *FormMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&FormCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&FormUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&FormUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&FormDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Form mutation op: %q", m.Op())
+	}
+}
+
+// QuestionClient is a client for the Question schema.
+type QuestionClient struct {
+	config
+}
+
+// NewQuestionClient returns a client for the Question from the given config.
+func NewQuestionClient(c config) *QuestionClient {
+	return &QuestionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `question.Hooks(f(g(h())))`.
+func (c *QuestionClient) Use(hooks ...Hook) {
+	c.hooks.Question = append(c.hooks.Question, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `question.Intercept(f(g(h())))`.
+func (c *QuestionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Question = append(c.inters.Question, interceptors...)
+}
+
+// Create returns a builder for creating a Question entity.
+func (c *QuestionClient) Create() *QuestionCreate {
+	mutation := newQuestionMutation(c.config, OpCreate)
+	return &QuestionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Question entities.
+func (c *QuestionClient) CreateBulk(builders ...*QuestionCreate) *QuestionCreateBulk {
+	return &QuestionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *QuestionClient) MapCreateBulk(slice any, setFunc func(*QuestionCreate, int)) *QuestionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &QuestionCreateBulk{err: fmt.Errorf("calling to QuestionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*QuestionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &QuestionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Question.
+func (c *QuestionClient) Update() *QuestionUpdate {
+	mutation := newQuestionMutation(c.config, OpUpdate)
+	return &QuestionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *QuestionClient) UpdateOne(q *Question) *QuestionUpdateOne {
+	mutation := newQuestionMutation(c.config, OpUpdateOne, withQuestion(q))
+	return &QuestionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *QuestionClient) UpdateOneID(id uuid.UUID) *QuestionUpdateOne {
+	mutation := newQuestionMutation(c.config, OpUpdateOne, withQuestionID(id))
+	return &QuestionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Question.
+func (c *QuestionClient) Delete() *QuestionDelete {
+	mutation := newQuestionMutation(c.config, OpDelete)
+	return &QuestionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *QuestionClient) DeleteOne(q *Question) *QuestionDeleteOne {
+	return c.DeleteOneID(q.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *QuestionClient) DeleteOneID(id uuid.UUID) *QuestionDeleteOne {
+	builder := c.Delete().Where(question.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &QuestionDeleteOne{builder}
+}
+
+// Query returns a query builder for Question.
+func (c *QuestionClient) Query() *QuestionQuery {
+	return &QuestionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeQuestion},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Question entity by its id.
+func (c *QuestionClient) Get(ctx context.Context, id uuid.UUID) (*Question, error) {
+	return c.Query().Where(question.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *QuestionClient) GetX(ctx context.Context, id uuid.UUID) *Question {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryForm queries the form edge of a Question.
+func (c *QuestionClient) QueryForm(q *Question) *FormQuery {
+	query := (&FormClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := q.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(question.Table, question.FieldID, id),
+			sqlgraph.To(form.Table, form.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, question.FormTable, question.FormColumn),
+		)
+		fromV = sqlgraph.Neighbors(q.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTextQuestion queries the textQuestion edge of a Question.
+func (c *QuestionClient) QueryTextQuestion(q *Question) *TextQuestionQuery {
+	query := (&TextQuestionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := q.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(question.Table, question.FieldID, id),
+			sqlgraph.To(textquestion.Table, textquestion.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, question.TextQuestionTable, question.TextQuestionColumn),
+		)
+		fromV = sqlgraph.Neighbors(q.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryQuestionOption queries the questionOption edge of a Question.
+func (c *QuestionClient) QueryQuestionOption(q *Question) *QuestionOptionQuery {
+	query := (&QuestionOptionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := q.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(question.Table, question.FieldID, id),
+			sqlgraph.To(questionoption.Table, questionoption.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, question.QuestionOptionTable, question.QuestionOptionColumn),
+		)
+		fromV = sqlgraph.Neighbors(q.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAnswer queries the answer edge of a Question.
+func (c *QuestionClient) QueryAnswer(q *Question) *AnswerQuery {
+	query := (&AnswerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := q.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(question.Table, question.FieldID, id),
+			sqlgraph.To(answer.Table, answer.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, question.AnswerTable, question.AnswerColumn),
+		)
+		fromV = sqlgraph.Neighbors(q.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *QuestionClient) Hooks() []Hook {
+	return c.hooks.Question
+}
+
+// Interceptors returns the client interceptors.
+func (c *QuestionClient) Interceptors() []Interceptor {
+	return c.inters.Question
+}
+
+func (c *QuestionClient) mutate(ctx context.Context, m *QuestionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&QuestionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&QuestionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&QuestionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&QuestionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Question mutation op: %q", m.Op())
+	}
+}
+
+// QuestionOptionClient is a client for the QuestionOption schema.
+type QuestionOptionClient struct {
+	config
+}
+
+// NewQuestionOptionClient returns a client for the QuestionOption from the given config.
+func NewQuestionOptionClient(c config) *QuestionOptionClient {
+	return &QuestionOptionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `questionoption.Hooks(f(g(h())))`.
+func (c *QuestionOptionClient) Use(hooks ...Hook) {
+	c.hooks.QuestionOption = append(c.hooks.QuestionOption, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `questionoption.Intercept(f(g(h())))`.
+func (c *QuestionOptionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.QuestionOption = append(c.inters.QuestionOption, interceptors...)
+}
+
+// Create returns a builder for creating a QuestionOption entity.
+func (c *QuestionOptionClient) Create() *QuestionOptionCreate {
+	mutation := newQuestionOptionMutation(c.config, OpCreate)
+	return &QuestionOptionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of QuestionOption entities.
+func (c *QuestionOptionClient) CreateBulk(builders ...*QuestionOptionCreate) *QuestionOptionCreateBulk {
+	return &QuestionOptionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *QuestionOptionClient) MapCreateBulk(slice any, setFunc func(*QuestionOptionCreate, int)) *QuestionOptionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &QuestionOptionCreateBulk{err: fmt.Errorf("calling to QuestionOptionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*QuestionOptionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &QuestionOptionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for QuestionOption.
+func (c *QuestionOptionClient) Update() *QuestionOptionUpdate {
+	mutation := newQuestionOptionMutation(c.config, OpUpdate)
+	return &QuestionOptionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *QuestionOptionClient) UpdateOne(qo *QuestionOption) *QuestionOptionUpdateOne {
+	mutation := newQuestionOptionMutation(c.config, OpUpdateOne, withQuestionOption(qo))
+	return &QuestionOptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *QuestionOptionClient) UpdateOneID(id uuid.UUID) *QuestionOptionUpdateOne {
+	mutation := newQuestionOptionMutation(c.config, OpUpdateOne, withQuestionOptionID(id))
+	return &QuestionOptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for QuestionOption.
+func (c *QuestionOptionClient) Delete() *QuestionOptionDelete {
+	mutation := newQuestionOptionMutation(c.config, OpDelete)
+	return &QuestionOptionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *QuestionOptionClient) DeleteOne(qo *QuestionOption) *QuestionOptionDeleteOne {
+	return c.DeleteOneID(qo.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *QuestionOptionClient) DeleteOneID(id uuid.UUID) *QuestionOptionDeleteOne {
+	builder := c.Delete().Where(questionoption.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &QuestionOptionDeleteOne{builder}
+}
+
+// Query returns a query builder for QuestionOption.
+func (c *QuestionOptionClient) Query() *QuestionOptionQuery {
+	return &QuestionOptionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeQuestionOption},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a QuestionOption entity by its id.
+func (c *QuestionOptionClient) Get(ctx context.Context, id uuid.UUID) (*QuestionOption, error) {
+	return c.Query().Where(questionoption.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *QuestionOptionClient) GetX(ctx context.Context, id uuid.UUID) *QuestionOption {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryQuestion queries the question edge of a QuestionOption.
+func (c *QuestionOptionClient) QueryQuestion(qo *QuestionOption) *QuestionQuery {
+	query := (&QuestionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := qo.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(questionoption.Table, questionoption.FieldID, id),
+			sqlgraph.To(question.Table, question.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, questionoption.QuestionTable, questionoption.QuestionColumn),
+		)
+		fromV = sqlgraph.Neighbors(qo.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySelectedOption queries the selectedOption edge of a QuestionOption.
+func (c *QuestionOptionClient) QuerySelectedOption(qo *QuestionOption) *SelectedOptionQuery {
+	query := (&SelectedOptionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := qo.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(questionoption.Table, questionoption.FieldID, id),
+			sqlgraph.To(selectedoption.Table, selectedoption.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, questionoption.SelectedOptionTable, questionoption.SelectedOptionColumn),
+		)
+		fromV = sqlgraph.Neighbors(qo.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *QuestionOptionClient) Hooks() []Hook {
+	return c.hooks.QuestionOption
+}
+
+// Interceptors returns the client interceptors.
+func (c *QuestionOptionClient) Interceptors() []Interceptor {
+	return c.inters.QuestionOption
+}
+
+func (c *QuestionOptionClient) mutate(ctx context.Context, m *QuestionOptionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&QuestionOptionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&QuestionOptionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&QuestionOptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&QuestionOptionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown QuestionOption mutation op: %q", m.Op())
+	}
+}
+
+// ResponseClient is a client for the Response schema.
+type ResponseClient struct {
+	config
+}
+
+// NewResponseClient returns a client for the Response from the given config.
+func NewResponseClient(c config) *ResponseClient {
+	return &ResponseClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `response.Hooks(f(g(h())))`.
+func (c *ResponseClient) Use(hooks ...Hook) {
+	c.hooks.Response = append(c.hooks.Response, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `response.Intercept(f(g(h())))`.
+func (c *ResponseClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Response = append(c.inters.Response, interceptors...)
+}
+
+// Create returns a builder for creating a Response entity.
+func (c *ResponseClient) Create() *ResponseCreate {
+	mutation := newResponseMutation(c.config, OpCreate)
+	return &ResponseCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Response entities.
+func (c *ResponseClient) CreateBulk(builders ...*ResponseCreate) *ResponseCreateBulk {
+	return &ResponseCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ResponseClient) MapCreateBulk(slice any, setFunc func(*ResponseCreate, int)) *ResponseCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ResponseCreateBulk{err: fmt.Errorf("calling to ResponseClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ResponseCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ResponseCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Response.
+func (c *ResponseClient) Update() *ResponseUpdate {
+	mutation := newResponseMutation(c.config, OpUpdate)
+	return &ResponseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ResponseClient) UpdateOne(r *Response) *ResponseUpdateOne {
+	mutation := newResponseMutation(c.config, OpUpdateOne, withResponse(r))
+	return &ResponseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ResponseClient) UpdateOneID(id uuid.UUID) *ResponseUpdateOne {
+	mutation := newResponseMutation(c.config, OpUpdateOne, withResponseID(id))
+	return &ResponseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Response.
+func (c *ResponseClient) Delete() *ResponseDelete {
+	mutation := newResponseMutation(c.config, OpDelete)
+	return &ResponseDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ResponseClient) DeleteOne(r *Response) *ResponseDeleteOne {
+	return c.DeleteOneID(r.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ResponseClient) DeleteOneID(id uuid.UUID) *ResponseDeleteOne {
+	builder := c.Delete().Where(response.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ResponseDeleteOne{builder}
+}
+
+// Query returns a query builder for Response.
+func (c *ResponseClient) Query() *ResponseQuery {
+	return &ResponseQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeResponse},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Response entity by its id.
+func (c *ResponseClient) Get(ctx context.Context, id uuid.UUID) (*Response, error) {
+	return c.Query().Where(response.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ResponseClient) GetX(ctx context.Context, id uuid.UUID) *Response {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryStudent queries the student edge of a Response.
+func (c *ResponseClient) QueryStudent(r *Response) *StudentQuery {
+	query := (&StudentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(response.Table, response.FieldID, id),
+			sqlgraph.To(student.Table, student.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, response.StudentTable, response.StudentColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryForm queries the form edge of a Response.
+func (c *ResponseClient) QueryForm(r *Response) *FormQuery {
+	query := (&FormClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(response.Table, response.FieldID, id),
+			sqlgraph.To(form.Table, form.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, response.FormTable, response.FormColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAnswer queries the answer edge of a Response.
+func (c *ResponseClient) QueryAnswer(r *Response) *AnswerQuery {
+	query := (&AnswerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(response.Table, response.FieldID, id),
+			sqlgraph.To(answer.Table, answer.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, response.AnswerTable, response.AnswerColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ResponseClient) Hooks() []Hook {
+	return c.hooks.Response
+}
+
+// Interceptors returns the client interceptors.
+func (c *ResponseClient) Interceptors() []Interceptor {
+	return c.inters.Response
+}
+
+func (c *ResponseClient) mutate(ctx context.Context, m *ResponseMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ResponseCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ResponseUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ResponseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ResponseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Response mutation op: %q", m.Op())
+	}
+}
+
+// SelectedOptionClient is a client for the SelectedOption schema.
+type SelectedOptionClient struct {
+	config
+}
+
+// NewSelectedOptionClient returns a client for the SelectedOption from the given config.
+func NewSelectedOptionClient(c config) *SelectedOptionClient {
+	return &SelectedOptionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `selectedoption.Hooks(f(g(h())))`.
+func (c *SelectedOptionClient) Use(hooks ...Hook) {
+	c.hooks.SelectedOption = append(c.hooks.SelectedOption, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `selectedoption.Intercept(f(g(h())))`.
+func (c *SelectedOptionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SelectedOption = append(c.inters.SelectedOption, interceptors...)
+}
+
+// Create returns a builder for creating a SelectedOption entity.
+func (c *SelectedOptionClient) Create() *SelectedOptionCreate {
+	mutation := newSelectedOptionMutation(c.config, OpCreate)
+	return &SelectedOptionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SelectedOption entities.
+func (c *SelectedOptionClient) CreateBulk(builders ...*SelectedOptionCreate) *SelectedOptionCreateBulk {
+	return &SelectedOptionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SelectedOptionClient) MapCreateBulk(slice any, setFunc func(*SelectedOptionCreate, int)) *SelectedOptionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SelectedOptionCreateBulk{err: fmt.Errorf("calling to SelectedOptionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SelectedOptionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SelectedOptionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SelectedOption.
+func (c *SelectedOptionClient) Update() *SelectedOptionUpdate {
+	mutation := newSelectedOptionMutation(c.config, OpUpdate)
+	return &SelectedOptionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SelectedOptionClient) UpdateOne(so *SelectedOption) *SelectedOptionUpdateOne {
+	mutation := newSelectedOptionMutation(c.config, OpUpdateOne, withSelectedOption(so))
+	return &SelectedOptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SelectedOptionClient) UpdateOneID(id int) *SelectedOptionUpdateOne {
+	mutation := newSelectedOptionMutation(c.config, OpUpdateOne, withSelectedOptionID(id))
+	return &SelectedOptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SelectedOption.
+func (c *SelectedOptionClient) Delete() *SelectedOptionDelete {
+	mutation := newSelectedOptionMutation(c.config, OpDelete)
+	return &SelectedOptionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SelectedOptionClient) DeleteOne(so *SelectedOption) *SelectedOptionDeleteOne {
+	return c.DeleteOneID(so.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SelectedOptionClient) DeleteOneID(id int) *SelectedOptionDeleteOne {
+	builder := c.Delete().Where(selectedoption.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SelectedOptionDeleteOne{builder}
+}
+
+// Query returns a query builder for SelectedOption.
+func (c *SelectedOptionClient) Query() *SelectedOptionQuery {
+	return &SelectedOptionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSelectedOption},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SelectedOption entity by its id.
+func (c *SelectedOptionClient) Get(ctx context.Context, id int) (*SelectedOption, error) {
+	return c.Query().Where(selectedoption.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SelectedOptionClient) GetX(ctx context.Context, id int) *SelectedOption {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAnswer queries the answer edge of a SelectedOption.
+func (c *SelectedOptionClient) QueryAnswer(so *SelectedOption) *AnswerQuery {
+	query := (&AnswerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := so.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(selectedoption.Table, selectedoption.FieldID, id),
+			sqlgraph.To(answer.Table, answer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, selectedoption.AnswerTable, selectedoption.AnswerColumn),
+		)
+		fromV = sqlgraph.Neighbors(so.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOption queries the option edge of a SelectedOption.
+func (c *SelectedOptionClient) QueryOption(so *SelectedOption) *QuestionOptionQuery {
+	query := (&QuestionOptionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := so.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(selectedoption.Table, selectedoption.FieldID, id),
+			sqlgraph.To(questionoption.Table, questionoption.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, selectedoption.OptionTable, selectedoption.OptionColumn),
+		)
+		fromV = sqlgraph.Neighbors(so.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SelectedOptionClient) Hooks() []Hook {
+	return c.hooks.SelectedOption
+}
+
+// Interceptors returns the client interceptors.
+func (c *SelectedOptionClient) Interceptors() []Interceptor {
+	return c.inters.SelectedOption
+}
+
+func (c *SelectedOptionClient) mutate(ctx context.Context, m *SelectedOptionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SelectedOptionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SelectedOptionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SelectedOptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SelectedOptionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SelectedOption mutation op: %q", m.Op())
+	}
+}
+
 // StudentClient is a client for the Student schema.
 type StudentClient struct {
 	config
@@ -710,6 +1855,22 @@ func (c *StudentClient) QueryStudentClasses(s *Student) *StudentClassQuery {
 			sqlgraph.From(student.Table, student.FieldID, id),
 			sqlgraph.To(studentclass.Table, studentclass.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, student.StudentClassesTable, student.StudentClassesColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryResponses queries the responses edge of a Student.
+func (c *StudentClient) QueryResponses(s *Student) *ResponseQuery {
+	query := (&ResponseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(student.Table, student.FieldID, id),
+			sqlgraph.To(response.Table, response.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, student.ResponsesTable, student.ResponsesColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil
@@ -1072,6 +2233,155 @@ func (c *TeacherClient) mutate(ctx context.Context, m *TeacherMutation) (Value, 
 	}
 }
 
+// TextQuestionClient is a client for the TextQuestion schema.
+type TextQuestionClient struct {
+	config
+}
+
+// NewTextQuestionClient returns a client for the TextQuestion from the given config.
+func NewTextQuestionClient(c config) *TextQuestionClient {
+	return &TextQuestionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `textquestion.Hooks(f(g(h())))`.
+func (c *TextQuestionClient) Use(hooks ...Hook) {
+	c.hooks.TextQuestion = append(c.hooks.TextQuestion, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `textquestion.Intercept(f(g(h())))`.
+func (c *TextQuestionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TextQuestion = append(c.inters.TextQuestion, interceptors...)
+}
+
+// Create returns a builder for creating a TextQuestion entity.
+func (c *TextQuestionClient) Create() *TextQuestionCreate {
+	mutation := newTextQuestionMutation(c.config, OpCreate)
+	return &TextQuestionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TextQuestion entities.
+func (c *TextQuestionClient) CreateBulk(builders ...*TextQuestionCreate) *TextQuestionCreateBulk {
+	return &TextQuestionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TextQuestionClient) MapCreateBulk(slice any, setFunc func(*TextQuestionCreate, int)) *TextQuestionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TextQuestionCreateBulk{err: fmt.Errorf("calling to TextQuestionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TextQuestionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TextQuestionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TextQuestion.
+func (c *TextQuestionClient) Update() *TextQuestionUpdate {
+	mutation := newTextQuestionMutation(c.config, OpUpdate)
+	return &TextQuestionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TextQuestionClient) UpdateOne(tq *TextQuestion) *TextQuestionUpdateOne {
+	mutation := newTextQuestionMutation(c.config, OpUpdateOne, withTextQuestion(tq))
+	return &TextQuestionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TextQuestionClient) UpdateOneID(id uuid.UUID) *TextQuestionUpdateOne {
+	mutation := newTextQuestionMutation(c.config, OpUpdateOne, withTextQuestionID(id))
+	return &TextQuestionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TextQuestion.
+func (c *TextQuestionClient) Delete() *TextQuestionDelete {
+	mutation := newTextQuestionMutation(c.config, OpDelete)
+	return &TextQuestionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TextQuestionClient) DeleteOne(tq *TextQuestion) *TextQuestionDeleteOne {
+	return c.DeleteOneID(tq.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TextQuestionClient) DeleteOneID(id uuid.UUID) *TextQuestionDeleteOne {
+	builder := c.Delete().Where(textquestion.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TextQuestionDeleteOne{builder}
+}
+
+// Query returns a query builder for TextQuestion.
+func (c *TextQuestionClient) Query() *TextQuestionQuery {
+	return &TextQuestionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTextQuestion},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TextQuestion entity by its id.
+func (c *TextQuestionClient) Get(ctx context.Context, id uuid.UUID) (*TextQuestion, error) {
+	return c.Query().Where(textquestion.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TextQuestionClient) GetX(ctx context.Context, id uuid.UUID) *TextQuestion {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryQuestion queries the question edge of a TextQuestion.
+func (c *TextQuestionClient) QueryQuestion(tq *TextQuestion) *QuestionQuery {
+	query := (&QuestionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := tq.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(textquestion.Table, textquestion.FieldID, id),
+			sqlgraph.To(question.Table, question.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, textquestion.QuestionTable, textquestion.QuestionColumn),
+		)
+		fromV = sqlgraph.Neighbors(tq.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TextQuestionClient) Hooks() []Hook {
+	return c.hooks.TextQuestion
+}
+
+// Interceptors returns the client interceptors.
+func (c *TextQuestionClient) Interceptors() []Interceptor {
+	return c.inters.TextQuestion
+}
+
+func (c *TextQuestionClient) mutate(ctx context.Context, m *TextQuestionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TextQuestionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TextQuestionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TextQuestionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TextQuestionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TextQuestion mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -1240,10 +2550,12 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Class, ClassInvitationCode, Student, StudentClass, Teacher, User []ent.Hook
+		Answer, Class, ClassInvitationCode, Form, Question, QuestionOption, Response,
+		SelectedOption, Student, StudentClass, Teacher, TextQuestion, User []ent.Hook
 	}
 	inters struct {
-		Class, ClassInvitationCode, Student, StudentClass, Teacher,
+		Answer, Class, ClassInvitationCode, Form, Question, QuestionOption, Response,
+		SelectedOption, Student, StudentClass, Teacher, TextQuestion,
 		User []ent.Interceptor
 	}
 )

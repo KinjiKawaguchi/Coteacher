@@ -4,14 +4,15 @@ package ent
 
 import (
 	"context"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"errors"
 	"fmt"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/response"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -52,6 +53,21 @@ func (sc *StudentCreate) AddStudentClasses(s ...*StudentClass) *StudentCreate {
 		ids[i] = s[i].ID
 	}
 	return sc.AddStudentClassIDs(ids...)
+}
+
+// AddResponseIDs adds the "responses" edge to the Response entity by IDs.
+func (sc *StudentCreate) AddResponseIDs(ids ...uuid.UUID) *StudentCreate {
+	sc.mutation.AddResponseIDs(ids...)
+	return sc
+}
+
+// AddResponses adds the "responses" edges to the Response entity.
+func (sc *StudentCreate) AddResponses(r ...*Response) *StudentCreate {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return sc.AddResponseIDs(ids...)
 }
 
 // Mutation returns the StudentMutation object of the builder.
@@ -152,6 +168,22 @@ func (sc *StudentCreate) createSpec() (*Student, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(studentclass.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.ResponsesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   student.ResponsesTable,
+			Columns: []string{student.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

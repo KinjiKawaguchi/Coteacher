@@ -3,11 +3,11 @@
 package class
 
 import (
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
 	"github.com/google/uuid"
 )
 
@@ -302,6 +302,29 @@ func HasInvitationCodes() predicate.Class {
 func HasInvitationCodesWith(preds ...predicate.ClassInvitationCode) predicate.Class {
 	return predicate.Class(func(s *sql.Selector) {
 		step := newInvitationCodesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasForms applies the HasEdge predicate on the "forms" edge.
+func HasForms() predicate.Class {
+	return predicate.Class(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FormsTable, FormsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFormsWith applies the HasEdge predicate on the "forms" edge with a given conditions (other predicates).
+func HasFormsWith(preds ...predicate.Form) predicate.Class {
+	return predicate.Class(func(s *sql.Selector) {
+		step := newFormsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

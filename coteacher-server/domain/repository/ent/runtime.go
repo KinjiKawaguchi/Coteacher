@@ -3,12 +3,18 @@
 package ent
 
 import (
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/schema"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"time"
 
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/answer"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/form"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/question"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/questionoption"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/response"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/schema"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/textquestion"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -16,6 +22,12 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	answerFields := schema.Answer{}.Fields()
+	_ = answerFields
+	// answerDescID is the schema descriptor for id field.
+	answerDescID := answerFields[0].Descriptor()
+	// answer.DefaultID holds the default value on creation for the id field.
+	answer.DefaultID = answerDescID.Default.(func() uuid.UUID)
 	classFields := schema.Class{}.Fields()
 	_ = classFields
 	// classDescID is the schema descriptor for id field.
@@ -32,6 +44,36 @@ func init() {
 	classinvitationcodeDescID := classinvitationcodeFields[0].Descriptor()
 	// classinvitationcode.DefaultID holds the default value on creation for the id field.
 	classinvitationcode.DefaultID = classinvitationcodeDescID.Default.(func() uuid.UUID)
+	formFields := schema.Form{}.Fields()
+	_ = formFields
+	// formDescID is the schema descriptor for id field.
+	formDescID := formFields[0].Descriptor()
+	// form.DefaultID holds the default value on creation for the id field.
+	form.DefaultID = formDescID.Default.(func() uuid.UUID)
+	questionFields := schema.Question{}.Fields()
+	_ = questionFields
+	// questionDescID is the schema descriptor for id field.
+	questionDescID := questionFields[0].Descriptor()
+	// question.DefaultID holds the default value on creation for the id field.
+	question.DefaultID = questionDescID.Default.(func() uuid.UUID)
+	questionoptionFields := schema.QuestionOption{}.Fields()
+	_ = questionoptionFields
+	// questionoptionDescID is the schema descriptor for id field.
+	questionoptionDescID := questionoptionFields[0].Descriptor()
+	// questionoption.DefaultID holds the default value on creation for the id field.
+	questionoption.DefaultID = questionoptionDescID.Default.(func() uuid.UUID)
+	responseFields := schema.Response{}.Fields()
+	_ = responseFields
+	// responseDescID is the schema descriptor for id field.
+	responseDescID := responseFields[0].Descriptor()
+	// response.DefaultID holds the default value on creation for the id field.
+	response.DefaultID = responseDescID.Default.(func() uuid.UUID)
+	textquestionFields := schema.TextQuestion{}.Fields()
+	_ = textquestionFields
+	// textquestionDescID is the schema descriptor for id field.
+	textquestionDescID := textquestionFields[0].Descriptor()
+	// textquestion.DefaultID holds the default value on creation for the id field.
+	textquestion.DefaultID = textquestionDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescCreatedAt is the schema descriptor for created_at field.
