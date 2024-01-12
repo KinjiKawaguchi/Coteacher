@@ -73,6 +73,12 @@ func (au *AnswerUpdate) SetNillableAnswerText(s *string) *AnswerUpdate {
 	return au
 }
 
+// ClearAnswerText clears the value of the "answer_text" field.
+func (au *AnswerUpdate) ClearAnswerText() *AnswerUpdate {
+	au.mutation.ClearAnswerText()
+	return au
+}
+
 // SetQuestion sets the "question" edge to the Question entity.
 func (au *AnswerUpdate) SetQuestion(q *Question) *AnswerUpdate {
 	return au.SetQuestionID(q.ID)
@@ -188,6 +194,9 @@ func (au *AnswerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.AnswerText(); ok {
 		_spec.SetField(answer.FieldAnswerText, field.TypeString, value)
+	}
+	if au.mutation.AnswerTextCleared() {
+		_spec.ClearField(answer.FieldAnswerText, field.TypeString)
 	}
 	if au.mutation.QuestionCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -354,6 +363,12 @@ func (auo *AnswerUpdateOne) SetNillableAnswerText(s *string) *AnswerUpdateOne {
 	return auo
 }
 
+// ClearAnswerText clears the value of the "answer_text" field.
+func (auo *AnswerUpdateOne) ClearAnswerText() *AnswerUpdateOne {
+	auo.mutation.ClearAnswerText()
+	return auo
+}
+
 // SetQuestion sets the "question" edge to the Question entity.
 func (auo *AnswerUpdateOne) SetQuestion(q *Question) *AnswerUpdateOne {
 	return auo.SetQuestionID(q.ID)
@@ -499,6 +514,9 @@ func (auo *AnswerUpdateOne) sqlSave(ctx context.Context) (_node *Answer, err err
 	}
 	if value, ok := auo.mutation.AnswerText(); ok {
 		_spec.SetField(answer.FieldAnswerText, field.TypeString, value)
+	}
+	if auo.mutation.AnswerTextCleared() {
+		_spec.ClearField(answer.FieldAnswerText, field.TypeString)
 	}
 	if auo.mutation.QuestionCleared() {
 		edge := &sqlgraph.EdgeSpec{

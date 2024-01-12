@@ -41,6 +41,14 @@ func (ac *AnswerCreate) SetAnswerText(s string) *AnswerCreate {
 	return ac
 }
 
+// SetNillableAnswerText sets the "answer_text" field if the given value is not nil.
+func (ac *AnswerCreate) SetNillableAnswerText(s *string) *AnswerCreate {
+	if s != nil {
+		ac.SetAnswerText(*s)
+	}
+	return ac
+}
+
 // SetID sets the "id" field.
 func (ac *AnswerCreate) SetID(u uuid.UUID) *AnswerCreate {
 	ac.mutation.SetID(u)
@@ -128,9 +136,6 @@ func (ac *AnswerCreate) check() error {
 	}
 	if _, ok := ac.mutation.ResponseID(); !ok {
 		return &ValidationError{Name: "response_id", err: errors.New(`ent: missing required field "Answer.response_id"`)}
-	}
-	if _, ok := ac.mutation.AnswerText(); !ok {
-		return &ValidationError{Name: "answer_text", err: errors.New(`ent: missing required field "Answer.answer_text"`)}
 	}
 	if _, ok := ac.mutation.QuestionID(); !ok {
 		return &ValidationError{Name: "question", err: errors.New(`ent: missing required edge "Answer.question"`)}

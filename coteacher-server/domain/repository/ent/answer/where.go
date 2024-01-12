@@ -164,6 +164,16 @@ func AnswerTextHasSuffix(v string) predicate.Answer {
 	return predicate.Answer(sql.FieldHasSuffix(FieldAnswerText, v))
 }
 
+// AnswerTextIsNil applies the IsNil predicate on the "answer_text" field.
+func AnswerTextIsNil() predicate.Answer {
+	return predicate.Answer(sql.FieldIsNull(FieldAnswerText))
+}
+
+// AnswerTextNotNil applies the NotNil predicate on the "answer_text" field.
+func AnswerTextNotNil() predicate.Answer {
+	return predicate.Answer(sql.FieldNotNull(FieldAnswerText))
+}
+
 // AnswerTextEqualFold applies the EqualFold predicate on the "answer_text" field.
 func AnswerTextEqualFold(v string) predicate.Answer {
 	return predicate.Answer(sql.FieldEqualFold(FieldAnswerText, v))

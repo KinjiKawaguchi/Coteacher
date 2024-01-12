@@ -18,7 +18,7 @@ func (Answer) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).Default(uuid.New).StorageKey("id").Unique(),
 		field.UUID("question_id", uuid.UUID{}).StorageKey("question_id"),
 		field.UUID("response_id", uuid.UUID{}).StorageKey("response_id"),
-		field.Text("answer_text"),
+		field.Text("answer_text").Optional(),
 	}
 }
 

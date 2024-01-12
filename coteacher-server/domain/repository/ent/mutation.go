@@ -279,9 +279,22 @@ func (m *AnswerMutation) OldAnswerText(ctx context.Context) (v string, err error
 	return oldValue.AnswerText, nil
 }
 
+// ClearAnswerText clears the value of the "answer_text" field.
+func (m *AnswerMutation) ClearAnswerText() {
+	m.answer_text = nil
+	m.clearedFields[answer.FieldAnswerText] = struct{}{}
+}
+
+// AnswerTextCleared returns if the "answer_text" field was cleared in this mutation.
+func (m *AnswerMutation) AnswerTextCleared() bool {
+	_, ok := m.clearedFields[answer.FieldAnswerText]
+	return ok
+}
+
 // ResetAnswerText resets all changes to the "answer_text" field.
 func (m *AnswerMutation) ResetAnswerText() {
 	m.answer_text = nil
+	delete(m.clearedFields, answer.FieldAnswerText)
 }
 
 // ClearQuestion clears the "question" edge to the Question entity.
@@ -524,7 +537,11 @@ func (m *AnswerMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *AnswerMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(answer.FieldAnswerText) {
+		fields = append(fields, answer.FieldAnswerText)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -537,6 +554,11 @@ func (m *AnswerMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *AnswerMutation) ClearField(name string) error {
+	switch name {
+	case answer.FieldAnswerText:
+		m.ClearAnswerText()
+		return nil
+	}
 	return fmt.Errorf("unknown Answer nullable field %s", name)
 }
 

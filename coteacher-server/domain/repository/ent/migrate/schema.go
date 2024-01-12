@@ -11,7 +11,7 @@ var (
 	// AnswersColumns holds the columns for the "answers" table.
 	AnswersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
-		{Name: "answer_text", Type: field.TypeString, Size: 2147483647},
+		{Name: "answer_text", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "question_id", Type: field.TypeUUID},
 		{Name: "response_id", Type: field.TypeUUID},
 	}
