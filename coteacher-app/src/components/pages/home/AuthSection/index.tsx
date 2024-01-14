@@ -1,14 +1,12 @@
 import React from 'react';
-import { ChakraProvider, Flex, Text, VStack, Image } from '@chakra-ui/react';
+import { Spinner, Flex, VStack } from '@chakra-ui/react';
 import { Button } from '@/components/ui/button';
 import StudentAuthDialog from './StudentAuthDialog';
 import TeacherAuthDialog from './TeacherAuthDialog';
-import app_icon from '@/images/app-icon.svg';
-import theme from '@/theme';
 import { useRouter } from 'next/navigation';
 
 type AuthSectionProps = {
-  isAuthenticated: boolean;
+  isAuthenticated: boolean | null;
 };
 
 const AuthSection: React.FC<AuthSectionProps> = ({ isAuthenticated }) => {
@@ -18,23 +16,23 @@ const AuthSection: React.FC<AuthSectionProps> = ({ isAuthenticated }) => {
     router.push('/DashBoard');
   };
 
+  if (isAuthenticated === null) {
+    return <Spinner />;
+  }
+
   return (
-    <ChakraProvider theme={theme}>
-      <Flex>
-        <VStack spacing={8} textAlign="center">
-          <Image src={app_icon.src} alt="logo" boxSize="200px" />
-          <Text fontSize="4xl">あなたの先生</Text>
-          {isAuthenticated ? ( // TODO: ここのチラツキをなくす
-            <Button onClick={navDashBoard}>ダッシュボード</Button>
-          ) : (
-            <>
-              <TeacherAuthDialog />
-              <StudentAuthDialog />
-            </>
-          )}
-        </VStack>
-      </Flex>
-    </ChakraProvider>
+    <Flex>
+      <VStack spacing={8} textAlign="center">
+        {isAuthenticated ? (
+          <Button onClick={navDashBoard}>ダッシュボード</Button>
+        ) : (
+          <>
+            <TeacherAuthDialog />
+            <StudentAuthDialog />
+          </>
+        )}
+      </VStack>
+    </Flex>
   );
 };
 

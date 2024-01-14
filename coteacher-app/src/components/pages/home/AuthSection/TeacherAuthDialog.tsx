@@ -51,6 +51,7 @@ const TeacherAuthDialog = () => {
                 先生用アカウントの新規登録は現在受け付けておりません
               </AlertDescription>
             </Alert>
+            入力されたメールに認証リンクを送信します。
           </DialogDescription>
         </DialogHeader>
         <EmailInput handleSubmit={handleSubmit} />
