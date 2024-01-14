@@ -15,10 +15,19 @@ import { Class } from '@/interfaces';
 
 interface CommonDashBoardProps {
   fetchClasses: () => Promise<Class[]>;
-  ModalContent: ({ onClose, fetchClasses }: { onClose: () => void; fetchClasses: () => Promise<Class[]> }) => ReactElement;
+  ModalContent: ({
+    onClose,
+    fetchClasses,
+  }: {
+    onClose: () => void;
+    fetchClasses: () => Promise<Class[]>;
+  }) => ReactElement;
 }
 
-const CommonDashBoard: React.FC<CommonDashBoardProps> = ({ fetchClasses, ModalContent }) => {
+const CommonDashBoard: React.FC<CommonDashBoardProps> = ({
+  fetchClasses,
+  ModalContent,
+}) => {
   const router = useRouter();
   const [classes, setClasses] = useState<Class[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -29,7 +38,7 @@ const CommonDashBoard: React.FC<CommonDashBoardProps> = ({ fetchClasses, ModalCo
 
   const handleClassClick = (classId: string) => {
     if (classId) {
-      router.push(`/Class/${classId}`);
+      router.push(`/DashBoard/${classId}`);
     } else {
       onOpen();
     }
@@ -48,7 +57,12 @@ const CommonDashBoard: React.FC<CommonDashBoardProps> = ({ fetchClasses, ModalCo
               onClick={() => handleClassClick(cls.id)}
             />
           ))}
-          <ClassBox key="new-class" id="" name="" onClick={() => handleClassClick('')} />
+          <ClassBox
+            key="new-class"
+            id=""
+            name=""
+            onClick={() => handleClassClick('')}
+          />
           <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalContent onClose={onClose} fetchClasses={fetchClasses} />
           </Modal>
