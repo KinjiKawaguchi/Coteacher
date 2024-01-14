@@ -1,14 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import {
-  ChakraProvider,
-  Container,
-  HStack,
-  useDisclosure,
-  Modal,
-} from '@chakra-ui/react';
-import theme from '@/theme';
+import { Container, HStack, useDisclosure, Modal } from '@chakra-ui/react';
 import ClassBox from './ClassBox';
 import withAuthAndAccountCheck from '@/libs/utils/HOC/withAccountCheck';
 import UserHeader from '@/components/layout/header/UserHeader';
@@ -33,7 +26,7 @@ const TeacherDashBoard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <ChakraProvider theme={theme}>
+    <>
       <Container maxWidth="container.sm">
         <UserHeader />
         <HStack spacing={4} wrap="wrap" justify="center">
@@ -46,7 +39,7 @@ const TeacherDashBoard = () => {
           </Modal>
         </HStack>
       </Container>
-    </ChakraProvider>
+    </>
   );
 };
 

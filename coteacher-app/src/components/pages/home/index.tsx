@@ -1,10 +1,17 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { ChakraProvider, Text, VStack, Container } from '@chakra-ui/react';
+import {
+  ChakraProvider,
+  Text,
+  VStack,
+  Container,
+  Image,
+} from '@chakra-ui/react';
 import theme from '@/theme'; // Import custom theme
 import LargeWithAppLinksAndSocial from '@/components/layout/footer';
 import AuthSection from '@/components/pages/home/AuthSection';
 import { auth } from '@/libs/utils/auth/FirebaseConfig'; // Import Firebase config
+import app_icon from '@/images/app-icon.svg';
 
 const IntroductionText = () => (
   <Text mt={4} align="left" letterSpacing={3}>
@@ -19,22 +26,22 @@ const IntroductionText = () => (
 );
 
 const HomeView = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Observer for changes in authentication status
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      console.log(user);
-      setIsAuthenticated(!!user); // Set isAuthenticated to true if user is logged in, otherwise false
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      setIsAuthenticated(!!user); // userが存在する場合はtrue, そうでなければfalse
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
+
   return (
     <ChakraProvider theme={theme}>
       <Container maxWidth="container.sm">
         <VStack spacing={8} textAlign="center">
+          <Image src={app_icon.src} alt="logo" boxSize="200px" />
+          <Text fontSize="4xl">あなたの先生</Text>
           <AuthSection isAuthenticated={isAuthenticated} />
           <IntroductionText />
         </VStack>
