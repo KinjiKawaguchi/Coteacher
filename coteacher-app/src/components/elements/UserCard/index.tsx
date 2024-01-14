@@ -1,26 +1,37 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import default_user_icon from '@/images/default-avatar-profile-icon.jpg';
+import { Text, HStack } from '@chakra-ui/react';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+
+import { Github, LifeBuoy, LogOut, Settings, User } from 'lucide-react';
 import {
-  Image,
-  Text,
-  HStack,
-  Popover,
-  PopoverTrigger,
-  Button,
-  PopoverContent,
-  Portal,
-} from '@chakra-ui/react';
-import { auth } from '@/libs/utils/auth/FirebaseConfig';
-import { useRouter } from 'next/navigation';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { auth } from '@/libs/utils/auth/FirebaseConfig'; // Firebase認証のインポート
+import { useRouter } from 'next/navigation'; // ルーターのインポート
 
 const UserCard = () => {
   const [userType, setUserType] = useState('');
   const [userName, setUserName] = useState('');
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isUserPresent, setIsUserPresent] = useState(false); // New state variable
-  const router = useRouter();
+
+  const router = useRouter(); // ルーターのインスタンスを生成
+
+  const handleLogout = () => {
+    auth.signOut(); // Firebaseからログアウト
+    setIsUserPresent(false); // ユーザー状態を更新
+    localStorage.clear(); // localStorageをクリア
+    router.push('/'); // ホームページにリダイレクト
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -44,33 +55,48 @@ const UserCard = () => {
     return null; // Or return some fallback UI if needed
   }
   return (
-    <Popover isOpen={isPopoverOpen} onClose={() => setIsPopoverOpen(false)}>
-      <PopoverTrigger>
+    //TODO: すべてのボタンを実装する
+    <DropdownMenu>
+      <DropdownMenuTrigger>
         <HStack spacing={4} align="center" onClick={handleTogglePopover}>
-          <Image
-            borderRadius="full"
-            boxSize="50px"
-            src={default_user_icon.src}
-            alt="User Avatar"
-          />
+          <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          </Avatar>
           <Text fontWeight="bold">{displayName}</Text>
-        </HStack>
-      </PopoverTrigger>
-      <Portal>
-        <PopoverContent>
-          <Button
-            onClick={() => {
-              auth.signOut();
-              setIsUserPresent(false);
-              localStorage.clear();
-              router.push('/');
-            }}
-          >
-            Logout
-          </Button>
-        </PopoverContent>
-      </Portal>
-    </Popover>
+        </HStack>{' '}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56">
+        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem>
+            <User className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Settings</span>
+            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <Github className="mr-2 h-4 w-4" />
+          <span>GitHub</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <LifeBuoy className="mr-2 h-4 w-4" />
+          <span>Support</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleLogout}>
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
+          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
