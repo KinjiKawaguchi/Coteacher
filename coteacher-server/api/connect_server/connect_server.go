@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
+	"connectrpc.com/grpcreflect"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/api/connect_server/interceptor"
 	grpc_interfaces "github.com/KinjiKawaguchi/Coteacher/coteacher-server/interfaces/grpc"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/class"
@@ -32,6 +33,7 @@ func New(addr string, opts ...optionFunc) *http.Server {
 
 	mux := http.NewServeMux()
 
+	// 既存のgRPCサービスハンドラの登録
 	classinvitationcodeSrv := grpc_interfaces.NewClassInvitationCodeServiceServer(class_invitation_code.NewInteractor(opt.entClient, opt.logger))
 	mux.Handle(coteacherv1connect.NewClassInvitationCodeServiceHandler(classinvitationcodeSrv, interceptors))
 	classSrv := grpc_interfaces.NewClassServiceServer(class.NewInteractor(opt.entClient, opt.logger))
@@ -46,6 +48,19 @@ func New(addr string, opts ...optionFunc) *http.Server {
 	mux.Handle(coteacherv1connect.NewTeacherServiceHandler(teacherSrv, interceptors))
 	userSrv := grpc_interfaces.NewUserServiceServer(user.NewInteractor(opt.entClient, opt.logger))
 	mux.Handle(coteacherv1connect.NewUserServiceHandler(userSrv, interceptors))
+
+	// gRPC Reflectionの設定
+	reflector := grpcreflect.NewStaticReflector(
+    "coteacher.v1.ClassInvitationCodeService",
+    "coteacher.v1.ClassService",
+    "coteacher.v1.HealthcheckService",
+    "coteacher.v1.StudentClassService",
+    "coteacher.v1.StudentService",
+    "coteacher.v1.TeacherService",
+    "coteacher.v1.UserService",
+  )
+	mux.Handle(grpcreflect.NewHandlerV1(reflector))
+	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
 
 	corsHandler := cors.New(cors.Options{
 		AllowedMethods: []string{
@@ -82,3 +97,4 @@ func New(addr string, opts ...optionFunc) *http.Server {
 		),
 	}
 }
+
