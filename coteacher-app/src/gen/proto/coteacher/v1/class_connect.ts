@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CreateClassRequest, CreateClassResponse, DeleteClassRequest, DeleteClassResponse, GetClassByIDRequest, GetClassByIDResponse, GetClassListByTeacherIDRequest, GetClassListByTeacherIDResponse, UpdateClassRequest, UpdateClassResponse } from "./class_pb";
+import { CheckClassEditPermissionRequest, CheckClassEditPermissionResponse, CheckClassViewPermissionRequest, CheckClassViewPermissionResponse, CreateClassRequest, CreateClassResponse, DeleteClassRequest, DeleteClassResponse, GetClassByIDRequest, GetClassByIDResponse, GetClassListByTeacherIDRequest, GetClassListByTeacherIDResponse, UpdateClassRequest, UpdateClassResponse } from "./class_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -55,6 +55,24 @@ export const ClassService = {
       name: "DeleteClass",
       I: DeleteClassRequest,
       O: DeleteClassResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc coteacher.v1.ClassService.CheckClassEditPermission
+     */
+    checkClassEditPermission: {
+      name: "CheckClassEditPermission",
+      I: CheckClassEditPermissionRequest,
+      O: CheckClassEditPermissionResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc coteacher.v1.ClassService.CheckClassViewPermission
+     */
+    checkClassViewPermission: {
+      name: "CheckClassViewPermission",
+      I: CheckClassViewPermissionRequest,
+      O: CheckClassViewPermissionResponse,
       kind: MethodKind.Unary,
     },
   }

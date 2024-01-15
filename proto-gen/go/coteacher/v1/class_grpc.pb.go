@@ -19,11 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ClassService_CreateClass_FullMethodName             = "/coteacher.v1.ClassService/CreateClass"
-	ClassService_GetClassByID_FullMethodName            = "/coteacher.v1.ClassService/GetClassByID"
-	ClassService_GetClassListByTeacherID_FullMethodName = "/coteacher.v1.ClassService/GetClassListByTeacherID"
-	ClassService_UpdateClass_FullMethodName             = "/coteacher.v1.ClassService/UpdateClass"
-	ClassService_DeleteClass_FullMethodName             = "/coteacher.v1.ClassService/DeleteClass"
+	ClassService_CreateClass_FullMethodName              = "/coteacher.v1.ClassService/CreateClass"
+	ClassService_GetClassByID_FullMethodName             = "/coteacher.v1.ClassService/GetClassByID"
+	ClassService_GetClassListByTeacherID_FullMethodName  = "/coteacher.v1.ClassService/GetClassListByTeacherID"
+	ClassService_UpdateClass_FullMethodName              = "/coteacher.v1.ClassService/UpdateClass"
+	ClassService_DeleteClass_FullMethodName              = "/coteacher.v1.ClassService/DeleteClass"
+	ClassService_CheckClassEditPermission_FullMethodName = "/coteacher.v1.ClassService/CheckClassEditPermission"
+	ClassService_CheckClassViewPermission_FullMethodName = "/coteacher.v1.ClassService/CheckClassViewPermission"
 )
 
 // ClassServiceClient is the client API for ClassService service.
@@ -35,6 +37,8 @@ type ClassServiceClient interface {
 	GetClassListByTeacherID(ctx context.Context, in *GetClassListByTeacherIDRequest, opts ...grpc.CallOption) (*GetClassListByTeacherIDResponse, error)
 	UpdateClass(ctx context.Context, in *UpdateClassRequest, opts ...grpc.CallOption) (*UpdateClassResponse, error)
 	DeleteClass(ctx context.Context, in *DeleteClassRequest, opts ...grpc.CallOption) (*DeleteClassResponse, error)
+	CheckClassEditPermission(ctx context.Context, in *CheckClassEditPermissionRequest, opts ...grpc.CallOption) (*CheckClassEditPermissionResponse, error)
+	CheckClassViewPermission(ctx context.Context, in *CheckClassViewPermissionRequest, opts ...grpc.CallOption) (*CheckClassViewPermissionResponse, error)
 }
 
 type classServiceClient struct {
@@ -90,6 +94,24 @@ func (c *classServiceClient) DeleteClass(ctx context.Context, in *DeleteClassReq
 	return out, nil
 }
 
+func (c *classServiceClient) CheckClassEditPermission(ctx context.Context, in *CheckClassEditPermissionRequest, opts ...grpc.CallOption) (*CheckClassEditPermissionResponse, error) {
+	out := new(CheckClassEditPermissionResponse)
+	err := c.cc.Invoke(ctx, ClassService_CheckClassEditPermission_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *classServiceClient) CheckClassViewPermission(ctx context.Context, in *CheckClassViewPermissionRequest, opts ...grpc.CallOption) (*CheckClassViewPermissionResponse, error) {
+	out := new(CheckClassViewPermissionResponse)
+	err := c.cc.Invoke(ctx, ClassService_CheckClassViewPermission_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ClassServiceServer is the server API for ClassService service.
 // All implementations should embed UnimplementedClassServiceServer
 // for forward compatibility
@@ -99,6 +121,8 @@ type ClassServiceServer interface {
 	GetClassListByTeacherID(context.Context, *GetClassListByTeacherIDRequest) (*GetClassListByTeacherIDResponse, error)
 	UpdateClass(context.Context, *UpdateClassRequest) (*UpdateClassResponse, error)
 	DeleteClass(context.Context, *DeleteClassRequest) (*DeleteClassResponse, error)
+	CheckClassEditPermission(context.Context, *CheckClassEditPermissionRequest) (*CheckClassEditPermissionResponse, error)
+	CheckClassViewPermission(context.Context, *CheckClassViewPermissionRequest) (*CheckClassViewPermissionResponse, error)
 }
 
 // UnimplementedClassServiceServer should be embedded to have forward compatible implementations.
@@ -119,6 +143,12 @@ func (UnimplementedClassServiceServer) UpdateClass(context.Context, *UpdateClass
 }
 func (UnimplementedClassServiceServer) DeleteClass(context.Context, *DeleteClassRequest) (*DeleteClassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteClass not implemented")
+}
+func (UnimplementedClassServiceServer) CheckClassEditPermission(context.Context, *CheckClassEditPermissionRequest) (*CheckClassEditPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckClassEditPermission not implemented")
+}
+func (UnimplementedClassServiceServer) CheckClassViewPermission(context.Context, *CheckClassViewPermissionRequest) (*CheckClassViewPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckClassViewPermission not implemented")
 }
 
 // UnsafeClassServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -222,6 +252,42 @@ func _ClassService_DeleteClass_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ClassService_CheckClassEditPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckClassEditPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClassServiceServer).CheckClassEditPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ClassService_CheckClassEditPermission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClassServiceServer).CheckClassEditPermission(ctx, req.(*CheckClassEditPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ClassService_CheckClassViewPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckClassViewPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClassServiceServer).CheckClassViewPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ClassService_CheckClassViewPermission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClassServiceServer).CheckClassViewPermission(ctx, req.(*CheckClassViewPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ClassService_ServiceDesc is the grpc.ServiceDesc for ClassService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -248,6 +314,14 @@ var ClassService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteClass",
 			Handler:    _ClassService_DeleteClass_Handler,
+		},
+		{
+			MethodName: "CheckClassEditPermission",
+			Handler:    _ClassService_CheckClassEditPermission_Handler,
+		},
+		{
+			MethodName: "CheckClassViewPermission",
+			Handler:    _ClassService_CheckClassViewPermission_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

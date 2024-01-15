@@ -48,16 +48,24 @@ const (
 	// ClassServiceDeleteClassProcedure is the fully-qualified name of the ClassService's DeleteClass
 	// RPC.
 	ClassServiceDeleteClassProcedure = "/coteacher.v1.ClassService/DeleteClass"
+	// ClassServiceCheckClassEditPermissionProcedure is the fully-qualified name of the ClassService's
+	// CheckClassEditPermission RPC.
+	ClassServiceCheckClassEditPermissionProcedure = "/coteacher.v1.ClassService/CheckClassEditPermission"
+	// ClassServiceCheckClassViewPermissionProcedure is the fully-qualified name of the ClassService's
+	// CheckClassViewPermission RPC.
+	ClassServiceCheckClassViewPermissionProcedure = "/coteacher.v1.ClassService/CheckClassViewPermission"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
-	classServiceServiceDescriptor                       = v1.File_coteacher_v1_class_proto.Services().ByName("ClassService")
-	classServiceCreateClassMethodDescriptor             = classServiceServiceDescriptor.Methods().ByName("CreateClass")
-	classServiceGetClassByIDMethodDescriptor            = classServiceServiceDescriptor.Methods().ByName("GetClassByID")
-	classServiceGetClassListByTeacherIDMethodDescriptor = classServiceServiceDescriptor.Methods().ByName("GetClassListByTeacherID")
-	classServiceUpdateClassMethodDescriptor             = classServiceServiceDescriptor.Methods().ByName("UpdateClass")
-	classServiceDeleteClassMethodDescriptor             = classServiceServiceDescriptor.Methods().ByName("DeleteClass")
+	classServiceServiceDescriptor                        = v1.File_coteacher_v1_class_proto.Services().ByName("ClassService")
+	classServiceCreateClassMethodDescriptor              = classServiceServiceDescriptor.Methods().ByName("CreateClass")
+	classServiceGetClassByIDMethodDescriptor             = classServiceServiceDescriptor.Methods().ByName("GetClassByID")
+	classServiceGetClassListByTeacherIDMethodDescriptor  = classServiceServiceDescriptor.Methods().ByName("GetClassListByTeacherID")
+	classServiceUpdateClassMethodDescriptor              = classServiceServiceDescriptor.Methods().ByName("UpdateClass")
+	classServiceDeleteClassMethodDescriptor              = classServiceServiceDescriptor.Methods().ByName("DeleteClass")
+	classServiceCheckClassEditPermissionMethodDescriptor = classServiceServiceDescriptor.Methods().ByName("CheckClassEditPermission")
+	classServiceCheckClassViewPermissionMethodDescriptor = classServiceServiceDescriptor.Methods().ByName("CheckClassViewPermission")
 )
 
 // ClassServiceClient is a client for the coteacher.v1.ClassService service.
@@ -67,6 +75,8 @@ type ClassServiceClient interface {
 	GetClassListByTeacherID(context.Context, *connect.Request[v1.GetClassListByTeacherIDRequest]) (*connect.Response[v1.GetClassListByTeacherIDResponse], error)
 	UpdateClass(context.Context, *connect.Request[v1.UpdateClassRequest]) (*connect.Response[v1.UpdateClassResponse], error)
 	DeleteClass(context.Context, *connect.Request[v1.DeleteClassRequest]) (*connect.Response[v1.DeleteClassResponse], error)
+	CheckClassEditPermission(context.Context, *connect.Request[v1.CheckClassEditPermissionRequest]) (*connect.Response[v1.CheckClassEditPermissionResponse], error)
+	CheckClassViewPermission(context.Context, *connect.Request[v1.CheckClassViewPermissionRequest]) (*connect.Response[v1.CheckClassViewPermissionResponse], error)
 }
 
 // NewClassServiceClient constructs a client for the coteacher.v1.ClassService service. By default,
@@ -109,16 +119,30 @@ func NewClassServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(classServiceDeleteClassMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		checkClassEditPermission: connect.NewClient[v1.CheckClassEditPermissionRequest, v1.CheckClassEditPermissionResponse](
+			httpClient,
+			baseURL+ClassServiceCheckClassEditPermissionProcedure,
+			connect.WithSchema(classServiceCheckClassEditPermissionMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		checkClassViewPermission: connect.NewClient[v1.CheckClassViewPermissionRequest, v1.CheckClassViewPermissionResponse](
+			httpClient,
+			baseURL+ClassServiceCheckClassViewPermissionProcedure,
+			connect.WithSchema(classServiceCheckClassViewPermissionMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // classServiceClient implements ClassServiceClient.
 type classServiceClient struct {
-	createClass             *connect.Client[v1.CreateClassRequest, v1.CreateClassResponse]
-	getClassByID            *connect.Client[v1.GetClassByIDRequest, v1.GetClassByIDResponse]
-	getClassListByTeacherID *connect.Client[v1.GetClassListByTeacherIDRequest, v1.GetClassListByTeacherIDResponse]
-	updateClass             *connect.Client[v1.UpdateClassRequest, v1.UpdateClassResponse]
-	deleteClass             *connect.Client[v1.DeleteClassRequest, v1.DeleteClassResponse]
+	createClass              *connect.Client[v1.CreateClassRequest, v1.CreateClassResponse]
+	getClassByID             *connect.Client[v1.GetClassByIDRequest, v1.GetClassByIDResponse]
+	getClassListByTeacherID  *connect.Client[v1.GetClassListByTeacherIDRequest, v1.GetClassListByTeacherIDResponse]
+	updateClass              *connect.Client[v1.UpdateClassRequest, v1.UpdateClassResponse]
+	deleteClass              *connect.Client[v1.DeleteClassRequest, v1.DeleteClassResponse]
+	checkClassEditPermission *connect.Client[v1.CheckClassEditPermissionRequest, v1.CheckClassEditPermissionResponse]
+	checkClassViewPermission *connect.Client[v1.CheckClassViewPermissionRequest, v1.CheckClassViewPermissionResponse]
 }
 
 // CreateClass calls coteacher.v1.ClassService.CreateClass.
@@ -146,6 +170,16 @@ func (c *classServiceClient) DeleteClass(ctx context.Context, req *connect.Reque
 	return c.deleteClass.CallUnary(ctx, req)
 }
 
+// CheckClassEditPermission calls coteacher.v1.ClassService.CheckClassEditPermission.
+func (c *classServiceClient) CheckClassEditPermission(ctx context.Context, req *connect.Request[v1.CheckClassEditPermissionRequest]) (*connect.Response[v1.CheckClassEditPermissionResponse], error) {
+	return c.checkClassEditPermission.CallUnary(ctx, req)
+}
+
+// CheckClassViewPermission calls coteacher.v1.ClassService.CheckClassViewPermission.
+func (c *classServiceClient) CheckClassViewPermission(ctx context.Context, req *connect.Request[v1.CheckClassViewPermissionRequest]) (*connect.Response[v1.CheckClassViewPermissionResponse], error) {
+	return c.checkClassViewPermission.CallUnary(ctx, req)
+}
+
 // ClassServiceHandler is an implementation of the coteacher.v1.ClassService service.
 type ClassServiceHandler interface {
 	CreateClass(context.Context, *connect.Request[v1.CreateClassRequest]) (*connect.Response[v1.CreateClassResponse], error)
@@ -153,6 +187,8 @@ type ClassServiceHandler interface {
 	GetClassListByTeacherID(context.Context, *connect.Request[v1.GetClassListByTeacherIDRequest]) (*connect.Response[v1.GetClassListByTeacherIDResponse], error)
 	UpdateClass(context.Context, *connect.Request[v1.UpdateClassRequest]) (*connect.Response[v1.UpdateClassResponse], error)
 	DeleteClass(context.Context, *connect.Request[v1.DeleteClassRequest]) (*connect.Response[v1.DeleteClassResponse], error)
+	CheckClassEditPermission(context.Context, *connect.Request[v1.CheckClassEditPermissionRequest]) (*connect.Response[v1.CheckClassEditPermissionResponse], error)
+	CheckClassViewPermission(context.Context, *connect.Request[v1.CheckClassViewPermissionRequest]) (*connect.Response[v1.CheckClassViewPermissionResponse], error)
 }
 
 // NewClassServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -191,6 +227,18 @@ func NewClassServiceHandler(svc ClassServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(classServiceDeleteClassMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	classServiceCheckClassEditPermissionHandler := connect.NewUnaryHandler(
+		ClassServiceCheckClassEditPermissionProcedure,
+		svc.CheckClassEditPermission,
+		connect.WithSchema(classServiceCheckClassEditPermissionMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	classServiceCheckClassViewPermissionHandler := connect.NewUnaryHandler(
+		ClassServiceCheckClassViewPermissionProcedure,
+		svc.CheckClassViewPermission,
+		connect.WithSchema(classServiceCheckClassViewPermissionMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/coteacher.v1.ClassService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ClassServiceCreateClassProcedure:
@@ -203,6 +251,10 @@ func NewClassServiceHandler(svc ClassServiceHandler, opts ...connect.HandlerOpti
 			classServiceUpdateClassHandler.ServeHTTP(w, r)
 		case ClassServiceDeleteClassProcedure:
 			classServiceDeleteClassHandler.ServeHTTP(w, r)
+		case ClassServiceCheckClassEditPermissionProcedure:
+			classServiceCheckClassEditPermissionHandler.ServeHTTP(w, r)
+		case ClassServiceCheckClassViewPermissionProcedure:
+			classServiceCheckClassViewPermissionHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -230,4 +282,12 @@ func (UnimplementedClassServiceHandler) UpdateClass(context.Context, *connect.Re
 
 func (UnimplementedClassServiceHandler) DeleteClass(context.Context, *connect.Request[v1.DeleteClassRequest]) (*connect.Response[v1.DeleteClassResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.ClassService.DeleteClass is not implemented"))
+}
+
+func (UnimplementedClassServiceHandler) CheckClassEditPermission(context.Context, *connect.Request[v1.CheckClassEditPermissionRequest]) (*connect.Response[v1.CheckClassEditPermissionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.ClassService.CheckClassEditPermission is not implemented"))
+}
+
+func (UnimplementedClassServiceHandler) CheckClassViewPermission(context.Context, *connect.Request[v1.CheckClassViewPermissionRequest]) (*connect.Response[v1.CheckClassViewPermissionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.ClassService.CheckClassViewPermission is not implemented"))
 }
