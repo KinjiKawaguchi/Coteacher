@@ -8,6 +8,7 @@ import {
   VisuallyHidden,
   chakra,
   useColorModeValue,
+  Flex,
 } from '@chakra-ui/react';
 import { FaTwitter, FaGithub } from 'react-icons/fa';
 import UserCard from '@/components/elements/UserCard';
@@ -51,7 +52,9 @@ export default function LargeWithAppLinksAndSocial() {
       color={useColorModeValue('gray.700', 'gray.200')}
     >
       <Container as={Stack} maxW={'6xl'} py={10}>
-        <UserCard />
+        <Flex>
+          <UserCard />
+        </Flex>
         <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={8}>
           <Stack align={'flex-start'}>
             <Box as="a" href={'#'}>
