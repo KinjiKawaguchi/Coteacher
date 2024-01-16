@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package coteacher.v1;
+
+import "coteacher/v1/resources.proto";
+
+service FormService {
+  rpc CreateForm(CreateFormRequest) returns (CreateFormResponse);
+  rpc GetFormByID(GetFormByIDRequest) returns (GetFormByIDResponse);
+  rpc GetFormListByClassID(GetFormListByClassIDRequest) returns (GetFormListByClassIDResponse);
+  rpc UpdateForm(UpdateFormRequest) returns (UpdateFormResponse);
+  rpc DeleteForm(DeleteFormRequest) returns (DeleteFormResponse);
+}
+
+message CreateFormRequest {
+  string class_id = 1;
+  Form form = 2;
+}
+
+message CreateFormResponse {
+  Form form = 1;
+}
+
+message GetFormByIDRequest {
+  string form_id = 1;
+}
+
+message GetFormByIDResponse {
+  Form form = 1;
+}
+
+message GetFormListByClassIDRequest {
+  string class_id = 1;
+}
+
+message GetFormListByClassIDResponse {
+  repeated Form forms = 1;
+}
+
+message UpdateFormRequest {
+  string class_id = 1;
+  Form form = 2;
+}
+
+message UpdateFormResponse {
+  Form form = 1;
+}
+
+message DeleteFormRequest {
+  string class_id = 1;
+  string form_id = 2;
+}
+
+message DeleteFormResponse {
+  Form form = 1;
+}
+

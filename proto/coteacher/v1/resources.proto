@@ -39,8 +39,8 @@ message ClassInvitationCode {
 
 message Class {
   string id = 1;
-  string name = 2;
-  string teacher_id = 3;
+  string teacher_id = 2;
+  string name = 3;
   google.protobuf.Timestamp created_at = 4;
   google.protobuf.Timestamp updated_at = 5;
 }
@@ -50,4 +50,51 @@ message StudentClass {
   string class_id = 2;
   google.protobuf.Timestamp created_at = 3;
   google.protobuf.Timestamp updated_at = 4;
+}
+
+message Form {
+  string id = 1;
+  string class_id = 2;
+  string name = 3;
+  string description = 4;
+  int32 usage_limit = 5;
+  repeated Question questions = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message Question {
+  string id = 1;
+  string question_id = 2;
+  enum QuestionType {
+    QUESTION_TYPE_UNSPECIFIED = 0;
+    QUESTION_TYPE_CHECKBOX = 1;
+    QUESTION_TYPE_LIST = 2;
+    QUESTION_TYPE_RADIO = 3;
+    QUESTION_TYPE_MULTIPLE_CHOICE = 4;
+    QUESTION_TYPE_PARAGRAPH_TEXT = 5;
+    QUESTION_TYPE_TEXT = 6;
+  }
+  QuestionType question_type = 3;
+  TextQuestion text_question = 4;
+  repeated QuestionOption options = 5;
+  bool is_required = 6;
+  bool for_ai_processing = 7;
+  int32 order = 8;
+  string form_id = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+
+  message TextQuestion {
+    string id = 1;
+    string question_id = 2;
+    int32 max_length = 3;
+  }
+
+  message QuestionOption {
+    string id = 1;
+    string question_id = 2;
+    string option_text = 3;
+    int32 order = 4;
+  }
 }

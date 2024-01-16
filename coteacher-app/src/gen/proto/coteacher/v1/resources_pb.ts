@@ -253,14 +253,14 @@ export class Class extends Message<Class> {
   id = "";
 
   /**
-   * @generated from field: string name = 2;
-   */
-  name = "";
-
-  /**
-   * @generated from field: string teacher_id = 3;
+   * @generated from field: string teacher_id = 2;
    */
   teacherId = "";
+
+  /**
+   * @generated from field: string name = 3;
+   */
+  name = "";
 
   /**
    * @generated from field: google.protobuf.Timestamp created_at = 4;
@@ -281,8 +281,8 @@ export class Class extends Message<Class> {
   static readonly typeName = "coteacher.v1.Class";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 3, name: "teacher_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "teacher_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "created_at", kind: "message", T: Timestamp },
     { no: 5, name: "updated_at", kind: "message", T: Timestamp },
   ]);
@@ -356,6 +356,336 @@ export class StudentClass extends Message<StudentClass> {
 
   static equals(a: StudentClass | PlainMessage<StudentClass> | undefined, b: StudentClass | PlainMessage<StudentClass> | undefined): boolean {
     return proto3.util.equals(StudentClass, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.Form
+ */
+export class Form extends Message<Form> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string class_id = 2;
+   */
+  classId = "";
+
+  /**
+   * @generated from field: string name = 3;
+   */
+  name = "";
+
+  /**
+   * @generated from field: string description = 4;
+   */
+  description = "";
+
+  /**
+   * @generated from field: int32 usage_limit = 5;
+   */
+  usageLimit = 0;
+
+  /**
+   * @generated from field: repeated coteacher.v1.Question questions = 6;
+   */
+  questions: Question[] = [];
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 7;
+   */
+  createdAt?: Timestamp;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp updated_at = 8;
+   */
+  updatedAt?: Timestamp;
+
+  constructor(data?: PartialMessage<Form>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.Form";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "class_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "usage_limit", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 6, name: "questions", kind: "message", T: Question, repeated: true },
+    { no: 7, name: "created_at", kind: "message", T: Timestamp },
+    { no: 8, name: "updated_at", kind: "message", T: Timestamp },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Form {
+    return new Form().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Form {
+    return new Form().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Form {
+    return new Form().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Form | PlainMessage<Form> | undefined, b: Form | PlainMessage<Form> | undefined): boolean {
+    return proto3.util.equals(Form, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.Question
+ */
+export class Question extends Message<Question> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string question_id = 2;
+   */
+  questionId = "";
+
+  /**
+   * @generated from field: coteacher.v1.Question.QuestionType question_type = 3;
+   */
+  questionType = Question_QuestionType.UNSPECIFIED;
+
+  /**
+   * @generated from field: coteacher.v1.Question.TextQuestion text_question = 4;
+   */
+  textQuestion?: Question_TextQuestion;
+
+  /**
+   * @generated from field: repeated coteacher.v1.Question.QuestionOption options = 5;
+   */
+  options: Question_QuestionOption[] = [];
+
+  /**
+   * @generated from field: bool is_required = 6;
+   */
+  isRequired = false;
+
+  /**
+   * @generated from field: bool for_ai_processing = 7;
+   */
+  forAiProcessing = false;
+
+  /**
+   * @generated from field: int32 order = 8;
+   */
+  order = 0;
+
+  /**
+   * @generated from field: string form_id = 9;
+   */
+  formId = "";
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 10;
+   */
+  createdAt?: Timestamp;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp updated_at = 11;
+   */
+  updatedAt?: Timestamp;
+
+  constructor(data?: PartialMessage<Question>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.Question";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "question_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "question_type", kind: "enum", T: proto3.getEnumType(Question_QuestionType) },
+    { no: 4, name: "text_question", kind: "message", T: Question_TextQuestion },
+    { no: 5, name: "options", kind: "message", T: Question_QuestionOption, repeated: true },
+    { no: 6, name: "is_required", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 7, name: "for_ai_processing", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 8, name: "order", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 9, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 10, name: "created_at", kind: "message", T: Timestamp },
+    { no: 11, name: "updated_at", kind: "message", T: Timestamp },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Question {
+    return new Question().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Question {
+    return new Question().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Question {
+    return new Question().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Question | PlainMessage<Question> | undefined, b: Question | PlainMessage<Question> | undefined): boolean {
+    return proto3.util.equals(Question, a, b);
+  }
+}
+
+/**
+ * @generated from enum coteacher.v1.Question.QuestionType
+ */
+export enum Question_QuestionType {
+  /**
+   * @generated from enum value: QUESTION_TYPE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: QUESTION_TYPE_CHECKBOX = 1;
+   */
+  CHECKBOX = 1,
+
+  /**
+   * @generated from enum value: QUESTION_TYPE_LIST = 2;
+   */
+  LIST = 2,
+
+  /**
+   * @generated from enum value: QUESTION_TYPE_RADIO = 3;
+   */
+  RADIO = 3,
+
+  /**
+   * @generated from enum value: QUESTION_TYPE_MULTIPLE_CHOICE = 4;
+   */
+  MULTIPLE_CHOICE = 4,
+
+  /**
+   * @generated from enum value: QUESTION_TYPE_PARAGRAPH_TEXT = 5;
+   */
+  PARAGRAPH_TEXT = 5,
+
+  /**
+   * @generated from enum value: QUESTION_TYPE_TEXT = 6;
+   */
+  TEXT = 6,
+}
+// Retrieve enum metadata with: proto3.getEnumType(Question_QuestionType)
+proto3.util.setEnumType(Question_QuestionType, "coteacher.v1.Question.QuestionType", [
+  { no: 0, name: "QUESTION_TYPE_UNSPECIFIED" },
+  { no: 1, name: "QUESTION_TYPE_CHECKBOX" },
+  { no: 2, name: "QUESTION_TYPE_LIST" },
+  { no: 3, name: "QUESTION_TYPE_RADIO" },
+  { no: 4, name: "QUESTION_TYPE_MULTIPLE_CHOICE" },
+  { no: 5, name: "QUESTION_TYPE_PARAGRAPH_TEXT" },
+  { no: 6, name: "QUESTION_TYPE_TEXT" },
+]);
+
+/**
+ * @generated from message coteacher.v1.Question.TextQuestion
+ */
+export class Question_TextQuestion extends Message<Question_TextQuestion> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string question_id = 2;
+   */
+  questionId = "";
+
+  /**
+   * @generated from field: int32 max_length = 3;
+   */
+  maxLength = 0;
+
+  constructor(data?: PartialMessage<Question_TextQuestion>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.Question.TextQuestion";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "question_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "max_length", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Question_TextQuestion {
+    return new Question_TextQuestion().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Question_TextQuestion {
+    return new Question_TextQuestion().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Question_TextQuestion {
+    return new Question_TextQuestion().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Question_TextQuestion | PlainMessage<Question_TextQuestion> | undefined, b: Question_TextQuestion | PlainMessage<Question_TextQuestion> | undefined): boolean {
+    return proto3.util.equals(Question_TextQuestion, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.Question.QuestionOption
+ */
+export class Question_QuestionOption extends Message<Question_QuestionOption> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string question_id = 2;
+   */
+  questionId = "";
+
+  /**
+   * @generated from field: string option_text = 3;
+   */
+  optionText = "";
+
+  /**
+   * @generated from field: int32 order = 4;
+   */
+  order = 0;
+
+  constructor(data?: PartialMessage<Question_QuestionOption>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.Question.QuestionOption";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "question_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "option_text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "order", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Question_QuestionOption {
+    return new Question_QuestionOption().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Question_QuestionOption {
+    return new Question_QuestionOption().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Question_QuestionOption {
+    return new Question_QuestionOption().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Question_QuestionOption | PlainMessage<Question_QuestionOption> | undefined, b: Question_QuestionOption | PlainMessage<Question_QuestionOption> | undefined): boolean {
+    return proto3.util.equals(Question_QuestionOption, a, b);
   }
 }
 
