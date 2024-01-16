@@ -9,6 +9,8 @@ import {
   CreateClassRequest,
   GetClassListByTeacherIDRequest,
   DeleteClassRequest,
+  CheckClassEditPermissionRequest,
+  CheckClassViewPermissionRequest,
 } from '@/gen/proto/coteacher/v1/class_pb';
 import { Class } from '@/interfaces';
 
@@ -57,6 +59,22 @@ class ClassRepository {
       };
     });
     return classes;
+  }
+
+  async checkClassEditPermission(classId: string): Promise<boolean> {
+    const req = new CheckClassEditPermissionRequest();
+    req.classId = classId;
+    req.teacherId = localStorage.getItem('UserID') || '';
+    const res = await this.cli.checkClassEditPermission(req);
+    return res.hasPermission;
+  }
+
+  async checkClassViewPermission(classId: string): Promise<boolean> {
+    const req = new CheckClassViewPermissionRequest();
+    req.classId = classId;
+    req.studentId = localStorage.getItem('UserID') || '';
+    const res = await this.cli.checkClassViewPermission(req);
+    return res.hasPermission;
   }
 }
 
