@@ -52,15 +52,13 @@ const CommonDashBoard: React.FC<CommonDashBoardProps> = ({
           {classes.map(cls => (
             <ClassBox
               key={cls.id}
-              id={cls.id}
-              name={cls.name}
+              classData={cls}
               onClick={() => handleClassClick(cls.id)}
             />
           ))}
           <ClassBox
             key="new-class"
-            id=""
-            name=""
+            classData={{ id: '', name: '', teacherId: '' }}
             onClick={() => handleClassClick('')}
           />
           <Modal isOpen={isOpen} onClose={onClose} isCentered>

@@ -6,6 +6,7 @@ import {
   VStack,
   Container,
   Image,
+  Box,
 } from '@chakra-ui/react';
 import theme from '@/theme'; // Import custom theme
 import LargeWithAppLinksAndSocial from '@/components/layout/footer';
@@ -38,15 +39,21 @@ const HomeView = () => {
 
   return (
     <ChakraProvider theme={theme}>
-      <Container maxWidth="container.sm">
-        <VStack spacing={8} textAlign="center">
-          <Image src={app_icon.src} alt="logo" boxSize="200px" />
-          <Text fontSize="4xl">あなたの先生</Text>
-          <AuthSection isAuthenticated={isAuthenticated} />
-          <IntroductionText />
-        </VStack>
-      </Container>
-      <LargeWithAppLinksAndSocial />
+      <Box display="flex" flexDirection="column" minHeight="100vh">
+        {' '}
+        {/* Full viewport height */}
+        <Container maxWidth="container.sm" flex="1">
+          {' '}
+          {/* Flex container */}
+          <VStack spacing={8} textAlign="center">
+            <Image src={app_icon.src} alt="logo" boxSize="200px" />
+            <Text fontSize="4xl">あなたの先生</Text>
+            <AuthSection isAuthenticated={isAuthenticated} />
+            <IntroductionText />
+          </VStack>
+        </Container>
+        <LargeWithAppLinksAndSocial />
+      </Box>
     </ChakraProvider>
   );
 };

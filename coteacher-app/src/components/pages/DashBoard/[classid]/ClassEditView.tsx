@@ -1,3 +1,5 @@
+import { FormTable } from './FormTable';
+
 export default function ClassEditView({
   params,
 }: {
@@ -6,6 +8,7 @@ export default function ClassEditView({
   return (
     <>
       <div>ClassEditView</div>
+      <FormTable classId={params.classid} />
     </>
   );
 }

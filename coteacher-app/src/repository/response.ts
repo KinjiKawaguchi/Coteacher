@@ -25,12 +25,16 @@ class ResponseRepository {
   }
 
   async getNumberOfResponseByStudentId(
-    studentId: string,
+    studentId: string | null,
     formId: string
   ): Promise<number> {
     const req = new GetNumberOfResponsesByStudentIDRequest();
     req.formId = formId;
-    req.studentId = studentId;
+    if (studentId) {
+      req.studentId = studentId;
+    } else {
+      req.studentId = localStorage.getItem('UserID') || '';
+    }
     const res = await this.cli.getNumberOfResponsesByFormID(req);
     return res.numberOfResponses;
   }
