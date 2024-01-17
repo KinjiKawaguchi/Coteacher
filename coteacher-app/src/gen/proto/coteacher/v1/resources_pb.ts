@@ -389,11 +389,6 @@ export class Form extends Message<Form> {
   usageLimit = 0;
 
   /**
-   * @generated from field: repeated coteacher.v1.Question questions = 6;
-   */
-  questions: Question[] = [];
-
-  /**
    * @generated from field: google.protobuf.Timestamp created_at = 7;
    */
   createdAt?: Timestamp;
@@ -416,7 +411,6 @@ export class Form extends Message<Form> {
     { no: 3, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 5, name: "usage_limit", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-    { no: 6, name: "questions", kind: "message", T: Question, repeated: true },
     { no: 7, name: "created_at", kind: "message", T: Timestamp },
     { no: 8, name: "updated_at", kind: "message", T: Timestamp },
   ]);
