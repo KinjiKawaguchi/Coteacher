@@ -82,12 +82,6 @@ message Question {
     int32 max_length = 3;
   }
   TextQuestion text_question = 5;
-  message QuestionOption {
-    string id = 1;
-    string question_id = 2;
-    string option_text = 3;
-    int32 order = 4;
-  }
   repeated QuestionOption options = 6;
   bool is_required = 7;
   bool for_ai_processing = 8;
@@ -96,3 +90,27 @@ message Question {
   google.protobuf.Timestamp created_at = 11;
   google.protobuf.Timestamp updated_at = 12;
 }
+
+message QuestionOption {
+  string id = 1;
+  string question_id = 2;
+  string option_text = 3;
+  int32 order = 4;
+}
+
+message Response {
+  string id = 1;
+  string form_id = 2;
+  string student_id = 3;
+  message Answer {
+    string id = 1;
+    string response_id = 2;
+    string question_id = 3;
+    string answer_text = 4;
+    repeated QuestionOption selected_options = 5;
+  }
+  repeated Answer answers = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+

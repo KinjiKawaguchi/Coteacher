@@ -66,9 +66,9 @@ func ToPbQuestion(t *ent.Question) *pb.Question {
 	questionType := pb.Question_QuestionType(pb.Question_QuestionType_value[t.QuestionType.String()])
 
 	// Create a slice of *pb.Question_QuestionOption for options
-	var pbOptions []*pb.Question_QuestionOption
+	var pbOptions []*pb.QuestionOption
 	for _, option := range t.Edges.QuestionOption {
-		pbOptions = append(pbOptions, &pb.Question_QuestionOption{
+		pbOptions = append(pbOptions, &pb.QuestionOption{
 			Id:         option.ID.String(),
 			QuestionId: t.ID.String(),
 			OptionText: option.OptionText,
