@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CreateClassRequest, CreateClassResponse, DeleteClassRequest, DeleteClassResponse, GetClassByIDRequest, GetClassByIDResponse, GetClassListByTeacherIDRequest, GetClassListByTeacherIDResponse, UpdateClassRequest, UpdateClassResponse } from "./class_pb";
+import { CheckClassEditPermissionRequest, CheckClassEditPermissionResponse, CheckClassViewPermissionRequest, CheckClassViewPermissionResponse, CreateClassRequest, CreateClassResponse, DeleteClassRequest, DeleteClassResponse, GetClassByIDRequest, GetClassByIDResponse, GetClassListByTeacherIDRequest, GetClassListByTeacherIDResponse, UpdateClassRequest, UpdateClassResponse } from "./class_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 import { createQueryService } from "@connectrpc/connect-query";
 
@@ -60,6 +60,24 @@ export const ClassService = {
       O: DeleteClassResponse,
       kind: MethodKind.Unary,
     },
+    /**
+     * @generated from rpc coteacher.v1.ClassService.CheckClassEditPermission
+     */
+    checkClassEditPermission: {
+      name: "CheckClassEditPermission",
+      I: CheckClassEditPermissionRequest,
+      O: CheckClassEditPermissionResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc coteacher.v1.ClassService.CheckClassViewPermission
+     */
+    checkClassViewPermission: {
+      name: "CheckClassViewPermission",
+      I: CheckClassViewPermissionRequest,
+      O: CheckClassViewPermissionResponse,
+      kind: MethodKind.Unary,
+    },
   }
 } as const;
 
@@ -97,3 +115,17 @@ export const updateClass = createQueryService({
 export const deleteClass = createQueryService({
   service: ClassService,
 }).deleteClass;
+
+/**
+ * @generated from rpc coteacher.v1.ClassService.CheckClassEditPermission
+ */
+export const checkClassEditPermission = createQueryService({
+  service: ClassService,
+}).checkClassEditPermission;
+
+/**
+ * @generated from rpc coteacher.v1.ClassService.CheckClassViewPermission
+ */
+export const checkClassViewPermission = createQueryService({
+  service: ClassService,
+}).checkClassViewPermission;

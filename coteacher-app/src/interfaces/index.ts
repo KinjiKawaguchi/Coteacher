@@ -17,4 +17,12 @@ export type ClassInvitationCode = {
   invitationCode: string;
   expirationDate: Date;
   isActive: boolean;
-}
+};
+
+export type Form = {
+  id: string;
+  classId: string;
+  name: string;
+  description: string;
+  usageLimit: number;
+};

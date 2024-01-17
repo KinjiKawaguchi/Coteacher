@@ -169,3 +169,67 @@ func (i *Interactor) DeleteClass(ctx context.Context, req *pb.DeleteClassRequest
 		Class: utils.ToPbClass(class),
 	}, nil
 }
+
+func (i *Interactor) CheckClassEditPermission(ctx context.Context, req *pb.CheckClassEditPermissionRequest) (*pb.CheckClassEditPermissionResponse, error) {
+  classID, err := uuid.Parse(req.ClassId)
+  if err != nil {
+    return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid class ID"))
+  }
+
+  teacherID, err := uuid.Parse(req.TeacherId)
+  if err != nil {
+    return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid teacher ID"))
+  }
+
+  class, err := i.entClient.Class.Query().Where(entclass.ID(classID)).Only(ctx)
+  if err != nil {
+    if ent.IsNotFound(err) {
+      return &pb.CheckClassEditPermissionResponse {
+        HasPermission: false,
+      },nil
+    }
+    return nil, connect.NewError(connect.CodeInternal, err)
+  }
+
+  if class.TeacherID != teacherID {
+    return &pb.CheckClassEditPermissionResponse {
+      HasPermission: false,
+    }, nil
+  }
+
+  return &pb.CheckClassEditPermissionResponse{
+    HasPermission: true,
+  }, nil
+}
+
+func (i *Interactor) CheckClassViewPermission(ctx context.Context, req *pb.CheckClassViewPermissionRequest) (*pb.CheckClassViewPermissionResponse, error) {
+  classID, err := uuid.Parse(req.ClassId)
+  if err != nil {
+    return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid class ID"))
+  }
+
+  studentID, err := uuid.Parse(req.StudentId)
+  if err != nil {
+    return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid student ID"))
+  }
+
+  studentClass, err := i.entClient.StudentClass.Query().Where(entstudentclass.ClassID(classID), entstudentclass.StudentID(studentID)).Only(ctx)
+  if err != nil {
+    if ent.IsNotFound(err) {
+      return &pb.CheckClassViewPermissionResponse {
+        HasPermission: false,
+      },nil
+    }
+    return nil, connect.NewError(connect.CodeInternal, err)
+  }
+
+  if studentClass == nil {
+    return &pb.CheckClassViewPermissionResponse {
+      HasPermission: false,
+    }, nil
+  }
+
+  return &pb.CheckClassViewPermissionResponse{
+    HasPermission: true,
+  }, nil
+}

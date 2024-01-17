@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package coteacher.v1;
+
+service ResponseService {
+  rpc GetNumberOfResponsesByStudentID(GetNumberOfResponsesByStudentIDRequest) returns (GetNumberOfResponsesByStudentIDResponse);
+  rpc GetNumberOfResponsesByFormID(GetNumberOfResponsesByFormIDRequest) returns (GetNumberOfResponsesByFormIDResponse);
+}
+
+message GetNumberOfResponsesByStudentIDRequest {
+  string student_id = 1;
+  string form_id = 2;
+}
+
+message GetNumberOfResponsesByStudentIDResponse {
+  int32 number_of_responses = 1;
+}
+
+message GetNumberOfResponsesByFormIDRequest {
+  string form_id = 1;
+}
+
+message GetNumberOfResponsesByFormIDResponse {
+  int32 number_of_responses = 1;
+}

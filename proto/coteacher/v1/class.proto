@@ -10,6 +10,9 @@ service ClassService {
   rpc GetClassListByTeacherID(GetClassListByTeacherIDRequest) returns (GetClassListByTeacherIDResponse);
   rpc UpdateClass(UpdateClassRequest) returns (UpdateClassResponse);
   rpc DeleteClass(DeleteClassRequest) returns (DeleteClassResponse);
+  rpc CheckClassEditPermission(CheckClassEditPermissionRequest) returns (CheckClassEditPermissionResponse);
+  rpc CheckClassViewPermission(CheckClassViewPermissionRequest) returns (CheckClassViewPermissionResponse);
+
 }
 
 
@@ -55,4 +58,22 @@ message DeleteClassRequest {
 
 message DeleteClassResponse {
   Class class = 1;
+}
+
+message CheckClassEditPermissionRequest {
+  string class_id = 1;
+  string teacher_id = 2;
+}
+
+message CheckClassEditPermissionResponse {
+  bool has_permission = 1;
+}
+
+message CheckClassViewPermissionRequest {
+  string class_id = 1;
+  string student_id = 2;
+}
+
+message CheckClassViewPermissionResponse {
+  bool has_permission = 1;
 }

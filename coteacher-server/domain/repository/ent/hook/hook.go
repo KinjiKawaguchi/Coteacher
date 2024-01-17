@@ -4,9 +4,22 @@ package hook
 
 import (
 	"context"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 	"fmt"
+
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 )
+
+// The AnswerFunc type is an adapter to allow the use of ordinary
+// function as Answer mutator.
+type AnswerFunc func(context.Context, *ent.AnswerMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AnswerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AnswerMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AnswerMutation", m)
+}
 
 // The ClassFunc type is an adapter to allow the use of ordinary
 // function as Class mutator.
@@ -30,6 +43,66 @@ func (f ClassInvitationCodeFunc) Mutate(ctx context.Context, m ent.Mutation) (en
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ClassInvitationCodeMutation", m)
+}
+
+// The FormFunc type is an adapter to allow the use of ordinary
+// function as Form mutator.
+type FormFunc func(context.Context, *ent.FormMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FormFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FormMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FormMutation", m)
+}
+
+// The QuestionFunc type is an adapter to allow the use of ordinary
+// function as Question mutator.
+type QuestionFunc func(context.Context, *ent.QuestionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f QuestionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.QuestionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.QuestionMutation", m)
+}
+
+// The QuestionOptionFunc type is an adapter to allow the use of ordinary
+// function as QuestionOption mutator.
+type QuestionOptionFunc func(context.Context, *ent.QuestionOptionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f QuestionOptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.QuestionOptionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.QuestionOptionMutation", m)
+}
+
+// The ResponseFunc type is an adapter to allow the use of ordinary
+// function as Response mutator.
+type ResponseFunc func(context.Context, *ent.ResponseMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ResponseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ResponseMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ResponseMutation", m)
+}
+
+// The SelectedOptionFunc type is an adapter to allow the use of ordinary
+// function as SelectedOption mutator.
+type SelectedOptionFunc func(context.Context, *ent.SelectedOptionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SelectedOptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SelectedOptionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SelectedOptionMutation", m)
 }
 
 // The StudentFunc type is an adapter to allow the use of ordinary
@@ -66,6 +139,18 @@ func (f TeacherFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TeacherMutation", m)
+}
+
+// The TextQuestionFunc type is an adapter to allow the use of ordinary
+// function as TextQuestion mutator.
+type TextQuestionFunc func(context.Context, *ent.TextQuestionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TextQuestionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.TextQuestionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TextQuestionMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary

@@ -2,14 +2,14 @@ import React from 'react';
 import { Box, HStack, Text, useColorModeValue } from '@chakra-ui/react';
 import { FaBook } from 'react-icons/fa';
 import ClassBoxPopUp from './ClassBoxPopUp';
+import { Class } from '@/interfaces';
 
 interface ClassBoxProps {
-  id: string;
-  name: string;
+  classData: Class;
   onClick?: () => void;
 }
 
-const ClassBox = ({ id, name, onClick }: ClassBoxProps) => {
+const ClassBox = ({ classData, onClick }: ClassBoxProps) => {
   const bg = useColorModeValue('gray.100', 'gray.600');
   const text = useColorModeValue('gray.800', 'white');
 
@@ -28,8 +28,12 @@ const ClassBox = ({ id, name, onClick }: ClassBoxProps) => {
       onClick={onClick}
     >
       <HStack justifyContent="space-between" mb={2}>
-        <FaBook size="24" color={text} aria-hidden="true" />
-        <ClassBoxPopUp classId={id} />
+        {classData.id !== '' && (
+          <>
+            <FaBook size="24" color={text} aria-hidden="true" />
+            <ClassBoxPopUp classId={classData.id} />
+          </>
+        )}
       </HStack>
       <Text
         fontSize={['md', 'lg']}
@@ -38,7 +42,7 @@ const ClassBox = ({ id, name, onClick }: ClassBoxProps) => {
         noOfLines={1}
         isTruncated
       >
-        {name || '+'}
+        {classData.name || '+'}
       </Text>
     </Box>
   );

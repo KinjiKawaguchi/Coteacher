@@ -3,10 +3,9 @@
 package teacher
 
 import (
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
-
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
 	"github.com/google/uuid"
 )
 

@@ -3,11 +3,11 @@
 package user
 
 import (
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
 	"github.com/google/uuid"
 )
 

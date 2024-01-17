@@ -27,6 +27,8 @@ const (
 	EdgeClassStudents = "classStudents"
 	// EdgeInvitationCodes holds the string denoting the invitationcodes edge name in mutations.
 	EdgeInvitationCodes = "invitationCodes"
+	// EdgeForms holds the string denoting the forms edge name in mutations.
+	EdgeForms = "forms"
 	// Table holds the table name of the class in the database.
 	Table = "classes"
 	// TeacherTable is the table that holds the teacher relation/edge.
@@ -50,6 +52,13 @@ const (
 	InvitationCodesInverseTable = "class_invitation_codes"
 	// InvitationCodesColumn is the table column denoting the invitationCodes relation/edge.
 	InvitationCodesColumn = "class_id"
+	// FormsTable is the table that holds the forms relation/edge.
+	FormsTable = "forms"
+	// FormsInverseTable is the table name for the Form entity.
+	// It exists in this package in order to avoid circular dependency with the "form" package.
+	FormsInverseTable = "forms"
+	// FormsColumn is the table column denoting the forms relation/edge.
+	FormsColumn = "class_id"
 )
 
 // Columns holds all SQL columns for class fields.
@@ -138,6 +147,20 @@ func ByInvitationCodes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newInvitationCodesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByFormsCount orders the results by forms count.
+func ByFormsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFormsStep(), opts...)
+	}
+}
+
+// ByForms orders the results by forms terms.
+func ByForms(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFormsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newTeacherStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -157,5 +180,12 @@ func newInvitationCodesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(InvitationCodesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, InvitationCodesTable, InvitationCodesColumn),
+	)
+}
+func newFormsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FormsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FormsTable, FormsColumn),
 	)
 }

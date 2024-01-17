@@ -3,10 +3,9 @@
 package student
 
 import (
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
-
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
 	"github.com/google/uuid"
 )
 
@@ -93,6 +92,29 @@ func HasStudentClasses() predicate.Student {
 func HasStudentClassesWith(preds ...predicate.StudentClass) predicate.Student {
 	return predicate.Student(func(s *sql.Selector) {
 		step := newStudentClassesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasResponses applies the HasEdge predicate on the "responses" edge.
+func HasResponses() predicate.Student {
+	return predicate.Student(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ResponsesTable, ResponsesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasResponsesWith applies the HasEdge predicate on the "responses" edge with a given conditions (other predicates).
+func HasResponsesWith(preds ...predicate.Response) predicate.Student {
+	return predicate.Student(func(s *sql.Selector) {
+		step := newResponsesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

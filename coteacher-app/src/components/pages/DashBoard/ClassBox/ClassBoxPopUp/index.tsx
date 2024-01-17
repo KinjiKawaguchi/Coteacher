@@ -54,7 +54,13 @@ const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
   return (
     <Popover>
       <PopoverTrigger>
-        <IconButton aria-label="Search database" icon={<FaEllipsisH />} />
+        <IconButton
+          aria-label="Search database"
+          icon={<FaEllipsisH />}
+          onClick={e => {
+            e.stopPropagation();
+          }}
+        />
       </PopoverTrigger>
       <Portal>
         <PopoverContent>
@@ -64,7 +70,10 @@ const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
                 leftIcon={<FaTrashAlt />}
                 colorScheme="teal"
                 variant="solid"
-                onClick={handleQuitClass}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleQuitClass();
+                }}
               >
                 授業から退出
               </Button>
@@ -75,7 +84,10 @@ const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
                   leftIcon={<FaPassport />}
                   colorScheme="teal"
                   variant="solid"
-                  onClick={handleIssueInvitationCode}
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleIssueInvitationCode();
+                  }}
                 >
                   授業招待コードを発行
                 </Button>
@@ -83,7 +95,10 @@ const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
                   leftIcon={<FaTrashAlt />}
                   colorScheme="teal"
                   variant="solid"
-                  onClick={handleDeleteClass}
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleDeleteClass();
+                  }}
                 >
                   授業を削除
                 </Button>

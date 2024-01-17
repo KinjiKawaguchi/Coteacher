@@ -5,6 +5,7 @@ replace github.com/KinjiKawaguchi/Coteacher/proto-gen/go => ../proto-gen/go
 go 1.21.5
 
 require (
+	connectrpc.com/grpcreflect v1.2.0
 	entgo.io/ent v0.12.5
 	github.com/google/uuid v1.3.1
 	github.com/rs/cors v1.7.0

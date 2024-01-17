@@ -3,13 +3,13 @@
 package ent
 
 import (
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"fmt"
 	"strings"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -31,9 +31,11 @@ type StudentEdges struct {
 	User *User `json:"user,omitempty"`
 	// StudentClasses holds the value of the studentClasses edge.
 	StudentClasses []*StudentClass `json:"studentClasses,omitempty"`
+	// Responses holds the value of the responses edge.
+	Responses []*Response `json:"responses,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -56,6 +58,15 @@ func (e StudentEdges) StudentClassesOrErr() ([]*StudentClass, error) {
 		return e.StudentClasses, nil
 	}
 	return nil, &NotLoadedError{edge: "studentClasses"}
+}
+
+// ResponsesOrErr returns the Responses value or an error if the edge
+// was not loaded in eager-loading.
+func (e StudentEdges) ResponsesOrErr() ([]*Response, error) {
+	if e.loadedTypes[2] {
+		return e.Responses, nil
+	}
+	return nil, &NotLoadedError{edge: "responses"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -116,6 +127,11 @@ func (s *Student) QueryUser() *UserQuery {
 // QueryStudentClasses queries the "studentClasses" edge of the Student entity.
 func (s *Student) QueryStudentClasses() *StudentClassQuery {
 	return NewStudentClient(s.config).QueryStudentClasses(s)
+}
+
+// QueryResponses queries the "responses" edge of the Student entity.
+func (s *Student) QueryResponses() *ResponseQuery {
+	return NewStudentClient(s.config).QueryResponses(s)
 }
 
 // Update returns a builder for updating this Student.

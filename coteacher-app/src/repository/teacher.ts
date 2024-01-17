@@ -29,17 +29,13 @@ class TeacherRepository {
   }
 
   async checkTeacherExistsByEmail(email: string | null): Promise<boolean> {
-    console.log('checkTeacherExistsByEmail');
-    console.log(email);
     const req = new CheckTeacherExistsByEmailRequest();
     if (email) {
       req.email = email;
     } else {
       req.email = localStorage.getItem('UserEmail') || '';
     }
-    console.log(req);
     const res = await this.cli.checkTeacherExistsByEmail(req);
-    console.log(res);
     return res.exists;
   }
 }

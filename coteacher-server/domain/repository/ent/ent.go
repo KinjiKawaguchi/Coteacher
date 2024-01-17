@@ -4,12 +4,6 @@ package ent
 
 import (
 	"context"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 	"errors"
 	"fmt"
 	"reflect"
@@ -18,6 +12,19 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/answer"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/form"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/question"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/questionoption"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/response"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/selectedoption"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/student"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/textquestion"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -78,11 +85,18 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			answer.Table:              answer.ValidColumn,
 			class.Table:               class.ValidColumn,
 			classinvitationcode.Table: classinvitationcode.ValidColumn,
+			form.Table:                form.ValidColumn,
+			question.Table:            question.ValidColumn,
+			questionoption.Table:      questionoption.ValidColumn,
+			response.Table:            response.ValidColumn,
+			selectedoption.Table:      selectedoption.ValidColumn,
 			student.Table:             student.ValidColumn,
 			studentclass.Table:        studentclass.ValidColumn,
 			teacher.Table:             teacher.ValidColumn,
+			textquestion.Table:        textquestion.ValidColumn,
 			user.Table:                user.ValidColumn,
 		})
 	})

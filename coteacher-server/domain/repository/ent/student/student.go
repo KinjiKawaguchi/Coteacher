@@ -16,6 +16,8 @@ const (
 	EdgeUser = "user"
 	// EdgeStudentClasses holds the string denoting the studentclasses edge name in mutations.
 	EdgeStudentClasses = "studentClasses"
+	// EdgeResponses holds the string denoting the responses edge name in mutations.
+	EdgeResponses = "responses"
 	// Table holds the table name of the student in the database.
 	Table = "students"
 	// UserTable is the table that holds the user relation/edge.
@@ -32,6 +34,13 @@ const (
 	StudentClassesInverseTable = "student_classes"
 	// StudentClassesColumn is the table column denoting the studentClasses relation/edge.
 	StudentClassesColumn = "student_id"
+	// ResponsesTable is the table that holds the responses relation/edge.
+	ResponsesTable = "responses"
+	// ResponsesInverseTable is the table name for the Response entity.
+	// It exists in this package in order to avoid circular dependency with the "response" package.
+	ResponsesInverseTable = "responses"
+	// ResponsesColumn is the table column denoting the responses relation/edge.
+	ResponsesColumn = "student_id"
 )
 
 // Columns holds all SQL columns for student fields.
@@ -88,6 +97,20 @@ func ByStudentClasses(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newStudentClassesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByResponsesCount orders the results by responses count.
+func ByResponsesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newResponsesStep(), opts...)
+	}
+}
+
+// ByResponses orders the results by responses terms.
+func ByResponses(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newResponsesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -100,5 +123,12 @@ func newStudentClassesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(StudentClassesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, StudentClassesTable, StudentClassesColumn),
+	)
+}
+func newResponsesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ResponsesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ResponsesTable, ResponsesColumn),
 	)
 }

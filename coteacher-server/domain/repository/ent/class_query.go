@@ -4,11 +4,6 @@ package ent
 
 import (
 	"context"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
 	"database/sql/driver"
 	"fmt"
 	"math"
@@ -16,6 +11,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/form"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/predicate"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
 	"github.com/google/uuid"
 )
 
@@ -29,6 +30,7 @@ type ClassQuery struct {
 	withTeacher         *TeacherQuery
 	withClassStudents   *StudentClassQuery
 	withInvitationCodes *ClassInvitationCodeQuery
+	withForms           *FormQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -124,6 +126,28 @@ func (cq *ClassQuery) QueryInvitationCodes() *ClassInvitationCodeQuery {
 			sqlgraph.From(class.Table, class.FieldID, selector),
 			sqlgraph.To(classinvitationcode.Table, classinvitationcode.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, class.InvitationCodesTable, class.InvitationCodesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryForms chains the current query on the "forms" edge.
+func (cq *ClassQuery) QueryForms() *FormQuery {
+	query := (&FormClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(class.Table, class.FieldID, selector),
+			sqlgraph.To(form.Table, form.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, class.FormsTable, class.FormsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -326,6 +350,7 @@ func (cq *ClassQuery) Clone() *ClassQuery {
 		withTeacher:         cq.withTeacher.Clone(),
 		withClassStudents:   cq.withClassStudents.Clone(),
 		withInvitationCodes: cq.withInvitationCodes.Clone(),
+		withForms:           cq.withForms.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
@@ -362,6 +387,17 @@ func (cq *ClassQuery) WithInvitationCodes(opts ...func(*ClassInvitationCodeQuery
 		opt(query)
 	}
 	cq.withInvitationCodes = query
+	return cq
+}
+
+// WithForms tells the query-builder to eager-load the nodes that are connected to
+// the "forms" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ClassQuery) WithForms(opts ...func(*FormQuery)) *ClassQuery {
+	query := (&FormClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withForms = query
 	return cq
 }
 
@@ -443,10 +479,11 @@ func (cq *ClassQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Class,
 	var (
 		nodes       = []*Class{}
 		_spec       = cq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			cq.withTeacher != nil,
 			cq.withClassStudents != nil,
 			cq.withInvitationCodes != nil,
+			cq.withForms != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -484,6 +521,13 @@ func (cq *ClassQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Class,
 		if err := cq.loadInvitationCodes(ctx, query, nodes,
 			func(n *Class) { n.Edges.InvitationCodes = []*ClassInvitationCode{} },
 			func(n *Class, e *ClassInvitationCode) { n.Edges.InvitationCodes = append(n.Edges.InvitationCodes, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withForms; query != nil {
+		if err := cq.loadForms(ctx, query, nodes,
+			func(n *Class) { n.Edges.Forms = []*Form{} },
+			func(n *Class, e *Form) { n.Edges.Forms = append(n.Edges.Forms, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -564,6 +608,36 @@ func (cq *ClassQuery) loadInvitationCodes(ctx context.Context, query *ClassInvit
 	}
 	query.Where(predicate.ClassInvitationCode(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(class.InvitationCodesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ClassID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "class_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (cq *ClassQuery) loadForms(ctx context.Context, query *FormQuery, nodes []*Class, init func(*Class), assign func(*Class, *Form)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Class)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(form.FieldClassID)
+	}
+	query.Where(predicate.Form(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(class.FormsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

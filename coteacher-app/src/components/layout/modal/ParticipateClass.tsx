@@ -14,10 +14,11 @@ import {
 } from '@chakra-ui/react';
 import toast from '@/libs/utils/toast';
 import { studentRepo } from '@/repository/student';
+import { Class } from '@/interfaces';
 
 type ParticipateClassProps = {
   onClose: () => void;
-  fetchClasses: () => Promise<void>;
+  fetchClasses: () => Promise<Class[]>;
 };
 
 export default function ParticipateClass({

@@ -58,3 +58,19 @@ func (s *classServiceServer) DeleteClass(ctx context.Context, req *connect.Reque
 	}
 	return connect.NewResponse(resp), nil
 }
+
+func (s *classServiceServer) CheckClassEditPermission(ctx context.Context, req *connect.Request[coteacherv1.CheckClassEditPermissionRequest]) (*connect.Response[coteacherv1.CheckClassEditPermissionResponse], error) {
+  resp, err := s.classInteractor.CheckClassEditPermission(ctx, req.Msg)
+  if err != nil {
+    return nil, err
+  }
+  return connect.NewResponse(resp), nil
+}
+
+func (s *classServiceServer) CheckClassViewPermission(ctx context.Context, req *connect.Request[coteacherv1.CheckClassViewPermissionRequest]) (*connect.Response[coteacherv1.CheckClassViewPermissionResponse], error) {
+  resp, err := s.classInteractor.CheckClassViewPermission(ctx, req.Msg)
+  if err != nil {
+    return nil, err
+  }
+  return connect.NewResponse(resp), nil
+}
