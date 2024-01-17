@@ -2,6 +2,7 @@ import {
   CheckUserExistsByEmailRequest,
   CreateUserRequest,
   GetUserByEmailRequest,
+  GetUserByIDRequest,
 } from '@/gen/proto/coteacher/v1/user_pb';
 import { UserService } from '@/gen/proto/coteacher/v1/user_connect';
 import {
@@ -33,6 +34,26 @@ class UserRepository {
     localStorage.setItem('UserEmail', res.user.email);
     localStorage.setItem('UserName', res.user.name);
     localStorage.setItem('UserType', res.userType.toString());
+    const user: User = {
+      id: res.user.id,
+      name: res.user.name,
+      email: res.user.email,
+      user_type: res.userType, //TODO: 戻値の確認
+    };
+    return user;
+  }
+
+  async getUserById(id: string | null): Promise<User> {
+    const req = new GetUserByIDRequest();
+    if (id) {
+      req.id = id;
+    } else {
+      req.id = localStorage.getItem('UserID') || '';
+    }
+    const res = await this.cli.getUserByID(req);
+    if (!res.user) {
+      throw new Error('User not found');
+    }
     const user: User = {
       id: res.user.id,
       name: res.user.name,

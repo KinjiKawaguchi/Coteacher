@@ -462,9 +462,9 @@ export class Question extends Message<Question> {
   textQuestion?: Question_TextQuestion;
 
   /**
-   * @generated from field: repeated coteacher.v1.Question.QuestionOption options = 6;
+   * @generated from field: repeated coteacher.v1.QuestionOption options = 6;
    */
-  options: Question_QuestionOption[] = [];
+  options: QuestionOption[] = [];
 
   /**
    * @generated from field: bool is_required = 7;
@@ -509,7 +509,7 @@ export class Question extends Message<Question> {
     { no: 3, name: "question_type", kind: "enum", T: proto3.getEnumType(Question_QuestionType) },
     { no: 4, name: "question_text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 5, name: "text_question", kind: "message", T: Question_TextQuestion },
-    { no: 6, name: "options", kind: "message", T: Question_QuestionOption, repeated: true },
+    { no: 6, name: "options", kind: "message", T: QuestionOption, repeated: true },
     { no: 7, name: "is_required", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
     { no: 8, name: "for_ai_processing", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
     { no: 9, name: "order", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
@@ -635,9 +635,9 @@ export class Question_TextQuestion extends Message<Question_TextQuestion> {
 }
 
 /**
- * @generated from message coteacher.v1.Question.QuestionOption
+ * @generated from message coteacher.v1.QuestionOption
  */
-export class Question_QuestionOption extends Message<Question_QuestionOption> {
+export class QuestionOption extends Message<QuestionOption> {
   /**
    * @generated from field: string id = 1;
    */
@@ -658,13 +658,13 @@ export class Question_QuestionOption extends Message<Question_QuestionOption> {
    */
   order = 0;
 
-  constructor(data?: PartialMessage<Question_QuestionOption>) {
+  constructor(data?: PartialMessage<QuestionOption>) {
     super();
     proto3.util.initPartial(data, this);
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "coteacher.v1.Question.QuestionOption";
+  static readonly typeName = "coteacher.v1.QuestionOption";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "question_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
@@ -672,20 +672,148 @@ export class Question_QuestionOption extends Message<Question_QuestionOption> {
     { no: 4, name: "order", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
   ]);
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Question_QuestionOption {
-    return new Question_QuestionOption().fromBinary(bytes, options);
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): QuestionOption {
+    return new QuestionOption().fromBinary(bytes, options);
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Question_QuestionOption {
-    return new Question_QuestionOption().fromJson(jsonValue, options);
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): QuestionOption {
+    return new QuestionOption().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Question_QuestionOption {
-    return new Question_QuestionOption().fromJsonString(jsonString, options);
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): QuestionOption {
+    return new QuestionOption().fromJsonString(jsonString, options);
   }
 
-  static equals(a: Question_QuestionOption | PlainMessage<Question_QuestionOption> | undefined, b: Question_QuestionOption | PlainMessage<Question_QuestionOption> | undefined): boolean {
-    return proto3.util.equals(Question_QuestionOption, a, b);
+  static equals(a: QuestionOption | PlainMessage<QuestionOption> | undefined, b: QuestionOption | PlainMessage<QuestionOption> | undefined): boolean {
+    return proto3.util.equals(QuestionOption, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.Response
+ */
+export class Response extends Message<Response> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string form_id = 2;
+   */
+  formId = "";
+
+  /**
+   * @generated from field: string student_id = 3;
+   */
+  studentId = "";
+
+  /**
+   * @generated from field: repeated coteacher.v1.Response.Answer answers = 4;
+   */
+  answers: Response_Answer[] = [];
+
+  /**
+   * @generated from field: string created_at = 5;
+   */
+  createdAt = "";
+
+  /**
+   * @generated from field: string updated_at = 6;
+   */
+  updatedAt = "";
+
+  constructor(data?: PartialMessage<Response>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.Response";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "student_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "answers", kind: "message", T: Response_Answer, repeated: true },
+    { no: 5, name: "created_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "updated_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Response {
+    return new Response().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Response {
+    return new Response().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Response {
+    return new Response().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Response | PlainMessage<Response> | undefined, b: Response | PlainMessage<Response> | undefined): boolean {
+    return proto3.util.equals(Response, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.Response.Answer
+ */
+export class Response_Answer extends Message<Response_Answer> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string response_id = 2;
+   */
+  responseId = "";
+
+  /**
+   * @generated from field: string question_id = 3;
+   */
+  questionId = "";
+
+  /**
+   * @generated from field: string answer_text = 4;
+   */
+  answerText = "";
+
+  /**
+   * @generated from field: repeated coteacher.v1.QuestionOption selected_options = 5;
+   */
+  selectedOptions: QuestionOption[] = [];
+
+  constructor(data?: PartialMessage<Response_Answer>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.Response.Answer";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "response_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "question_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "answer_text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "selected_options", kind: "message", T: QuestionOption, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Response_Answer {
+    return new Response_Answer().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Response_Answer {
+    return new Response_Answer().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Response_Answer {
+    return new Response_Answer().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Response_Answer | PlainMessage<Response_Answer> | undefined, b: Response_Answer | PlainMessage<Response_Answer> | undefined): boolean {
+    return proto3.util.equals(Response_Answer, a, b);
   }
 }
 
