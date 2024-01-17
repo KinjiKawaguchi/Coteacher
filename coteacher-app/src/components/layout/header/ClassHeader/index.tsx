@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { HStack, Text, Box, Spinner } from '@chakra-ui/react';
+import { HStack, Text, Box, Spinner, Center } from '@chakra-ui/react';
 import { classRepo } from '@/repository/class';
 import { userRepo } from '@/repository/user';
 import { Class, User } from '@/interfaces';
+import { FaChalkboardTeacher, FaEnvelope } from 'react-icons/fa';
 
 export type ClassHeaderProps = {
   classId: string;
@@ -40,21 +41,28 @@ export const ClassHeader: React.FC<ClassHeaderProps> = ({ classId }) => {
   }
 
   return (
-    <HStack spacing={4}>
-      {classData && (
-        <Box>
-          <Text fontSize="lg" fontWeight="bold">
-            {classData.name}
-          </Text>
-          <Text fontSize="md">Class ID: {classData.id}</Text>
-        </Box>
-      )}
-      {teacherData && (
-        <Box>
-          <Text fontSize="lg">Teacher: {teacherData.name}</Text>
-          <Text fontSize="md">Email: {teacherData.email}</Text>
-        </Box>
-      )}
-    </HStack>
+    <Center>
+      <HStack spacing={4}>
+        {classData && (
+          <Box>
+            <Text fontSize="lg" fontWeight="bold">
+              {classData.name}
+            </Text>
+          </Box>
+        )}
+        {teacherData && (
+          <Box>
+            <HStack>
+              <FaChalkboardTeacher />
+              <Text fontSize="lg"> {teacherData.name}</Text>
+            </HStack>
+            <HStack>
+              <FaEnvelope />
+              <Text fontSize="md">{teacherData.email}</Text>
+            </HStack>
+          </Box>
+        )}
+      </HStack>
+    </Center>
   );
 };

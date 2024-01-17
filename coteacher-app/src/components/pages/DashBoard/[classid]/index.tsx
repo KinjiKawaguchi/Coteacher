@@ -10,6 +10,7 @@ import { ClassHeader } from '@/components/layout/header/ClassHeader';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { FormTable } from './FormTable';
+import { ArrowLeft } from 'lucide-react';
 
 export default function Class({ params }: { params: { classid: string } }) {
   const [hasEditPermission, setHasEditPermission] = useState<boolean | null>(
@@ -48,7 +49,9 @@ export default function Class({ params }: { params: { classid: string } }) {
 
   return (
     <ChakraProvider theme={theme}>
-      <Button onClick={navDashBoard}>←</Button>
+      <Button variant="ghost" onClick={navDashBoard}>
+        <ArrowLeft />
+      </Button>
       <Container maxWidth="container.sm">
         <UserHeader />
         <ClassHeader classId={params.classid} />
@@ -56,12 +59,4 @@ export default function Class({ params }: { params: { classid: string } }) {
       </Container>
     </ChakraProvider>
   );
-
-  if (hasEditPermission) {
-    return <ClassEditView params={params} />;
-  } else if (hasViewPermission) {
-    return <ClassView params={params} />;
-  } else {
-    return <NotFound />;
-  }
 }

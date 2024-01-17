@@ -31,7 +31,7 @@ export const FormTable: React.FC<FormTableProps> = ({ classId }) => {
       const formList = await formRepo.getFormListByClassId(classId);
       if (!isMounted) return;
 
-      const fetchUsageData = async form => {
+      const fetchUsageData = async (form: Form) => {
         if (userType === '1') {
           return await responseRepo.getNumberOfResponseByStudentId(
             null,
