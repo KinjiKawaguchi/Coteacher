@@ -53,6 +53,7 @@ func ToPbForm(t *ent.Form) *pb.Form {
 	return &pb.Form{
 		Id:          t.ID.String(),
 		ClassId:     t.ClassID.String(),
+		Name:        t.Name,
 		Description: t.Description,
 		UsageLimit:  int32(t.UsageLimit),
 		CreatedAt:   timestamppb.New(t.CreatedAt),
