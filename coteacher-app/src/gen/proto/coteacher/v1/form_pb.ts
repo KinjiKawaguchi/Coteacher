@@ -17,9 +17,19 @@ export class CreateFormRequest extends Message<CreateFormRequest> {
   classId = "";
 
   /**
-   * @generated from field: coteacher.v1.Form form = 2;
+   * @generated from field: string name = 2;
    */
-  form?: Form;
+  name = "";
+
+  /**
+   * @generated from field: string description = 3;
+   */
+  description = "";
+
+  /**
+   * @generated from field: int32 usage_limit = 4;
+   */
+  usageLimit = 0;
 
   constructor(data?: PartialMessage<CreateFormRequest>) {
     super();
@@ -30,7 +40,9 @@ export class CreateFormRequest extends Message<CreateFormRequest> {
   static readonly typeName = "coteacher.v1.CreateFormRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "class_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "form", kind: "message", T: Form },
+    { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "usage_limit", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateFormRequest {
@@ -240,14 +252,24 @@ export class GetFormListByClassIDResponse extends Message<GetFormListByClassIDRe
  */
 export class UpdateFormRequest extends Message<UpdateFormRequest> {
   /**
-   * @generated from field: string class_id = 1;
+   * @generated from field: string form_id = 1;
    */
-  classId = "";
+  formId = "";
 
   /**
-   * @generated from field: coteacher.v1.Form form = 2;
+   * @generated from field: string name = 2;
    */
-  form?: Form;
+  name = "";
+
+  /**
+   * @generated from field: string description = 3;
+   */
+  description = "";
+
+  /**
+   * @generated from field: int32 usage_limit = 4;
+   */
+  usageLimit = 0;
 
   constructor(data?: PartialMessage<UpdateFormRequest>) {
     super();
@@ -257,8 +279,10 @@ export class UpdateFormRequest extends Message<UpdateFormRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "coteacher.v1.UpdateFormRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "class_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "form", kind: "message", T: Form },
+    { no: 1, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "usage_limit", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdateFormRequest {
@@ -320,12 +344,7 @@ export class UpdateFormResponse extends Message<UpdateFormResponse> {
  */
 export class DeleteFormRequest extends Message<DeleteFormRequest> {
   /**
-   * @generated from field: string class_id = 1;
-   */
-  classId = "";
-
-  /**
-   * @generated from field: string form_id = 2;
+   * @generated from field: string form_id = 1;
    */
   formId = "";
 
@@ -337,8 +356,7 @@ export class DeleteFormRequest extends Message<DeleteFormRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "coteacher.v1.DeleteFormRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "class_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): DeleteFormRequest {

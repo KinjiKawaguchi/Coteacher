@@ -14,7 +14,9 @@ service FormService {
 
 message CreateFormRequest {
   string class_id = 1;
-  Form form = 2;
+  string name = 2;
+  string description = 3;
+  int32 usage_limit = 4;
 }
 
 message CreateFormResponse {
@@ -38,8 +40,10 @@ message GetFormListByClassIDResponse {
 }
 
 message UpdateFormRequest {
-  string class_id = 1;
-  Form form = 2;
+  string form_id = 1;
+  string name = 2;
+  string description = 3;
+  int32 usage_limit = 4;
 }
 
 message UpdateFormResponse {
@@ -47,8 +51,7 @@ message UpdateFormResponse {
 }
 
 message DeleteFormRequest {
-  string class_id = 1;
-  string form_id = 2;
+  string form_id = 1;
 }
 
 message DeleteFormResponse {
