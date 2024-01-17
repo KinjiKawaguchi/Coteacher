@@ -19,7 +19,6 @@ func (Response) Fields() []ent.Field {
 		field.UUID("student_id", uuid.UUID{}).StorageKey("student_id"),
 		field.UUID("form_id", uuid.UUID{}).StorageKey("form_id"),
 		field.Text("ai_response"),
-		field.Time("submitted_at"),
 		field.Time("created_at"),
 		field.Time("updated_at"),
 	}

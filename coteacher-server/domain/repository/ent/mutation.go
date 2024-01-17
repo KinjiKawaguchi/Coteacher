@@ -4687,7 +4687,6 @@ type ResponseMutation struct {
 	typ            string
 	id             *uuid.UUID
 	ai_response    *string
-	submitted_at   *time.Time
 	created_at     *time.Time
 	updated_at     *time.Time
 	clearedFields  map[string]struct{}
@@ -4915,42 +4914,6 @@ func (m *ResponseMutation) ResetAiResponse() {
 	m.ai_response = nil
 }
 
-// SetSubmittedAt sets the "submitted_at" field.
-func (m *ResponseMutation) SetSubmittedAt(t time.Time) {
-	m.submitted_at = &t
-}
-
-// SubmittedAt returns the value of the "submitted_at" field in the mutation.
-func (m *ResponseMutation) SubmittedAt() (r time.Time, exists bool) {
-	v := m.submitted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSubmittedAt returns the old "submitted_at" field's value of the Response entity.
-// If the Response object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ResponseMutation) OldSubmittedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSubmittedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSubmittedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSubmittedAt: %w", err)
-	}
-	return oldValue.SubmittedAt, nil
-}
-
-// ResetSubmittedAt resets all changes to the "submitted_at" field.
-func (m *ResponseMutation) ResetSubmittedAt() {
-	m.submitted_at = nil
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (m *ResponseMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -5165,7 +5128,7 @@ func (m *ResponseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ResponseMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 5)
 	if m.student != nil {
 		fields = append(fields, response.FieldStudentID)
 	}
@@ -5174,9 +5137,6 @@ func (m *ResponseMutation) Fields() []string {
 	}
 	if m.ai_response != nil {
 		fields = append(fields, response.FieldAiResponse)
-	}
-	if m.submitted_at != nil {
-		fields = append(fields, response.FieldSubmittedAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, response.FieldCreatedAt)
@@ -5198,8 +5158,6 @@ func (m *ResponseMutation) Field(name string) (ent.Value, bool) {
 		return m.FormID()
 	case response.FieldAiResponse:
 		return m.AiResponse()
-	case response.FieldSubmittedAt:
-		return m.SubmittedAt()
 	case response.FieldCreatedAt:
 		return m.CreatedAt()
 	case response.FieldUpdatedAt:
@@ -5219,8 +5177,6 @@ func (m *ResponseMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldFormID(ctx)
 	case response.FieldAiResponse:
 		return m.OldAiResponse(ctx)
-	case response.FieldSubmittedAt:
-		return m.OldSubmittedAt(ctx)
 	case response.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case response.FieldUpdatedAt:
@@ -5254,13 +5210,6 @@ func (m *ResponseMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAiResponse(v)
-		return nil
-	case response.FieldSubmittedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSubmittedAt(v)
 		return nil
 	case response.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -5333,9 +5282,6 @@ func (m *ResponseMutation) ResetField(name string) error {
 		return nil
 	case response.FieldAiResponse:
 		m.ResetAiResponse()
-		return nil
-	case response.FieldSubmittedAt:
-		m.ResetSubmittedAt()
 		return nil
 	case response.FieldCreatedAt:
 		m.ResetCreatedAt()

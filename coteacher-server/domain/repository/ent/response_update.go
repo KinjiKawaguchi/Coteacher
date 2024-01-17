@@ -74,20 +74,6 @@ func (ru *ResponseUpdate) SetNillableAiResponse(s *string) *ResponseUpdate {
 	return ru
 }
 
-// SetSubmittedAt sets the "submitted_at" field.
-func (ru *ResponseUpdate) SetSubmittedAt(t time.Time) *ResponseUpdate {
-	ru.mutation.SetSubmittedAt(t)
-	return ru
-}
-
-// SetNillableSubmittedAt sets the "submitted_at" field if the given value is not nil.
-func (ru *ResponseUpdate) SetNillableSubmittedAt(t *time.Time) *ResponseUpdate {
-	if t != nil {
-		ru.SetSubmittedAt(*t)
-	}
-	return ru
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (ru *ResponseUpdate) SetCreatedAt(t time.Time) *ResponseUpdate {
 	ru.mutation.SetCreatedAt(t)
@@ -231,9 +217,6 @@ func (ru *ResponseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ru.mutation.AiResponse(); ok {
 		_spec.SetField(response.FieldAiResponse, field.TypeString, value)
-	}
-	if value, ok := ru.mutation.SubmittedAt(); ok {
-		_spec.SetField(response.FieldSubmittedAt, field.TypeTime, value)
 	}
 	if value, ok := ru.mutation.CreatedAt(); ok {
 		_spec.SetField(response.FieldCreatedAt, field.TypeTime, value)
@@ -402,20 +385,6 @@ func (ruo *ResponseUpdateOne) SetAiResponse(s string) *ResponseUpdateOne {
 func (ruo *ResponseUpdateOne) SetNillableAiResponse(s *string) *ResponseUpdateOne {
 	if s != nil {
 		ruo.SetAiResponse(*s)
-	}
-	return ruo
-}
-
-// SetSubmittedAt sets the "submitted_at" field.
-func (ruo *ResponseUpdateOne) SetSubmittedAt(t time.Time) *ResponseUpdateOne {
-	ruo.mutation.SetSubmittedAt(t)
-	return ruo
-}
-
-// SetNillableSubmittedAt sets the "submitted_at" field if the given value is not nil.
-func (ruo *ResponseUpdateOne) SetNillableSubmittedAt(t *time.Time) *ResponseUpdateOne {
-	if t != nil {
-		ruo.SetSubmittedAt(*t)
 	}
 	return ruo
 }
@@ -593,9 +562,6 @@ func (ruo *ResponseUpdateOne) sqlSave(ctx context.Context) (_node *Response, err
 	}
 	if value, ok := ruo.mutation.AiResponse(); ok {
 		_spec.SetField(response.FieldAiResponse, field.TypeString, value)
-	}
-	if value, ok := ruo.mutation.SubmittedAt(); ok {
-		_spec.SetField(response.FieldSubmittedAt, field.TypeTime, value)
 	}
 	if value, ok := ruo.mutation.CreatedAt(); ok {
 		_spec.SetField(response.FieldCreatedAt, field.TypeTime, value)

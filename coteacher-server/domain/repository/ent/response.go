@@ -26,8 +26,6 @@ type Response struct {
 	FormID uuid.UUID `json:"form_id,omitempty"`
 	// AiResponse holds the value of the "ai_response" field.
 	AiResponse string `json:"ai_response,omitempty"`
-	// SubmittedAt holds the value of the "submitted_at" field.
-	SubmittedAt time.Time `json:"submitted_at,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -93,7 +91,7 @@ func (*Response) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case response.FieldAiResponse:
 			values[i] = new(sql.NullString)
-		case response.FieldSubmittedAt, response.FieldCreatedAt, response.FieldUpdatedAt:
+		case response.FieldCreatedAt, response.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case response.FieldID, response.FieldStudentID, response.FieldFormID:
 			values[i] = new(uuid.UUID)
@@ -135,12 +133,6 @@ func (r *Response) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field ai_response", values[i])
 			} else if value.Valid {
 				r.AiResponse = value.String
-			}
-		case response.FieldSubmittedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field submitted_at", values[i])
-			} else if value.Valid {
-				r.SubmittedAt = value.Time
 			}
 		case response.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -213,9 +205,6 @@ func (r *Response) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ai_response=")
 	builder.WriteString(r.AiResponse)
-	builder.WriteString(", ")
-	builder.WriteString("submitted_at=")
-	builder.WriteString(r.SubmittedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(r.CreatedAt.Format(time.ANSIC))

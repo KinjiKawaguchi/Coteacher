@@ -19,8 +19,6 @@ const (
 	FieldFormID = "form_id"
 	// FieldAiResponse holds the string denoting the ai_response field in the database.
 	FieldAiResponse = "ai_response"
-	// FieldSubmittedAt holds the string denoting the submitted_at field in the database.
-	FieldSubmittedAt = "submitted_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -62,7 +60,6 @@ var Columns = []string{
 	FieldStudentID,
 	FieldFormID,
 	FieldAiResponse,
-	FieldSubmittedAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -103,11 +100,6 @@ func ByFormID(opts ...sql.OrderTermOption) OrderOption {
 // ByAiResponse orders the results by the ai_response field.
 func ByAiResponse(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAiResponse, opts...).ToFunc()
-}
-
-// BySubmittedAt orders the results by the submitted_at field.
-func BySubmittedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSubmittedAt, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

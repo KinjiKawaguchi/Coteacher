@@ -156,7 +156,6 @@ var (
 	ResponsesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "ai_response", Type: field.TypeString, Size: 2147483647},
-		{Name: "submitted_at", Type: field.TypeTime},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "form_id", Type: field.TypeUUID},
@@ -170,13 +169,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "responses_forms_responses",
-				Columns:    []*schema.Column{ResponsesColumns[5]},
+				Columns:    []*schema.Column{ResponsesColumns[4]},
 				RefColumns: []*schema.Column{FormsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "responses_students_responses",
-				Columns:    []*schema.Column{ResponsesColumns[6]},
+				Columns:    []*schema.Column{ResponsesColumns[5]},
 				RefColumns: []*schema.Column{StudentsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

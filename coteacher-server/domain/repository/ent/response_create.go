@@ -42,12 +42,6 @@ func (rc *ResponseCreate) SetAiResponse(s string) *ResponseCreate {
 	return rc
 }
 
-// SetSubmittedAt sets the "submitted_at" field.
-func (rc *ResponseCreate) SetSubmittedAt(t time.Time) *ResponseCreate {
-	rc.mutation.SetSubmittedAt(t)
-	return rc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (rc *ResponseCreate) SetCreatedAt(t time.Time) *ResponseCreate {
 	rc.mutation.SetCreatedAt(t)
@@ -151,9 +145,6 @@ func (rc *ResponseCreate) check() error {
 	if _, ok := rc.mutation.AiResponse(); !ok {
 		return &ValidationError{Name: "ai_response", err: errors.New(`ent: missing required field "Response.ai_response"`)}
 	}
-	if _, ok := rc.mutation.SubmittedAt(); !ok {
-		return &ValidationError{Name: "submitted_at", err: errors.New(`ent: missing required field "Response.submitted_at"`)}
-	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Response.created_at"`)}
 	}
@@ -204,10 +195,6 @@ func (rc *ResponseCreate) createSpec() (*Response, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.AiResponse(); ok {
 		_spec.SetField(response.FieldAiResponse, field.TypeString, value)
 		_node.AiResponse = value
-	}
-	if value, ok := rc.mutation.SubmittedAt(); ok {
-		_spec.SetField(response.FieldSubmittedAt, field.TypeTime, value)
-		_node.SubmittedAt = value
 	}
 	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.SetField(response.FieldCreatedAt, field.TypeTime, value)

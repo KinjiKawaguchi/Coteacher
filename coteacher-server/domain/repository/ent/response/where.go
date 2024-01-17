@@ -71,11 +71,6 @@ func AiResponse(v string) predicate.Response {
 	return predicate.Response(sql.FieldEQ(FieldAiResponse, v))
 }
 
-// SubmittedAt applies equality check predicate on the "submitted_at" field. It's identical to SubmittedAtEQ.
-func SubmittedAt(v time.Time) predicate.Response {
-	return predicate.Response(sql.FieldEQ(FieldSubmittedAt, v))
-}
-
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Response {
 	return predicate.Response(sql.FieldEQ(FieldCreatedAt, v))
@@ -189,46 +184,6 @@ func AiResponseEqualFold(v string) predicate.Response {
 // AiResponseContainsFold applies the ContainsFold predicate on the "ai_response" field.
 func AiResponseContainsFold(v string) predicate.Response {
 	return predicate.Response(sql.FieldContainsFold(FieldAiResponse, v))
-}
-
-// SubmittedAtEQ applies the EQ predicate on the "submitted_at" field.
-func SubmittedAtEQ(v time.Time) predicate.Response {
-	return predicate.Response(sql.FieldEQ(FieldSubmittedAt, v))
-}
-
-// SubmittedAtNEQ applies the NEQ predicate on the "submitted_at" field.
-func SubmittedAtNEQ(v time.Time) predicate.Response {
-	return predicate.Response(sql.FieldNEQ(FieldSubmittedAt, v))
-}
-
-// SubmittedAtIn applies the In predicate on the "submitted_at" field.
-func SubmittedAtIn(vs ...time.Time) predicate.Response {
-	return predicate.Response(sql.FieldIn(FieldSubmittedAt, vs...))
-}
-
-// SubmittedAtNotIn applies the NotIn predicate on the "submitted_at" field.
-func SubmittedAtNotIn(vs ...time.Time) predicate.Response {
-	return predicate.Response(sql.FieldNotIn(FieldSubmittedAt, vs...))
-}
-
-// SubmittedAtGT applies the GT predicate on the "submitted_at" field.
-func SubmittedAtGT(v time.Time) predicate.Response {
-	return predicate.Response(sql.FieldGT(FieldSubmittedAt, v))
-}
-
-// SubmittedAtGTE applies the GTE predicate on the "submitted_at" field.
-func SubmittedAtGTE(v time.Time) predicate.Response {
-	return predicate.Response(sql.FieldGTE(FieldSubmittedAt, v))
-}
-
-// SubmittedAtLT applies the LT predicate on the "submitted_at" field.
-func SubmittedAtLT(v time.Time) predicate.Response {
-	return predicate.Response(sql.FieldLT(FieldSubmittedAt, v))
-}
-
-// SubmittedAtLTE applies the LTE predicate on the "submitted_at" field.
-func SubmittedAtLTE(v time.Time) predicate.Response {
-	return predicate.Response(sql.FieldLTE(FieldSubmittedAt, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
