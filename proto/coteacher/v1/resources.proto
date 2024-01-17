@@ -75,25 +75,24 @@ message Question {
     QUESTION_TYPE_TEXT = 6;
   }
   QuestionType question_type = 3;
-  TextQuestion text_question = 4;
-  repeated QuestionOption options = 5;
-  bool is_required = 6;
-  bool for_ai_processing = 7;
-  int32 order = 8;
-  string form_id = 9;
-  google.protobuf.Timestamp created_at = 10;
-  google.protobuf.Timestamp updated_at = 11;
-
+  string question_text = 4;
   message TextQuestion {
     string id = 1;
     string question_id = 2;
     int32 max_length = 3;
   }
-
+  TextQuestion text_question = 5;
   message QuestionOption {
     string id = 1;
     string question_id = 2;
     string option_text = 3;
     int32 order = 4;
   }
+  repeated QuestionOption options = 6;
+  bool is_required = 7;
+  bool for_ai_processing = 8;
+  int32 order = 9;
+  string form_id = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
 }

@@ -452,42 +452,47 @@ export class Question extends Message<Question> {
   questionType = Question_QuestionType.UNSPECIFIED;
 
   /**
-   * @generated from field: coteacher.v1.Question.TextQuestion text_question = 4;
+   * @generated from field: string question_text = 4;
+   */
+  questionText = "";
+
+  /**
+   * @generated from field: coteacher.v1.Question.TextQuestion text_question = 5;
    */
   textQuestion?: Question_TextQuestion;
 
   /**
-   * @generated from field: repeated coteacher.v1.Question.QuestionOption options = 5;
+   * @generated from field: repeated coteacher.v1.Question.QuestionOption options = 6;
    */
   options: Question_QuestionOption[] = [];
 
   /**
-   * @generated from field: bool is_required = 6;
+   * @generated from field: bool is_required = 7;
    */
   isRequired = false;
 
   /**
-   * @generated from field: bool for_ai_processing = 7;
+   * @generated from field: bool for_ai_processing = 8;
    */
   forAiProcessing = false;
 
   /**
-   * @generated from field: int32 order = 8;
+   * @generated from field: int32 order = 9;
    */
   order = 0;
 
   /**
-   * @generated from field: string form_id = 9;
+   * @generated from field: string form_id = 10;
    */
   formId = "";
 
   /**
-   * @generated from field: google.protobuf.Timestamp created_at = 10;
+   * @generated from field: google.protobuf.Timestamp created_at = 11;
    */
   createdAt?: Timestamp;
 
   /**
-   * @generated from field: google.protobuf.Timestamp updated_at = 11;
+   * @generated from field: google.protobuf.Timestamp updated_at = 12;
    */
   updatedAt?: Timestamp;
 
@@ -502,14 +507,15 @@ export class Question extends Message<Question> {
     { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "question_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "question_type", kind: "enum", T: proto3.getEnumType(Question_QuestionType) },
-    { no: 4, name: "text_question", kind: "message", T: Question_TextQuestion },
-    { no: 5, name: "options", kind: "message", T: Question_QuestionOption, repeated: true },
-    { no: 6, name: "is_required", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
-    { no: 7, name: "for_ai_processing", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
-    { no: 8, name: "order", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-    { no: 9, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 10, name: "created_at", kind: "message", T: Timestamp },
-    { no: 11, name: "updated_at", kind: "message", T: Timestamp },
+    { no: 4, name: "question_text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "text_question", kind: "message", T: Question_TextQuestion },
+    { no: 6, name: "options", kind: "message", T: Question_QuestionOption, repeated: true },
+    { no: 7, name: "is_required", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 8, name: "for_ai_processing", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 9, name: "order", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 10, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 11, name: "created_at", kind: "message", T: Timestamp },
+    { no: 12, name: "updated_at", kind: "message", T: Timestamp },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Question {
