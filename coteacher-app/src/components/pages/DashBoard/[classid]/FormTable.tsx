@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   ColumnDef,
   useReactTable,
@@ -13,52 +13,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Form } from '@/interfaces';
-import { formRepo } from '@/repository/form';
-import { responseRepo } from '@/repository/response';
 
 export type FormTableProps = {
-  classId: string;
+  forms: Form[]; // 新しいプロパティを追加
 };
 
-export const FormTable: React.FC<FormTableProps> = ({ classId }) => {
-  const [forms, setForms] = useState<Form[]>([]);
+export const FormTable: React.FC<FormTableProps> = ({ forms }) => {
   const userType = localStorage.getItem('UserType');
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchForms = async () => {
-      const formList = await formRepo.getFormListByClassId(classId);
-      if (!isMounted) return;
-
-      const fetchUsageData = async (form: Form) => {
-        if (userType === '1') {
-          return await responseRepo.getNumberOfResponseByStudentId(
-            null,
-            form.id
-          );
-        } else if (userType === '2') {
-          return await responseRepo.getNumberOfResponseByFormId(form.id);
-        }
-        return 0;
-      };
-
-      const formsWithUsage = await Promise.all(
-        formList.map(async form => ({
-          ...form,
-          usage: await fetchUsageData(form),
-        }))
-      );
-
-      setForms(formsWithUsage);
-    };
-
-    fetchForms();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [classId]);
 
   const columns: ColumnDef<Form>[] = [
     {

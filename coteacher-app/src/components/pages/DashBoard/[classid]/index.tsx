@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import NotFound from '@/app/not-found';
 import { classRepo } from '@/repository/class';
-import { ChakraProvider, Spinner, Container } from '@chakra-ui/react';
-import ClassEditView from './ClassEditView';
+import { ChakraProvider, Spinner, Container, Flex } from '@chakra-ui/react';
 import theme from '@/theme';
-import ClassView from './ClassView';
 import UserHeader from '@/components/layout/header/UserHeader';
 import { ClassHeader } from '@/components/layout/header/ClassHeader';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { FormTable } from './FormTable';
 import { ArrowLeft } from 'lucide-react';
+import CreateFormDialog from './CreateFormDialog';
+import { formRepo } from '@/repository/form';
+import { Form } from '@/interfaces';
+import { responseRepo } from '@/repository/response';
 
 export default function Class({ params }: { params: { classid: string } }) {
   const [hasEditPermission, setHasEditPermission] = useState<boolean | null>(
@@ -19,7 +20,13 @@ export default function Class({ params }: { params: { classid: string } }) {
   const [hasViewPermission, setHasViewPermission] = useState<boolean | null>(
     null
   );
+  const [forms, setForms] = useState<Form[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const updateFormList = async () => {
+    const updatedForms = await formRepo.getFormListByClassId(params.classid);
+    setForms(updatedForms);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,6 +38,21 @@ export default function Class({ params }: { params: { classid: string } }) {
       );
       setHasEditPermission(editPermission);
       setHasViewPermission(viewPermission);
+
+      const formList = await formRepo.getFormListByClassId(params.classid);
+      const userType = localStorage.getItem('UserType');
+
+      const formsWithUsage = await Promise.all(
+        formList.map(async form => {
+          const usage =
+            userType === '1'
+              ? await responseRepo.getNumberOfResponseByStudentId(null, form.id)
+              : await responseRepo.getNumberOfResponseByFormId(form.id);
+          return { ...form, usage };
+        })
+      );
+
+      setForms(formsWithUsage);
       setIsLoading(false);
     };
 
@@ -42,10 +64,7 @@ export default function Class({ params }: { params: { classid: string } }) {
   }
 
   const router = useRouter();
-
-  const navDashBoard = () => {
-    router.back();
-  };
+  const navDashBoard = () => router.back();
 
   return (
     <ChakraProvider theme={theme}>
@@ -55,7 +74,10 @@ export default function Class({ params }: { params: { classid: string } }) {
       <Container maxWidth="container.sm">
         <UserHeader />
         <ClassHeader classId={params.classid} />
-        <FormTable classId={params.classid} />
+        <Flex justifyContent="flex-end">
+          <CreateFormDialog params={params} updateFormList={updateFormList} />
+        </Flex>
+        <FormTable forms={forms} />
       </Container>
     </ChakraProvider>
   );
