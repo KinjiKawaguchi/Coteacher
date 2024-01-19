@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CreateFormRequest, CreateFormResponse, DeleteFormRequest, DeleteFormResponse, GetFormByIDRequest, GetFormByIDResponse, GetFormListByClassIDRequest, GetFormListByClassIDResponse, UpdateFormRequest, UpdateFormResponse } from "./form_pb";
+import { CheckFormEditPermissionRequest, CheckFormEditPermissionResponse, CheckFormViewPermissionRequest, CheckFormViewPermissionResponse, CreateFormRequest, CreateFormResponse, DeleteFormRequest, DeleteFormResponse, GetFormByIDRequest, GetFormByIDResponse, GetFormListByClassIDRequest, GetFormListByClassIDResponse, UpdateFormRequest, UpdateFormResponse } from "./form_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 import { createQueryService } from "@connectrpc/connect-query";
 
@@ -60,6 +60,24 @@ export const FormService = {
       O: DeleteFormResponse,
       kind: MethodKind.Unary,
     },
+    /**
+     * @generated from rpc coteacher.v1.FormService.CheckFormEditPermission
+     */
+    checkFormEditPermission: {
+      name: "CheckFormEditPermission",
+      I: CheckFormEditPermissionRequest,
+      O: CheckFormEditPermissionResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc coteacher.v1.FormService.CheckFormViewPermission
+     */
+    checkFormViewPermission: {
+      name: "CheckFormViewPermission",
+      I: CheckFormViewPermissionRequest,
+      O: CheckFormViewPermissionResponse,
+      kind: MethodKind.Unary,
+    },
   }
 } as const;
 
@@ -97,3 +115,17 @@ export const updateForm = createQueryService({
 export const deleteForm = createQueryService({
   service: FormService,
 }).deleteForm;
+
+/**
+ * @generated from rpc coteacher.v1.FormService.CheckFormEditPermission
+ */
+export const checkFormEditPermission = createQueryService({
+  service: FormService,
+}).checkFormEditPermission;
+
+/**
+ * @generated from rpc coteacher.v1.FormService.CheckFormViewPermission
+ */
+export const checkFormViewPermission = createQueryService({
+  service: FormService,
+}).checkFormViewPermission;

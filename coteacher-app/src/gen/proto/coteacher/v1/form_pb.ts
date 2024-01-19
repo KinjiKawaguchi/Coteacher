@@ -413,3 +413,163 @@ export class DeleteFormResponse extends Message<DeleteFormResponse> {
   }
 }
 
+/**
+ * @generated from message coteacher.v1.CheckFormEditPermissionRequest
+ */
+export class CheckFormEditPermissionRequest extends Message<CheckFormEditPermissionRequest> {
+  /**
+   * @generated from field: string form_id = 1;
+   */
+  formId = "";
+
+  /**
+   * @generated from field: string teacher_id = 2;
+   */
+  teacherId = "";
+
+  constructor(data?: PartialMessage<CheckFormEditPermissionRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.CheckFormEditPermissionRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "teacher_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CheckFormEditPermissionRequest {
+    return new CheckFormEditPermissionRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CheckFormEditPermissionRequest {
+    return new CheckFormEditPermissionRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CheckFormEditPermissionRequest {
+    return new CheckFormEditPermissionRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CheckFormEditPermissionRequest | PlainMessage<CheckFormEditPermissionRequest> | undefined, b: CheckFormEditPermissionRequest | PlainMessage<CheckFormEditPermissionRequest> | undefined): boolean {
+    return proto3.util.equals(CheckFormEditPermissionRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.CheckFormEditPermissionResponse
+ */
+export class CheckFormEditPermissionResponse extends Message<CheckFormEditPermissionResponse> {
+  /**
+   * @generated from field: bool has_permission = 1;
+   */
+  hasPermission = false;
+
+  constructor(data?: PartialMessage<CheckFormEditPermissionResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.CheckFormEditPermissionResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "has_permission", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CheckFormEditPermissionResponse {
+    return new CheckFormEditPermissionResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CheckFormEditPermissionResponse {
+    return new CheckFormEditPermissionResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CheckFormEditPermissionResponse {
+    return new CheckFormEditPermissionResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CheckFormEditPermissionResponse | PlainMessage<CheckFormEditPermissionResponse> | undefined, b: CheckFormEditPermissionResponse | PlainMessage<CheckFormEditPermissionResponse> | undefined): boolean {
+    return proto3.util.equals(CheckFormEditPermissionResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.CheckFormViewPermissionRequest
+ */
+export class CheckFormViewPermissionRequest extends Message<CheckFormViewPermissionRequest> {
+  /**
+   * @generated from field: string form_id = 1;
+   */
+  formId = "";
+
+  /**
+   * @generated from field: string student_id = 2;
+   */
+  studentId = "";
+
+  constructor(data?: PartialMessage<CheckFormViewPermissionRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.CheckFormViewPermissionRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "student_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CheckFormViewPermissionRequest {
+    return new CheckFormViewPermissionRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CheckFormViewPermissionRequest {
+    return new CheckFormViewPermissionRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CheckFormViewPermissionRequest {
+    return new CheckFormViewPermissionRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CheckFormViewPermissionRequest | PlainMessage<CheckFormViewPermissionRequest> | undefined, b: CheckFormViewPermissionRequest | PlainMessage<CheckFormViewPermissionRequest> | undefined): boolean {
+    return proto3.util.equals(CheckFormViewPermissionRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.CheckFormViewPermissionResponse
+ */
+export class CheckFormViewPermissionResponse extends Message<CheckFormViewPermissionResponse> {
+  /**
+   * @generated from field: bool has_permission = 1;
+   */
+  hasPermission = false;
+
+  constructor(data?: PartialMessage<CheckFormViewPermissionResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.CheckFormViewPermissionResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "has_permission", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CheckFormViewPermissionResponse {
+    return new CheckFormViewPermissionResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CheckFormViewPermissionResponse {
+    return new CheckFormViewPermissionResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CheckFormViewPermissionResponse {
+    return new CheckFormViewPermissionResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CheckFormViewPermissionResponse | PlainMessage<CheckFormViewPermissionResponse> | undefined, b: CheckFormViewPermissionResponse | PlainMessage<CheckFormViewPermissionResponse> | undefined): boolean {
+    return proto3.util.equals(CheckFormViewPermissionResponse, a, b);
+  }
+}
+

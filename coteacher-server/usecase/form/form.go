@@ -9,6 +9,7 @@ import (
 
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 	form "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/form"
+	studentClass "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
 
 	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
 
@@ -65,5 +66,67 @@ func (i *Interactor) CreateForm(ctx context.Context, req *pb.CreateFormRequest) 
 
 	return &pb.CreateFormResponse{
 		Form: utils.ToPbForm(form),
+	}, nil
+}
+
+func (i *Interactor) CheckFormEditPermission(ctx context.Context, req *pb.CheckFormEditPermissionRequest) (*pb.CheckFormEditPermissionResponse, error) {
+	// Get form by id.
+	formID, err := uuid.Parse(req.FormId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+	teacherID, err := uuid.Parse(req.TeacherId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	form, err := i.entClient.Form.Query().Where(form.ID(formID)).Only(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	// Check if the teacher is the owner of the form.
+	if form.Edges.Class.Edges.Teacher.ID != teacherID {
+		return &pb.CheckFormEditPermissionResponse{
+			HasPermission: false,
+		}, nil
+	}
+
+	return &pb.CheckFormEditPermissionResponse{
+		HasPermission: true,
+	}, nil
+}
+
+func (i *Interactor) CheckFormViewPermission(ctx context.Context, req *pb.CheckFormViewPermissionRequest) (*pb.CheckFormViewPermissionResponse, error) {
+	// Get form by id.
+	formID, err := uuid.Parse(req.FormId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+	studentID, err := uuid.Parse(req.StudentId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	form, err := i.entClient.Form.Query().Where(form.ID(formID)).Only(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	// Check if the student exists on student_class table.
+	_, err = i.entClient.StudentClass.Query().Where(
+		studentClass.And(
+			studentClass.StudentIDEQ(studentID),
+			studentClass.ClassIDEQ(form.Edges.Class.ID),
+		),
+	).Only(ctx)
+	if err != nil {
+		return &pb.CheckFormViewPermissionResponse{
+			HasPermission: false,
+		}, nil
+	}
+
+	return &pb.CheckFormViewPermissionResponse{
+		HasPermission: true,
 	}, nil
 }
