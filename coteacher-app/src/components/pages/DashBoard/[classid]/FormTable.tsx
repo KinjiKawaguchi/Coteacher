@@ -13,6 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Form } from '@/interfaces';
+import { useRouter } from 'next/navigation';
 
 export type FormTableProps = {
   forms: Form[]; // 新しいプロパティを追加
@@ -64,6 +65,13 @@ export const FormTable: React.FC<FormTableProps> = ({ forms }) => {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const router = useRouter();
+
+  const handleRowClick = (row: any) => {
+    const formId = row.original.id; // formIdはrow.originalから取得
+    router.push(`/dashboard/${formId}`);
+  };
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -85,7 +93,7 @@ export const FormTable: React.FC<FormTableProps> = ({ forms }) => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map(row => (
-            <TableRow key={row.id}>
+            <TableRow key={row.id} onClick={() => handleRowClick(row)}>
               {row.getVisibleCells().map(cell => (
                 <TableCell key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
