@@ -6,13 +6,42 @@ import {
 import { backendGrpcTransport } from '@/config/connectRpc';
 import { FormService } from '@/gen/proto/coteacher/v1/form_connect';
 import { Form } from '@/interfaces';
-import { GetFormListByClassIDRequest } from '@/gen/proto/coteacher/v1/form_pb';
+import {
+  CreateFormRequest,
+  GetFormListByClassIDRequest,
+} from '@/gen/proto/coteacher/v1/form_pb';
 
+export interface CreateFormInput {
+  classId: string;
+  name: string;
+  description: string;
+  usageLimit: number;
+}
 class FormRepository {
   readonly cli: PromiseClient<typeof FormService>;
 
   constructor(t: Transport) {
     this.cli = createPromiseClient(FormService, t);
+  }
+
+  async createForm(createFormInput: CreateFormInput) {
+    const req = new CreateFormRequest();
+    req.classId = createFormInput.classId;
+    req.name = createFormInput.name;
+    req.description = createFormInput.description;
+    req.usageLimit = createFormInput.usageLimit;
+    const res = await this.cli.createForm(req);
+    if (!res.form) {
+      throw new Error('form is null');
+    }
+    const form: Form = {
+      id: res.form.id,
+      classId: res.form.classId,
+      name: res.form.name,
+      description: res.form.description,
+      usageLimit: res.form.usageLimit,
+    };
+    return form;
   }
 
   async getFormListByClassId(classId: string): Promise<Form[]> {
