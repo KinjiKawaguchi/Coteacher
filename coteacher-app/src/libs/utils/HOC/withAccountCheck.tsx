@@ -20,7 +20,6 @@ const withAuthAndAccountCheck = <P extends object>(
               const isUserExists = await userRepo.checkUserExistsByEmail(
                 user.email
               );
-              console.log('isUserExists', isUserExists); // Debugging
               if (!isUserExists) {
                 router.push('/UserRegister');
               } else {
