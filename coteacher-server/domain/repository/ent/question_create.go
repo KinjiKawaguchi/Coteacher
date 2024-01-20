@@ -67,9 +67,25 @@ func (qc *QuestionCreate) SetCreatedAt(t time.Time) *QuestionCreate {
 	return qc
 }
 
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (qc *QuestionCreate) SetNillableCreatedAt(t *time.Time) *QuestionCreate {
+	if t != nil {
+		qc.SetCreatedAt(*t)
+	}
+	return qc
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (qc *QuestionCreate) SetUpdatedAt(t time.Time) *QuestionCreate {
 	qc.mutation.SetUpdatedAt(t)
+	return qc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (qc *QuestionCreate) SetNillableUpdatedAt(t *time.Time) *QuestionCreate {
+	if t != nil {
+		qc.SetUpdatedAt(*t)
+	}
 	return qc
 }
 
@@ -172,6 +188,14 @@ func (qc *QuestionCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (qc *QuestionCreate) defaults() {
+	if _, ok := qc.mutation.CreatedAt(); !ok {
+		v := question.DefaultCreatedAt()
+		qc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := qc.mutation.UpdatedAt(); !ok {
+		v := question.DefaultUpdatedAt()
+		qc.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := qc.mutation.ID(); !ok {
 		v := question.DefaultID()
 		qc.mutation.SetID(v)

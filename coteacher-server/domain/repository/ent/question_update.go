@@ -144,14 +144,6 @@ func (qu *QuestionUpdate) SetUpdatedAt(t time.Time) *QuestionUpdate {
 	return qu
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (qu *QuestionUpdate) SetNillableUpdatedAt(t *time.Time) *QuestionUpdate {
-	if t != nil {
-		qu.SetUpdatedAt(*t)
-	}
-	return qu
-}
-
 // SetForm sets the "form" edge to the Form entity.
 func (qu *QuestionUpdate) SetForm(f *Form) *QuestionUpdate {
 	return qu.SetFormID(f.ID)
@@ -278,6 +270,7 @@ func (qu *QuestionUpdate) RemoveAnswer(a ...*Answer) *QuestionUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (qu *QuestionUpdate) Save(ctx context.Context) (int, error) {
+	qu.defaults()
 	return withHooks(ctx, qu.sqlSave, qu.mutation, qu.hooks)
 }
 
@@ -300,6 +293,14 @@ func (qu *QuestionUpdate) Exec(ctx context.Context) error {
 func (qu *QuestionUpdate) ExecX(ctx context.Context) {
 	if err := qu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (qu *QuestionUpdate) defaults() {
+	if _, ok := qu.mutation.UpdatedAt(); !ok {
+		v := question.UpdateDefaultUpdatedAt()
+		qu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -647,14 +648,6 @@ func (quo *QuestionUpdateOne) SetUpdatedAt(t time.Time) *QuestionUpdateOne {
 	return quo
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (quo *QuestionUpdateOne) SetNillableUpdatedAt(t *time.Time) *QuestionUpdateOne {
-	if t != nil {
-		quo.SetUpdatedAt(*t)
-	}
-	return quo
-}
-
 // SetForm sets the "form" edge to the Form entity.
 func (quo *QuestionUpdateOne) SetForm(f *Form) *QuestionUpdateOne {
 	return quo.SetFormID(f.ID)
@@ -794,6 +787,7 @@ func (quo *QuestionUpdateOne) Select(field string, fields ...string) *QuestionUp
 
 // Save executes the query and returns the updated Question entity.
 func (quo *QuestionUpdateOne) Save(ctx context.Context) (*Question, error) {
+	quo.defaults()
 	return withHooks(ctx, quo.sqlSave, quo.mutation, quo.hooks)
 }
 
@@ -816,6 +810,14 @@ func (quo *QuestionUpdateOne) Exec(ctx context.Context) error {
 func (quo *QuestionUpdateOne) ExecX(ctx context.Context) {
 	if err := quo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (quo *QuestionUpdateOne) defaults() {
+	if _, ok := quo.mutation.UpdatedAt(); !ok {
+		v := question.UpdateDefaultUpdatedAt()
+		quo.mutation.SetUpdatedAt(v)
 	}
 }
 

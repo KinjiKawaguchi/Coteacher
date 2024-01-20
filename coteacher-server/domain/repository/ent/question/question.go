@@ -4,6 +4,7 @@ package question
 
 import (
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -95,6 +96,12 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
+	DefaultCreatedAt func() time.Time
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt func() time.Time
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
+	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
@@ -110,6 +117,7 @@ const (
 	QuestionTypeMultipleChoice QuestionType = "multiple_choice"
 	QuestionTypeParagraphText  QuestionType = "paragraph_text"
 	QuestionTypeText           QuestionType = "text"
+	QuestionTypeUnspecified    QuestionType = "unspecified"
 )
 
 func (qt QuestionType) String() string {
@@ -119,7 +127,7 @@ func (qt QuestionType) String() string {
 // QuestionTypeValidator is a validator for the "question_type" field enum values. It is called by the builders before save.
 func QuestionTypeValidator(qt QuestionType) error {
 	switch qt {
-	case QuestionTypeCheckbox, QuestionTypeList, QuestionTypeRadio, QuestionTypeMultipleChoice, QuestionTypeParagraphText, QuestionTypeText:
+	case QuestionTypeCheckbox, QuestionTypeList, QuestionTypeRadio, QuestionTypeMultipleChoice, QuestionTypeParagraphText, QuestionTypeText, QuestionTypeUnspecified:
 		return nil
 	default:
 		return fmt.Errorf("question: invalid enum value for question_type field: %q", qt)
