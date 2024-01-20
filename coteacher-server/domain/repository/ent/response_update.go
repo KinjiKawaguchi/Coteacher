@@ -94,14 +94,6 @@ func (ru *ResponseUpdate) SetUpdatedAt(t time.Time) *ResponseUpdate {
 	return ru
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (ru *ResponseUpdate) SetNillableUpdatedAt(t *time.Time) *ResponseUpdate {
-	if t != nil {
-		ru.SetUpdatedAt(*t)
-	}
-	return ru
-}
-
 // SetStudent sets the "student" edge to the Student entity.
 func (ru *ResponseUpdate) SetStudent(s *Student) *ResponseUpdate {
 	return ru.SetStudentID(s.ID)
@@ -167,6 +159,7 @@ func (ru *ResponseUpdate) RemoveAnswer(a ...*Answer) *ResponseUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ru *ResponseUpdate) Save(ctx context.Context) (int, error) {
+	ru.defaults()
 	return withHooks(ctx, ru.sqlSave, ru.mutation, ru.hooks)
 }
 
@@ -189,6 +182,14 @@ func (ru *ResponseUpdate) Exec(ctx context.Context) error {
 func (ru *ResponseUpdate) ExecX(ctx context.Context) {
 	if err := ru.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (ru *ResponseUpdate) defaults() {
+	if _, ok := ru.mutation.UpdatedAt(); !ok {
+		v := response.UpdateDefaultUpdatedAt()
+		ru.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -409,14 +410,6 @@ func (ruo *ResponseUpdateOne) SetUpdatedAt(t time.Time) *ResponseUpdateOne {
 	return ruo
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (ruo *ResponseUpdateOne) SetNillableUpdatedAt(t *time.Time) *ResponseUpdateOne {
-	if t != nil {
-		ruo.SetUpdatedAt(*t)
-	}
-	return ruo
-}
-
 // SetStudent sets the "student" edge to the Student entity.
 func (ruo *ResponseUpdateOne) SetStudent(s *Student) *ResponseUpdateOne {
 	return ruo.SetStudentID(s.ID)
@@ -495,6 +488,7 @@ func (ruo *ResponseUpdateOne) Select(field string, fields ...string) *ResponseUp
 
 // Save executes the query and returns the updated Response entity.
 func (ruo *ResponseUpdateOne) Save(ctx context.Context) (*Response, error) {
+	ruo.defaults()
 	return withHooks(ctx, ruo.sqlSave, ruo.mutation, ruo.hooks)
 }
 
@@ -517,6 +511,14 @@ func (ruo *ResponseUpdateOne) Exec(ctx context.Context) error {
 func (ruo *ResponseUpdateOne) ExecX(ctx context.Context) {
 	if err := ruo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (ruo *ResponseUpdateOne) defaults() {
+	if _, ok := ruo.mutation.UpdatedAt(); !ok {
+		v := response.UpdateDefaultUpdatedAt()
+		ruo.mutation.SetUpdatedAt(v)
 	}
 }
 

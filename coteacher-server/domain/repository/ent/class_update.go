@@ -81,14 +81,6 @@ func (cu *ClassUpdate) SetUpdatedAt(t time.Time) *ClassUpdate {
 	return cu
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (cu *ClassUpdate) SetNillableUpdatedAt(t *time.Time) *ClassUpdate {
-	if t != nil {
-		cu.SetUpdatedAt(*t)
-	}
-	return cu
-}
-
 // SetTeacher sets the "teacher" edge to the Teacher entity.
 func (cu *ClassUpdate) SetTeacher(t *Teacher) *ClassUpdate {
 	return cu.SetTeacherID(t.ID)
@@ -215,6 +207,7 @@ func (cu *ClassUpdate) RemoveForms(f ...*Form) *ClassUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cu *ClassUpdate) Save(ctx context.Context) (int, error) {
+	cu.defaults()
 	return withHooks(ctx, cu.sqlSave, cu.mutation, cu.hooks)
 }
 
@@ -237,6 +230,14 @@ func (cu *ClassUpdate) Exec(ctx context.Context) error {
 func (cu *ClassUpdate) ExecX(ctx context.Context) {
 	if err := cu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (cu *ClassUpdate) defaults() {
+	if _, ok := cu.mutation.UpdatedAt(); !ok {
+		v := class.UpdateDefaultUpdatedAt()
+		cu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -501,14 +502,6 @@ func (cuo *ClassUpdateOne) SetUpdatedAt(t time.Time) *ClassUpdateOne {
 	return cuo
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (cuo *ClassUpdateOne) SetNillableUpdatedAt(t *time.Time) *ClassUpdateOne {
-	if t != nil {
-		cuo.SetUpdatedAt(*t)
-	}
-	return cuo
-}
-
 // SetTeacher sets the "teacher" edge to the Teacher entity.
 func (cuo *ClassUpdateOne) SetTeacher(t *Teacher) *ClassUpdateOne {
 	return cuo.SetTeacherID(t.ID)
@@ -648,6 +641,7 @@ func (cuo *ClassUpdateOne) Select(field string, fields ...string) *ClassUpdateOn
 
 // Save executes the query and returns the updated Class entity.
 func (cuo *ClassUpdateOne) Save(ctx context.Context) (*Class, error) {
+	cuo.defaults()
 	return withHooks(ctx, cuo.sqlSave, cuo.mutation, cuo.hooks)
 }
 
@@ -670,6 +664,14 @@ func (cuo *ClassUpdateOne) Exec(ctx context.Context) error {
 func (cuo *ClassUpdateOne) ExecX(ctx context.Context) {
 	if err := cuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (cuo *ClassUpdateOne) defaults() {
+	if _, ok := cuo.mutation.UpdatedAt(); !ok {
+		v := class.UpdateDefaultUpdatedAt()
+		cuo.mutation.SetUpdatedAt(v)
 	}
 }
 

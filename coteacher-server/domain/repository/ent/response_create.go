@@ -48,9 +48,25 @@ func (rc *ResponseCreate) SetCreatedAt(t time.Time) *ResponseCreate {
 	return rc
 }
 
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (rc *ResponseCreate) SetNillableCreatedAt(t *time.Time) *ResponseCreate {
+	if t != nil {
+		rc.SetCreatedAt(*t)
+	}
+	return rc
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (rc *ResponseCreate) SetUpdatedAt(t time.Time) *ResponseCreate {
 	rc.mutation.SetUpdatedAt(t)
+	return rc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (rc *ResponseCreate) SetNillableUpdatedAt(t *time.Time) *ResponseCreate {
+	if t != nil {
+		rc.SetUpdatedAt(*t)
+	}
 	return rc
 }
 
@@ -128,6 +144,14 @@ func (rc *ResponseCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (rc *ResponseCreate) defaults() {
+	if _, ok := rc.mutation.CreatedAt(); !ok {
+		v := response.DefaultCreatedAt()
+		rc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := rc.mutation.UpdatedAt(); !ok {
+		v := response.DefaultUpdatedAt()
+		rc.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := rc.mutation.ID(); !ok {
 		v := response.DefaultID()
 		rc.mutation.SetID(v)

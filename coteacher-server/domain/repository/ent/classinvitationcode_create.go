@@ -60,9 +60,25 @@ func (cicc *ClassInvitationCodeCreate) SetCreatedAt(t time.Time) *ClassInvitatio
 	return cicc
 }
 
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (cicc *ClassInvitationCodeCreate) SetNillableCreatedAt(t *time.Time) *ClassInvitationCodeCreate {
+	if t != nil {
+		cicc.SetCreatedAt(*t)
+	}
+	return cicc
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (cicc *ClassInvitationCodeCreate) SetUpdatedAt(t time.Time) *ClassInvitationCodeCreate {
 	cicc.mutation.SetUpdatedAt(t)
+	return cicc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (cicc *ClassInvitationCodeCreate) SetNillableUpdatedAt(t *time.Time) *ClassInvitationCodeCreate {
+	if t != nil {
+		cicc.SetUpdatedAt(*t)
+	}
 	return cicc
 }
 
@@ -123,6 +139,14 @@ func (cicc *ClassInvitationCodeCreate) defaults() {
 	if _, ok := cicc.mutation.IsActive(); !ok {
 		v := classinvitationcode.DefaultIsActive
 		cicc.mutation.SetIsActive(v)
+	}
+	if _, ok := cicc.mutation.CreatedAt(); !ok {
+		v := classinvitationcode.DefaultCreatedAt()
+		cicc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := cicc.mutation.UpdatedAt(); !ok {
+		v := classinvitationcode.DefaultUpdatedAt()
+		cicc.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := cicc.mutation.ID(); !ok {
 		v := classinvitationcode.DefaultID()
