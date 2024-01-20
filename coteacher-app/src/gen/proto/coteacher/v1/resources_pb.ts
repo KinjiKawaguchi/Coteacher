@@ -442,9 +442,9 @@ export class Question extends Message<Question> {
   id = "";
 
   /**
-   * @generated from field: string question_id = 2;
+   * @generated from field: string form_id = 2;
    */
-  questionId = "";
+  formId = "";
 
   /**
    * @generated from field: coteacher.v1.Question.QuestionType question_type = 3;
@@ -482,17 +482,12 @@ export class Question extends Message<Question> {
   order = 0;
 
   /**
-   * @generated from field: string form_id = 10;
-   */
-  formId = "";
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 11;
+   * @generated from field: google.protobuf.Timestamp created_at = 10;
    */
   createdAt?: Timestamp;
 
   /**
-   * @generated from field: google.protobuf.Timestamp updated_at = 12;
+   * @generated from field: google.protobuf.Timestamp updated_at = 11;
    */
   updatedAt?: Timestamp;
 
@@ -505,7 +500,7 @@ export class Question extends Message<Question> {
   static readonly typeName = "coteacher.v1.Question";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "question_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "question_type", kind: "enum", T: proto3.getEnumType(Question_QuestionType) },
     { no: 4, name: "question_text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 5, name: "text_question", kind: "message", T: Question_TextQuestion },
@@ -513,9 +508,8 @@ export class Question extends Message<Question> {
     { no: 7, name: "is_required", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
     { no: 8, name: "for_ai_processing", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
     { no: 9, name: "order", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-    { no: 10, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 11, name: "created_at", kind: "message", T: Timestamp },
-    { no: 12, name: "updated_at", kind: "message", T: Timestamp },
+    { no: 10, name: "created_at", kind: "message", T: Timestamp },
+    { no: 11, name: "updated_at", kind: "message", T: Timestamp },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Question {
