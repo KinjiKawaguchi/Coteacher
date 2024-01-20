@@ -41,9 +41,25 @@ func (scc *StudentClassCreate) SetCreatedAt(t time.Time) *StudentClassCreate {
 	return scc
 }
 
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (scc *StudentClassCreate) SetNillableCreatedAt(t *time.Time) *StudentClassCreate {
+	if t != nil {
+		scc.SetCreatedAt(*t)
+	}
+	return scc
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (scc *StudentClassCreate) SetUpdatedAt(t time.Time) *StudentClassCreate {
 	scc.mutation.SetUpdatedAt(t)
+	return scc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (scc *StudentClassCreate) SetNillableUpdatedAt(t *time.Time) *StudentClassCreate {
+	if t != nil {
+		scc.SetUpdatedAt(*t)
+	}
 	return scc
 }
 
@@ -64,6 +80,7 @@ func (scc *StudentClassCreate) Mutation() *StudentClassMutation {
 
 // Save creates the StudentClass in the database.
 func (scc *StudentClassCreate) Save(ctx context.Context) (*StudentClass, error) {
+	scc.defaults()
 	return withHooks(ctx, scc.sqlSave, scc.mutation, scc.hooks)
 }
 
@@ -86,6 +103,18 @@ func (scc *StudentClassCreate) Exec(ctx context.Context) error {
 func (scc *StudentClassCreate) ExecX(ctx context.Context) {
 	if err := scc.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (scc *StudentClassCreate) defaults() {
+	if _, ok := scc.mutation.CreatedAt(); !ok {
+		v := studentclass.DefaultCreatedAt()
+		scc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := scc.mutation.UpdatedAt(); !ok {
+		v := studentclass.DefaultUpdatedAt()
+		scc.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -198,6 +227,7 @@ func (sccb *StudentClassCreateBulk) Save(ctx context.Context) ([]*StudentClass, 
 	for i := range sccb.builders {
 		func(i int, root context.Context) {
 			builder := sccb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*StudentClassMutation)
 				if !ok {

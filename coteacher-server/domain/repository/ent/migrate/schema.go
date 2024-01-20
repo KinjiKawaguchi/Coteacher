@@ -108,7 +108,7 @@ var (
 	// QuestionsColumns holds the columns for the "questions" table.
 	QuestionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
-		{Name: "question_type", Type: field.TypeEnum, Enums: []string{"checkbox", "list", "radio", "multiple_choice", "paragraph_text", "text"}},
+		{Name: "question_type", Type: field.TypeEnum, Enums: []string{"checkbox", "list", "radio", "multiple_choice", "paragraph_text", "text", "unspecified"}},
 		{Name: "question_text", Type: field.TypeString, Size: 2147483647},
 		{Name: "is_required", Type: field.TypeBool},
 		{Name: "for_ai_processing", Type: field.TypeBool},

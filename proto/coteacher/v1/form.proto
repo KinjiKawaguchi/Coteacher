@@ -10,6 +10,8 @@ service FormService {
   rpc GetFormListByClassID(GetFormListByClassIDRequest) returns (GetFormListByClassIDResponse);
   rpc UpdateForm(UpdateFormRequest) returns (UpdateFormResponse);
   rpc DeleteForm(DeleteFormRequest) returns (DeleteFormResponse);
+  rpc CheckFormEditPermission(CheckFormEditPermissionRequest) returns (CheckFormEditPermissionResponse);
+  rpc CheckFormViewPermission(CheckFormViewPermissionRequest) returns (CheckFormViewPermissionResponse);
 }
 
 message CreateFormRequest {
@@ -57,4 +59,23 @@ message DeleteFormRequest {
 message DeleteFormResponse {
   Form form = 1;
 }
+
+message CheckFormEditPermissionRequest {
+  string form_id = 1;
+  string teacher_id = 2;
+}
+
+message CheckFormEditPermissionResponse {
+  bool has_permission = 1;
+}
+
+message CheckFormViewPermissionRequest { 
+  string form_id = 1;
+  string student_id = 2;
+}
+
+message CheckFormViewPermissionResponse {
+  bool has_permission = 1;
+}
+
 

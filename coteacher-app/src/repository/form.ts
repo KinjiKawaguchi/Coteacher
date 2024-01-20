@@ -7,6 +7,8 @@ import { backendGrpcTransport } from '@/config/connectRpc';
 import { FormService } from '@/gen/proto/coteacher/v1/form_connect';
 import { Form } from '@/interfaces';
 import {
+  CheckFormEditPermissionRequest,
+  CheckFormViewPermissionRequest,
   CreateFormRequest,
   GetFormListByClassIDRequest,
 } from '@/gen/proto/coteacher/v1/form_pb';
@@ -58,6 +60,30 @@ class FormRepository {
       };
     });
     return forms;
+  }
+
+  async checkFormEditPermission(formId: string, teacherId: string | null) {
+    const req = new CheckFormEditPermissionRequest();
+    req.formId = formId;
+    if (teacherId) {
+      req.teacherId = teacherId;
+    } else {
+      req.teacherId = localStorage.getItem('UserID') || '';
+    }
+    const res = await this.cli.checkFormEditPermission(req);
+    return res.hasPermission;
+  }
+
+  async checkFormViewPermission(formId: string, studentId: string | null) {
+    const req = new CheckFormViewPermissionRequest();
+    req.formId = formId;
+    if (studentId) {
+      req.studentId = studentId;
+    } else {
+      req.studentId = localStorage.getItem('UserID') || '';
+    }
+    const res = await this.cli.checkFormViewPermission(req);
+    return res.hasPermission;
   }
 }
 

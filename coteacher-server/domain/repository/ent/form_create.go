@@ -54,9 +54,25 @@ func (fc *FormCreate) SetCreatedAt(t time.Time) *FormCreate {
 	return fc
 }
 
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (fc *FormCreate) SetNillableCreatedAt(t *time.Time) *FormCreate {
+	if t != nil {
+		fc.SetCreatedAt(*t)
+	}
+	return fc
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (fc *FormCreate) SetUpdatedAt(t time.Time) *FormCreate {
 	fc.mutation.SetUpdatedAt(t)
+	return fc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (fc *FormCreate) SetNillableUpdatedAt(t *time.Time) *FormCreate {
+	if t != nil {
+		fc.SetUpdatedAt(*t)
+	}
 	return fc
 }
 
@@ -144,6 +160,14 @@ func (fc *FormCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (fc *FormCreate) defaults() {
+	if _, ok := fc.mutation.CreatedAt(); !ok {
+		v := form.DefaultCreatedAt()
+		fc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := fc.mutation.UpdatedAt(); !ok {
+		v := form.DefaultUpdatedAt()
+		fc.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := fc.mutation.ID(); !ok {
 		v := form.DefaultID()
 		fc.mutation.SetID(v)

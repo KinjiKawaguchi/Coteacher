@@ -79,14 +79,6 @@ func (scu *StudentClassUpdate) SetUpdatedAt(t time.Time) *StudentClassUpdate {
 	return scu
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (scu *StudentClassUpdate) SetNillableUpdatedAt(t *time.Time) *StudentClassUpdate {
-	if t != nil {
-		scu.SetUpdatedAt(*t)
-	}
-	return scu
-}
-
 // SetStudent sets the "student" edge to the Student entity.
 func (scu *StudentClassUpdate) SetStudent(s *Student) *StudentClassUpdate {
 	return scu.SetStudentID(s.ID)
@@ -116,6 +108,7 @@ func (scu *StudentClassUpdate) ClearClass() *StudentClassUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (scu *StudentClassUpdate) Save(ctx context.Context) (int, error) {
+	scu.defaults()
 	return withHooks(ctx, scu.sqlSave, scu.mutation, scu.hooks)
 }
 
@@ -138,6 +131,14 @@ func (scu *StudentClassUpdate) Exec(ctx context.Context) error {
 func (scu *StudentClassUpdate) ExecX(ctx context.Context) {
 	if err := scu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (scu *StudentClassUpdate) defaults() {
+	if _, ok := scu.mutation.UpdatedAt(); !ok {
+		v := studentclass.UpdateDefaultUpdatedAt()
+		scu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -296,14 +297,6 @@ func (scuo *StudentClassUpdateOne) SetUpdatedAt(t time.Time) *StudentClassUpdate
 	return scuo
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (scuo *StudentClassUpdateOne) SetNillableUpdatedAt(t *time.Time) *StudentClassUpdateOne {
-	if t != nil {
-		scuo.SetUpdatedAt(*t)
-	}
-	return scuo
-}
-
 // SetStudent sets the "student" edge to the Student entity.
 func (scuo *StudentClassUpdateOne) SetStudent(s *Student) *StudentClassUpdateOne {
 	return scuo.SetStudentID(s.ID)
@@ -346,6 +339,7 @@ func (scuo *StudentClassUpdateOne) Select(field string, fields ...string) *Stude
 
 // Save executes the query and returns the updated StudentClass entity.
 func (scuo *StudentClassUpdateOne) Save(ctx context.Context) (*StudentClass, error) {
+	scuo.defaults()
 	return withHooks(ctx, scuo.sqlSave, scuo.mutation, scuo.hooks)
 }
 
@@ -368,6 +362,14 @@ func (scuo *StudentClassUpdateOne) Exec(ctx context.Context) error {
 func (scuo *StudentClassUpdateOne) ExecX(ctx context.Context) {
 	if err := scuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (scuo *StudentClassUpdateOne) defaults() {
+	if _, ok := scuo.mutation.UpdatedAt(); !ok {
+		v := studentclass.UpdateDefaultUpdatedAt()
+		scuo.mutation.SetUpdatedAt(v)
 	}
 }
 

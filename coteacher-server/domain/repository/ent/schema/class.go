@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -18,8 +20,8 @@ func (Class) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).Default(uuid.New).StorageKey("id").Unique(),
 		field.String("name"),
 		field.UUID("teacher_id", uuid.UUID{}).StorageKey("teacher_id").Unique(),
-		field.Time("created_at"),
-		field.Time("updated_at"),
+		field.Time("created_at").Default(time.Now),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
 }
 

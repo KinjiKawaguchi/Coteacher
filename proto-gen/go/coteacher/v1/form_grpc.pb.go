@@ -19,11 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	FormService_CreateForm_FullMethodName           = "/coteacher.v1.FormService/CreateForm"
-	FormService_GetFormByID_FullMethodName          = "/coteacher.v1.FormService/GetFormByID"
-	FormService_GetFormListByClassID_FullMethodName = "/coteacher.v1.FormService/GetFormListByClassID"
-	FormService_UpdateForm_FullMethodName           = "/coteacher.v1.FormService/UpdateForm"
-	FormService_DeleteForm_FullMethodName           = "/coteacher.v1.FormService/DeleteForm"
+	FormService_CreateForm_FullMethodName              = "/coteacher.v1.FormService/CreateForm"
+	FormService_GetFormByID_FullMethodName             = "/coteacher.v1.FormService/GetFormByID"
+	FormService_GetFormListByClassID_FullMethodName    = "/coteacher.v1.FormService/GetFormListByClassID"
+	FormService_UpdateForm_FullMethodName              = "/coteacher.v1.FormService/UpdateForm"
+	FormService_DeleteForm_FullMethodName              = "/coteacher.v1.FormService/DeleteForm"
+	FormService_CheckFormEditPermission_FullMethodName = "/coteacher.v1.FormService/CheckFormEditPermission"
+	FormService_CheckFormViewPermission_FullMethodName = "/coteacher.v1.FormService/CheckFormViewPermission"
 )
 
 // FormServiceClient is the client API for FormService service.
@@ -35,6 +37,8 @@ type FormServiceClient interface {
 	GetFormListByClassID(ctx context.Context, in *GetFormListByClassIDRequest, opts ...grpc.CallOption) (*GetFormListByClassIDResponse, error)
 	UpdateForm(ctx context.Context, in *UpdateFormRequest, opts ...grpc.CallOption) (*UpdateFormResponse, error)
 	DeleteForm(ctx context.Context, in *DeleteFormRequest, opts ...grpc.CallOption) (*DeleteFormResponse, error)
+	CheckFormEditPermission(ctx context.Context, in *CheckFormEditPermissionRequest, opts ...grpc.CallOption) (*CheckFormEditPermissionResponse, error)
+	CheckFormViewPermission(ctx context.Context, in *CheckFormViewPermissionRequest, opts ...grpc.CallOption) (*CheckFormViewPermissionResponse, error)
 }
 
 type formServiceClient struct {
@@ -90,6 +94,24 @@ func (c *formServiceClient) DeleteForm(ctx context.Context, in *DeleteFormReques
 	return out, nil
 }
 
+func (c *formServiceClient) CheckFormEditPermission(ctx context.Context, in *CheckFormEditPermissionRequest, opts ...grpc.CallOption) (*CheckFormEditPermissionResponse, error) {
+	out := new(CheckFormEditPermissionResponse)
+	err := c.cc.Invoke(ctx, FormService_CheckFormEditPermission_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *formServiceClient) CheckFormViewPermission(ctx context.Context, in *CheckFormViewPermissionRequest, opts ...grpc.CallOption) (*CheckFormViewPermissionResponse, error) {
+	out := new(CheckFormViewPermissionResponse)
+	err := c.cc.Invoke(ctx, FormService_CheckFormViewPermission_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FormServiceServer is the server API for FormService service.
 // All implementations should embed UnimplementedFormServiceServer
 // for forward compatibility
@@ -99,6 +121,8 @@ type FormServiceServer interface {
 	GetFormListByClassID(context.Context, *GetFormListByClassIDRequest) (*GetFormListByClassIDResponse, error)
 	UpdateForm(context.Context, *UpdateFormRequest) (*UpdateFormResponse, error)
 	DeleteForm(context.Context, *DeleteFormRequest) (*DeleteFormResponse, error)
+	CheckFormEditPermission(context.Context, *CheckFormEditPermissionRequest) (*CheckFormEditPermissionResponse, error)
+	CheckFormViewPermission(context.Context, *CheckFormViewPermissionRequest) (*CheckFormViewPermissionResponse, error)
 }
 
 // UnimplementedFormServiceServer should be embedded to have forward compatible implementations.
@@ -119,6 +143,12 @@ func (UnimplementedFormServiceServer) UpdateForm(context.Context, *UpdateFormReq
 }
 func (UnimplementedFormServiceServer) DeleteForm(context.Context, *DeleteFormRequest) (*DeleteFormResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteForm not implemented")
+}
+func (UnimplementedFormServiceServer) CheckFormEditPermission(context.Context, *CheckFormEditPermissionRequest) (*CheckFormEditPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckFormEditPermission not implemented")
+}
+func (UnimplementedFormServiceServer) CheckFormViewPermission(context.Context, *CheckFormViewPermissionRequest) (*CheckFormViewPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckFormViewPermission not implemented")
 }
 
 // UnsafeFormServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -222,6 +252,42 @@ func _FormService_DeleteForm_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FormService_CheckFormEditPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckFormEditPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FormServiceServer).CheckFormEditPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FormService_CheckFormEditPermission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FormServiceServer).CheckFormEditPermission(ctx, req.(*CheckFormEditPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FormService_CheckFormViewPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckFormViewPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FormServiceServer).CheckFormViewPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FormService_CheckFormViewPermission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FormServiceServer).CheckFormViewPermission(ctx, req.(*CheckFormViewPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FormService_ServiceDesc is the grpc.ServiceDesc for FormService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -248,6 +314,14 @@ var FormService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteForm",
 			Handler:    _FormService_DeleteForm_Handler,
+		},
+		{
+			MethodName: "CheckFormEditPermission",
+			Handler:    _FormService_CheckFormEditPermission_Handler,
+		},
+		{
+			MethodName: "CheckFormViewPermission",
+			Handler:    _FormService_CheckFormViewPermission_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

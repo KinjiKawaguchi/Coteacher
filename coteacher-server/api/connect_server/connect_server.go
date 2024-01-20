@@ -10,6 +10,7 @@ import (
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/class"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/class_invitation_code"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/form"
+	question "github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/question"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/response" // Import the missing package
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/student"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/student_class"
@@ -38,20 +39,31 @@ func New(addr string, opts ...optionFunc) *http.Server {
 	// 既存のgRPCサービスハンドラの登録
 	classinvitationcodeSrv := grpc_interfaces.NewClassInvitationCodeServiceServer(class_invitation_code.NewInteractor(opt.entClient, opt.logger))
 	mux.Handle(coteacherv1connect.NewClassInvitationCodeServiceHandler(classinvitationcodeSrv, interceptors))
+
 	classSrv := grpc_interfaces.NewClassServiceServer(class.NewInteractor(opt.entClient, opt.logger))
 	mux.Handle(coteacherv1connect.NewClassServiceHandler(classSrv, interceptors))
+
 	formSrv := grpc_interfaces.NewFormServiceServer(form.NewInteractor(opt.entClient, opt.logger))
 	mux.Handle(coteacherv1connect.NewFormServiceHandler(formSrv, interceptors))
+
 	healthcheckSrv := grpc_interfaces.NewHealthCheckServiceServer(nil)
 	mux.Handle(coteacherv1connect.NewHealthcheckServiceHandler(healthcheckSrv, interceptors))
+
+	questionSrv := grpc_interfaces.NewQuestionServiceServer(question.NewInteractor(opt.entClient, opt.logger))
+	mux.Handle(coteacherv1connect.NewQuestionServiceHandler(questionSrv, interceptors))
+
 	responseSrv := grpc_interfaces.NewResponseServiceServer(response.NewInteractor(opt.entClient, opt.logger))
 	mux.Handle(coteacherv1connect.NewResponseServiceHandler(responseSrv, interceptors))
+
 	studentclassSrv := grpc_interfaces.NewStudentClassServiceServer(student_class.NewInteractor(opt.entClient, opt.logger))
 	mux.Handle(coteacherv1connect.NewStudentClassServiceHandler(studentclassSrv, interceptors))
+
 	studentSrv := grpc_interfaces.NewStudentServiceServer(student.NewInteractor(opt.entClient, opt.logger))
 	mux.Handle(coteacherv1connect.NewStudentServiceHandler(studentSrv, interceptors))
+
 	teacherSrv := grpc_interfaces.NewTeacherServiceServer(teacher.NewInteractor(opt.entClient, opt.logger))
 	mux.Handle(coteacherv1connect.NewTeacherServiceHandler(teacherSrv, interceptors))
+
 	userSrv := grpc_interfaces.NewUserServiceServer(user.NewInteractor(opt.entClient, opt.logger))
 	mux.Handle(coteacherv1connect.NewUserServiceHandler(userSrv, interceptors))
 
@@ -60,6 +72,7 @@ func New(addr string, opts ...optionFunc) *http.Server {
 		"coteacher.v1.ClassInvitationCodeService",
 		"coteacher.v1.ClassService",
 		"coteacher.v1.FormService",
+		"coteacher.v1.QuestionService",
 		"coteacher.v1.HealthcheckService",
 		"coteacher.v1.ResponseService",
 		"coteacher.v1.StudentClassService",

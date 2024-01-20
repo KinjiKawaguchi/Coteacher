@@ -59,8 +59,12 @@ export default function Class({ params }: { params: { classid: string } }) {
     fetchData();
   }, [params.classid]);
 
-  if (isLoading) {
+  if (hasEditPermission === null || hasViewPermission === null || isLoading) {
     return <Spinner />;
+  }
+
+  if (!hasEditPermission && !hasViewPermission) {
+    return <div>権限がありません</div>;
   }
 
   const router = useRouter();

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package coteacher.v1;
+
+import "coteacher/v1/resources.proto";
+
+service QuestionService {
+  rpc GetQuestionListByFormId(GetQuestionListByFormIdRequest) returns (GetQuestionListByFormIdResponse) {}
+  rpc SaveQuestionList(SaveQuestionListRequest) returns (SaveQuestionListResponse) {}
+}
+
+message GetQuestionListByFormIdRequest {
+  string form_id = 1;
+}
+
+message GetQuestionListByFormIdResponse {
+  repeated Question questions = 1;
+}
+
+message SaveQuestionListRequest {
+  repeated Question questions = 1;
+  repeated bool is_deleted = 2;
+}
+
+message SaveQuestionListResponse {
+  repeated Question questions = 1;
+}

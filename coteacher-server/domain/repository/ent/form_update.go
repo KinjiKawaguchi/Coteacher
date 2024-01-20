@@ -115,14 +115,6 @@ func (fu *FormUpdate) SetUpdatedAt(t time.Time) *FormUpdate {
 	return fu
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (fu *FormUpdate) SetNillableUpdatedAt(t *time.Time) *FormUpdate {
-	if t != nil {
-		fu.SetUpdatedAt(*t)
-	}
-	return fu
-}
-
 // SetClass sets the "class" edge to the Class entity.
 func (fu *FormUpdate) SetClass(c *Class) *FormUpdate {
 	return fu.SetClassID(c.ID)
@@ -213,6 +205,7 @@ func (fu *FormUpdate) RemoveResponses(r ...*Response) *FormUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (fu *FormUpdate) Save(ctx context.Context) (int, error) {
+	fu.defaults()
 	return withHooks(ctx, fu.sqlSave, fu.mutation, fu.hooks)
 }
 
@@ -235,6 +228,14 @@ func (fu *FormUpdate) Exec(ctx context.Context) error {
 func (fu *FormUpdate) ExecX(ctx context.Context) {
 	if err := fu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (fu *FormUpdate) defaults() {
+	if _, ok := fu.mutation.UpdatedAt(); !ok {
+		v := form.UpdateDefaultUpdatedAt()
+		fu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -498,14 +499,6 @@ func (fuo *FormUpdateOne) SetUpdatedAt(t time.Time) *FormUpdateOne {
 	return fuo
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (fuo *FormUpdateOne) SetNillableUpdatedAt(t *time.Time) *FormUpdateOne {
-	if t != nil {
-		fuo.SetUpdatedAt(*t)
-	}
-	return fuo
-}
-
 // SetClass sets the "class" edge to the Class entity.
 func (fuo *FormUpdateOne) SetClass(c *Class) *FormUpdateOne {
 	return fuo.SetClassID(c.ID)
@@ -609,6 +602,7 @@ func (fuo *FormUpdateOne) Select(field string, fields ...string) *FormUpdateOne 
 
 // Save executes the query and returns the updated Form entity.
 func (fuo *FormUpdateOne) Save(ctx context.Context) (*Form, error) {
+	fuo.defaults()
 	return withHooks(ctx, fuo.sqlSave, fuo.mutation, fuo.hooks)
 }
 
@@ -631,6 +625,14 @@ func (fuo *FormUpdateOne) Exec(ctx context.Context) error {
 func (fuo *FormUpdateOne) ExecX(ctx context.Context) {
 	if err := fuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (fuo *FormUpdateOne) defaults() {
+	if _, ok := fuo.mutation.UpdatedAt(); !ok {
+		v := form.UpdateDefaultUpdatedAt()
+		fuo.mutation.SetUpdatedAt(v)
 	}
 }
 

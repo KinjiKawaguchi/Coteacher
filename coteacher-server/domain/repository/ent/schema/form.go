@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -18,8 +20,8 @@ func (Form) Fields() []ent.Field {
 		field.String("name"),
 		field.Text("description"),
 		field.Int("usage_limit"),
-		field.Time("created_at"),
-		field.Time("updated_at"),
+		field.Time("created_at").Default(time.Now),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
 }
 

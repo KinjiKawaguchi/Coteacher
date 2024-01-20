@@ -106,14 +106,6 @@ func (cicu *ClassInvitationCodeUpdate) SetUpdatedAt(t time.Time) *ClassInvitatio
 	return cicu
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (cicu *ClassInvitationCodeUpdate) SetNillableUpdatedAt(t *time.Time) *ClassInvitationCodeUpdate {
-	if t != nil {
-		cicu.SetUpdatedAt(*t)
-	}
-	return cicu
-}
-
 // SetClass sets the "class" edge to the Class entity.
 func (cicu *ClassInvitationCodeUpdate) SetClass(c *Class) *ClassInvitationCodeUpdate {
 	return cicu.SetClassID(c.ID)
@@ -132,6 +124,7 @@ func (cicu *ClassInvitationCodeUpdate) ClearClass() *ClassInvitationCodeUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cicu *ClassInvitationCodeUpdate) Save(ctx context.Context) (int, error) {
+	cicu.defaults()
 	return withHooks(ctx, cicu.sqlSave, cicu.mutation, cicu.hooks)
 }
 
@@ -154,6 +147,14 @@ func (cicu *ClassInvitationCodeUpdate) Exec(ctx context.Context) error {
 func (cicu *ClassInvitationCodeUpdate) ExecX(ctx context.Context) {
 	if err := cicu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (cicu *ClassInvitationCodeUpdate) defaults() {
+	if _, ok := cicu.mutation.UpdatedAt(); !ok {
+		v := classinvitationcode.UpdateDefaultUpdatedAt()
+		cicu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -317,14 +318,6 @@ func (cicuo *ClassInvitationCodeUpdateOne) SetUpdatedAt(t time.Time) *ClassInvit
 	return cicuo
 }
 
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (cicuo *ClassInvitationCodeUpdateOne) SetNillableUpdatedAt(t *time.Time) *ClassInvitationCodeUpdateOne {
-	if t != nil {
-		cicuo.SetUpdatedAt(*t)
-	}
-	return cicuo
-}
-
 // SetClass sets the "class" edge to the Class entity.
 func (cicuo *ClassInvitationCodeUpdateOne) SetClass(c *Class) *ClassInvitationCodeUpdateOne {
 	return cicuo.SetClassID(c.ID)
@@ -356,6 +349,7 @@ func (cicuo *ClassInvitationCodeUpdateOne) Select(field string, fields ...string
 
 // Save executes the query and returns the updated ClassInvitationCode entity.
 func (cicuo *ClassInvitationCodeUpdateOne) Save(ctx context.Context) (*ClassInvitationCode, error) {
+	cicuo.defaults()
 	return withHooks(ctx, cicuo.sqlSave, cicuo.mutation, cicuo.hooks)
 }
 
@@ -378,6 +372,14 @@ func (cicuo *ClassInvitationCodeUpdateOne) Exec(ctx context.Context) error {
 func (cicuo *ClassInvitationCodeUpdateOne) ExecX(ctx context.Context) {
 	if err := cicuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (cicuo *ClassInvitationCodeUpdateOne) defaults() {
+	if _, ok := cicuo.mutation.UpdatedAt(); !ok {
+		v := classinvitationcode.UpdateDefaultUpdatedAt()
+		cicuo.mutation.SetUpdatedAt(v)
 	}
 }
 

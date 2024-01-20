@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -20,8 +22,8 @@ func (ClassInvitationCode) Fields() []ent.Field {
 		field.String("invitation_code").Unique(),
 		field.Time("expiration_date").Default(nil),
 		field.Bool("is_active").Default(true),
-		field.Time("created_at"),
-		field.Time("updated_at"),
+		field.Time("created_at").Default(time.Now),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
 }
 

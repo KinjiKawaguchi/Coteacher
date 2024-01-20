@@ -44,16 +44,24 @@ const (
 	FormServiceUpdateFormProcedure = "/coteacher.v1.FormService/UpdateForm"
 	// FormServiceDeleteFormProcedure is the fully-qualified name of the FormService's DeleteForm RPC.
 	FormServiceDeleteFormProcedure = "/coteacher.v1.FormService/DeleteForm"
+	// FormServiceCheckFormEditPermissionProcedure is the fully-qualified name of the FormService's
+	// CheckFormEditPermission RPC.
+	FormServiceCheckFormEditPermissionProcedure = "/coteacher.v1.FormService/CheckFormEditPermission"
+	// FormServiceCheckFormViewPermissionProcedure is the fully-qualified name of the FormService's
+	// CheckFormViewPermission RPC.
+	FormServiceCheckFormViewPermissionProcedure = "/coteacher.v1.FormService/CheckFormViewPermission"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
-	formServiceServiceDescriptor                    = v1.File_coteacher_v1_form_proto.Services().ByName("FormService")
-	formServiceCreateFormMethodDescriptor           = formServiceServiceDescriptor.Methods().ByName("CreateForm")
-	formServiceGetFormByIDMethodDescriptor          = formServiceServiceDescriptor.Methods().ByName("GetFormByID")
-	formServiceGetFormListByClassIDMethodDescriptor = formServiceServiceDescriptor.Methods().ByName("GetFormListByClassID")
-	formServiceUpdateFormMethodDescriptor           = formServiceServiceDescriptor.Methods().ByName("UpdateForm")
-	formServiceDeleteFormMethodDescriptor           = formServiceServiceDescriptor.Methods().ByName("DeleteForm")
+	formServiceServiceDescriptor                       = v1.File_coteacher_v1_form_proto.Services().ByName("FormService")
+	formServiceCreateFormMethodDescriptor              = formServiceServiceDescriptor.Methods().ByName("CreateForm")
+	formServiceGetFormByIDMethodDescriptor             = formServiceServiceDescriptor.Methods().ByName("GetFormByID")
+	formServiceGetFormListByClassIDMethodDescriptor    = formServiceServiceDescriptor.Methods().ByName("GetFormListByClassID")
+	formServiceUpdateFormMethodDescriptor              = formServiceServiceDescriptor.Methods().ByName("UpdateForm")
+	formServiceDeleteFormMethodDescriptor              = formServiceServiceDescriptor.Methods().ByName("DeleteForm")
+	formServiceCheckFormEditPermissionMethodDescriptor = formServiceServiceDescriptor.Methods().ByName("CheckFormEditPermission")
+	formServiceCheckFormViewPermissionMethodDescriptor = formServiceServiceDescriptor.Methods().ByName("CheckFormViewPermission")
 )
 
 // FormServiceClient is a client for the coteacher.v1.FormService service.
@@ -63,6 +71,8 @@ type FormServiceClient interface {
 	GetFormListByClassID(context.Context, *connect.Request[v1.GetFormListByClassIDRequest]) (*connect.Response[v1.GetFormListByClassIDResponse], error)
 	UpdateForm(context.Context, *connect.Request[v1.UpdateFormRequest]) (*connect.Response[v1.UpdateFormResponse], error)
 	DeleteForm(context.Context, *connect.Request[v1.DeleteFormRequest]) (*connect.Response[v1.DeleteFormResponse], error)
+	CheckFormEditPermission(context.Context, *connect.Request[v1.CheckFormEditPermissionRequest]) (*connect.Response[v1.CheckFormEditPermissionResponse], error)
+	CheckFormViewPermission(context.Context, *connect.Request[v1.CheckFormViewPermissionRequest]) (*connect.Response[v1.CheckFormViewPermissionResponse], error)
 }
 
 // NewFormServiceClient constructs a client for the coteacher.v1.FormService service. By default, it
@@ -105,16 +115,30 @@ func NewFormServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(formServiceDeleteFormMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		checkFormEditPermission: connect.NewClient[v1.CheckFormEditPermissionRequest, v1.CheckFormEditPermissionResponse](
+			httpClient,
+			baseURL+FormServiceCheckFormEditPermissionProcedure,
+			connect.WithSchema(formServiceCheckFormEditPermissionMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		checkFormViewPermission: connect.NewClient[v1.CheckFormViewPermissionRequest, v1.CheckFormViewPermissionResponse](
+			httpClient,
+			baseURL+FormServiceCheckFormViewPermissionProcedure,
+			connect.WithSchema(formServiceCheckFormViewPermissionMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // formServiceClient implements FormServiceClient.
 type formServiceClient struct {
-	createForm           *connect.Client[v1.CreateFormRequest, v1.CreateFormResponse]
-	getFormByID          *connect.Client[v1.GetFormByIDRequest, v1.GetFormByIDResponse]
-	getFormListByClassID *connect.Client[v1.GetFormListByClassIDRequest, v1.GetFormListByClassIDResponse]
-	updateForm           *connect.Client[v1.UpdateFormRequest, v1.UpdateFormResponse]
-	deleteForm           *connect.Client[v1.DeleteFormRequest, v1.DeleteFormResponse]
+	createForm              *connect.Client[v1.CreateFormRequest, v1.CreateFormResponse]
+	getFormByID             *connect.Client[v1.GetFormByIDRequest, v1.GetFormByIDResponse]
+	getFormListByClassID    *connect.Client[v1.GetFormListByClassIDRequest, v1.GetFormListByClassIDResponse]
+	updateForm              *connect.Client[v1.UpdateFormRequest, v1.UpdateFormResponse]
+	deleteForm              *connect.Client[v1.DeleteFormRequest, v1.DeleteFormResponse]
+	checkFormEditPermission *connect.Client[v1.CheckFormEditPermissionRequest, v1.CheckFormEditPermissionResponse]
+	checkFormViewPermission *connect.Client[v1.CheckFormViewPermissionRequest, v1.CheckFormViewPermissionResponse]
 }
 
 // CreateForm calls coteacher.v1.FormService.CreateForm.
@@ -142,6 +166,16 @@ func (c *formServiceClient) DeleteForm(ctx context.Context, req *connect.Request
 	return c.deleteForm.CallUnary(ctx, req)
 }
 
+// CheckFormEditPermission calls coteacher.v1.FormService.CheckFormEditPermission.
+func (c *formServiceClient) CheckFormEditPermission(ctx context.Context, req *connect.Request[v1.CheckFormEditPermissionRequest]) (*connect.Response[v1.CheckFormEditPermissionResponse], error) {
+	return c.checkFormEditPermission.CallUnary(ctx, req)
+}
+
+// CheckFormViewPermission calls coteacher.v1.FormService.CheckFormViewPermission.
+func (c *formServiceClient) CheckFormViewPermission(ctx context.Context, req *connect.Request[v1.CheckFormViewPermissionRequest]) (*connect.Response[v1.CheckFormViewPermissionResponse], error) {
+	return c.checkFormViewPermission.CallUnary(ctx, req)
+}
+
 // FormServiceHandler is an implementation of the coteacher.v1.FormService service.
 type FormServiceHandler interface {
 	CreateForm(context.Context, *connect.Request[v1.CreateFormRequest]) (*connect.Response[v1.CreateFormResponse], error)
@@ -149,6 +183,8 @@ type FormServiceHandler interface {
 	GetFormListByClassID(context.Context, *connect.Request[v1.GetFormListByClassIDRequest]) (*connect.Response[v1.GetFormListByClassIDResponse], error)
 	UpdateForm(context.Context, *connect.Request[v1.UpdateFormRequest]) (*connect.Response[v1.UpdateFormResponse], error)
 	DeleteForm(context.Context, *connect.Request[v1.DeleteFormRequest]) (*connect.Response[v1.DeleteFormResponse], error)
+	CheckFormEditPermission(context.Context, *connect.Request[v1.CheckFormEditPermissionRequest]) (*connect.Response[v1.CheckFormEditPermissionResponse], error)
+	CheckFormViewPermission(context.Context, *connect.Request[v1.CheckFormViewPermissionRequest]) (*connect.Response[v1.CheckFormViewPermissionResponse], error)
 }
 
 // NewFormServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -187,6 +223,18 @@ func NewFormServiceHandler(svc FormServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(formServiceDeleteFormMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	formServiceCheckFormEditPermissionHandler := connect.NewUnaryHandler(
+		FormServiceCheckFormEditPermissionProcedure,
+		svc.CheckFormEditPermission,
+		connect.WithSchema(formServiceCheckFormEditPermissionMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	formServiceCheckFormViewPermissionHandler := connect.NewUnaryHandler(
+		FormServiceCheckFormViewPermissionProcedure,
+		svc.CheckFormViewPermission,
+		connect.WithSchema(formServiceCheckFormViewPermissionMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/coteacher.v1.FormService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case FormServiceCreateFormProcedure:
@@ -199,6 +247,10 @@ func NewFormServiceHandler(svc FormServiceHandler, opts ...connect.HandlerOption
 			formServiceUpdateFormHandler.ServeHTTP(w, r)
 		case FormServiceDeleteFormProcedure:
 			formServiceDeleteFormHandler.ServeHTTP(w, r)
+		case FormServiceCheckFormEditPermissionProcedure:
+			formServiceCheckFormEditPermissionHandler.ServeHTTP(w, r)
+		case FormServiceCheckFormViewPermissionProcedure:
+			formServiceCheckFormViewPermissionHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -226,4 +278,12 @@ func (UnimplementedFormServiceHandler) UpdateForm(context.Context, *connect.Requ
 
 func (UnimplementedFormServiceHandler) DeleteForm(context.Context, *connect.Request[v1.DeleteFormRequest]) (*connect.Response[v1.DeleteFormResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.FormService.DeleteForm is not implemented"))
+}
+
+func (UnimplementedFormServiceHandler) CheckFormEditPermission(context.Context, *connect.Request[v1.CheckFormEditPermissionRequest]) (*connect.Response[v1.CheckFormEditPermissionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.FormService.CheckFormEditPermission is not implemented"))
+}
+
+func (UnimplementedFormServiceHandler) CheckFormViewPermission(context.Context, *connect.Request[v1.CheckFormViewPermissionRequest]) (*connect.Response[v1.CheckFormViewPermissionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.FormService.CheckFormViewPermission is not implemented"))
 }

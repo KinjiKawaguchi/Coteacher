@@ -43,9 +43,25 @@ func (cc *ClassCreate) SetCreatedAt(t time.Time) *ClassCreate {
 	return cc
 }
 
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (cc *ClassCreate) SetNillableCreatedAt(t *time.Time) *ClassCreate {
+	if t != nil {
+		cc.SetCreatedAt(*t)
+	}
+	return cc
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (cc *ClassCreate) SetUpdatedAt(t time.Time) *ClassCreate {
 	cc.mutation.SetUpdatedAt(t)
+	return cc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (cc *ClassCreate) SetNillableUpdatedAt(t *time.Time) *ClassCreate {
+	if t != nil {
+		cc.SetUpdatedAt(*t)
+	}
 	return cc
 }
 
@@ -148,6 +164,14 @@ func (cc *ClassCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (cc *ClassCreate) defaults() {
+	if _, ok := cc.mutation.CreatedAt(); !ok {
+		v := class.DefaultCreatedAt()
+		cc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := cc.mutation.UpdatedAt(); !ok {
+		v := class.DefaultUpdatedAt()
+		cc.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := cc.mutation.ID(); !ok {
 		v := class.DefaultID()
 		cc.mutation.SetID(v)
