@@ -62,10 +62,7 @@ func ToPbForm(t *ent.Form) *pb.Form {
 }
 
 func ToPbQuestion(t *ent.Question) *pb.Question {
-	// Convert QuestionType to its corresponding enum in pb.QuestionType
-	questionType := pb.Question_QuestionType(pb.Question_QuestionType_value[t.QuestionType.String()])
-
-	// Create a slice of *pb.Question_QuestionOption for options
+	// Create a slice of *pb.QuestionOption for options
 	var pbOptions []*pb.QuestionOption
 	for _, option := range t.Edges.QuestionOption {
 		pbOptions = append(pbOptions, &pb.QuestionOption{
@@ -87,18 +84,21 @@ func ToPbQuestion(t *ent.Question) *pb.Question {
 		}
 	}
 
+	// Convert QuestionType to its corresponding enum in pb.QuestionType
+	questionType := pb.Question_QuestionType(pb.Question_QuestionType_value[t.QuestionType.String()])
+
 	// Construct and return the pb.Question
 	return &pb.Question{
 		Id:              t.ID.String(),
 		FormId:          t.FormID.String(),
 		QuestionType:    questionType,
 		QuestionText:    t.QuestionText,
+		TextQuestion:    textQuestion,
+		Options:         pbOptions,
 		IsRequired:      t.IsRequired,
 		ForAiProcessing: t.ForAiProcessing,
 		Order:           int32(t.Order),
 		CreatedAt:       timestamppb.New(t.CreatedAt),
 		UpdatedAt:       timestamppb.New(t.UpdatedAt),
-		Options:         pbOptions,
-		TextQuestion:    textQuestion,
 	}
 }
