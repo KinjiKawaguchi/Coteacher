@@ -7,7 +7,7 @@ import {
   Modal,
 } from '@chakra-ui/react';
 import theme from '@/theme';
-import ClassBox from './ClassBox';
+import ClassBox from './ClassBox/';
 import withAuthAndAccountCheck from '@/libs/utils/HOC/withAccountCheck';
 import UserHeader from '@/components/layout/header/UserHeader';
 import { useRouter } from 'next/navigation';
