@@ -41,9 +41,12 @@ const deleteClass = async (classId: string) => {
 const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
   const userType = localStorage.getItem('UserType');
 
-  const handleMenuItemClick = (e, action) => {
+  const handleMenuItemClick = async (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    action: () => Promise<void>
+  ) => {
     e.stopPropagation(); // 親コンポーネントへのイベント伝播を停止
-    action();
+    await action(); // 非同期アクションを実行
   };
 
   const handleIssueInvitationCode = async () => {
