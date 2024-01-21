@@ -8,6 +8,7 @@ import (
 	utils "github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/utils"
 
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
 	form "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/form"
 	studentClass "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
 
@@ -85,8 +86,12 @@ func (i *Interactor) CheckFormEditPermission(ctx context.Context, req *pb.CheckF
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	// Check if the teacher is the owner of the form.
-	if form.Edges.Class.Edges.Teacher.ID != teacherID {
+	class, err := i.entClient.Class.Query().Where(class.ID(form.ClassID)).Only(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	if class.TeacherID != teacherID {
 		return &pb.CheckFormEditPermissionResponse{
 			HasPermission: false,
 		}, nil
@@ -113,17 +118,18 @@ func (i *Interactor) CheckFormViewPermission(ctx context.Context, req *pb.CheckF
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	// Check if the student exists on student_class table.
-	_, err = i.entClient.StudentClass.Query().Where(
-		studentClass.And(
-			studentClass.StudentIDEQ(studentID),
-			studentClass.ClassIDEQ(form.Edges.Class.ID),
-		),
-	).Only(ctx)
+	_, err = i.entClient.StudentClass.Query().
+		Where(studentClass.
+			ClassID(form.ClassID), studentClass.StudentID(studentID)).
+		Exist(ctx)
+
 	if err != nil {
-		return &pb.CheckFormViewPermissionResponse{
-			HasPermission: false,
-		}, nil
+		if ent.IsNotFound(err) {
+			return &pb.CheckFormViewPermissionResponse{
+				HasPermission: false,
+			}, nil
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	return &pb.CheckFormViewPermissionResponse{
