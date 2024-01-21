@@ -14,6 +14,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import toast from '@/libs/utils/toast';
 
 interface ClassBoxPopUpProps {
   classId: string;
@@ -21,20 +22,28 @@ interface ClassBoxPopUpProps {
 
 const issueInvitationCode = async (classId: string) => {
   const cic = await classInvitationCodeRepo.issueClassInvitationCode(classId);
-  alert(cic.invitationCode);
+  toast({
+    status: 'success',
+    title: '招待コードを発行しました。',
+    description: cic.invitationCode,
+  });
 };
 
 const quitClass = async (classId: string) => {
   await studentRepo.quitClass(classId);
-  alert('授業から退出しました。');
-  // リロード
+  toast({
+    status: 'success',
+    title: '授業から退出しました。',
+  });
   window.location.reload(); // TODO: リロードせずに内容を変更
 };
 
 const deleteClass = async (classId: string) => {
   await classRepo.deleteClass(classId);
-  alert('授業を削除しました。');
-  // リロード
+  toast({
+    status: 'success',
+    title: '授業を削除しました。',
+  }); // リロード
   window.location.reload(); // TODO: リロードせずに内容を変更
 };
 
