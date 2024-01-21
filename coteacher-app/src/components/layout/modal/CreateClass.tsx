@@ -19,11 +19,13 @@ import { Class } from '@/interfaces';
 type ParticipateClassProps = {
   onClose: () => void;
   fetchClasses: () => Promise<Class[]>;
+  setClasses: React.Dispatch<React.SetStateAction<Class[]>>;
 };
 
 export default function CreateClass({
   onClose,
   fetchClasses,
+  setClasses,
 }: ParticipateClassProps) {
   const [className, setClassName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
@@ -35,7 +37,7 @@ export default function CreateClass({
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && className === event.currentTarget.value) {
       handleSubmit();
     }
   };
@@ -53,7 +55,8 @@ export default function CreateClass({
           title: 'Success',
           description: '授業を作成しました。',
         });
-        await fetchClasses();
+        const classes = await fetchClasses();
+        setClasses(classes);
         onClose();
       } else {
         // Error toasts

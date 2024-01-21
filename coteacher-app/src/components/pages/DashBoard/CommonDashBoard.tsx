@@ -18,9 +18,11 @@ interface CommonDashBoardProps {
   ModalContent: ({
     onClose,
     fetchClasses,
+    setClasses,
   }: {
     onClose: () => void;
     fetchClasses: () => Promise<Class[]>;
+    setClasses: React.Dispatch<React.SetStateAction<Class[]>>;
   }) => ReactElement;
 }
 
@@ -62,7 +64,11 @@ const CommonDashBoard: React.FC<CommonDashBoardProps> = ({
             onClick={() => handleClassClick('')}
           />
           <Modal isOpen={isOpen} onClose={onClose} isCentered>
-            <ModalContent onClose={onClose} fetchClasses={fetchClasses} />
+            <ModalContent
+              onClose={onClose}
+              fetchClasses={fetchClasses}
+              setClasses={setClasses}
+            />
           </Modal>
         </HStack>
       </Container>
