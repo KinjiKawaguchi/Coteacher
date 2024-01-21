@@ -46,6 +46,22 @@ func (i *Interactor) GetFormListByClassID(ctx context.Context, req *pb.GetFormLi
 	}, nil
 }
 
+func (i *Interactor) GetFormByID(ctx context.Context, req *pb.GetFormByIDRequest) (*pb.GetFormByIDResponse, error) {
+	// Get form by id.
+	formID, err := uuid.Parse(req.FormId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+	form, err := i.entClient.Form.Query().Where(form.ID(formID)).Only(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return &pb.GetFormByIDResponse{
+		Form: utils.ToPbForm(form),
+	}, nil
+}
+
 func (i *Interactor) CreateForm(ctx context.Context, req *pb.CreateFormRequest) (*pb.CreateFormResponse, error) {
 	now := time.Now()
 	classID, err := uuid.Parse(req.ClassId)
@@ -118,21 +134,16 @@ func (i *Interactor) CheckFormViewPermission(ctx context.Context, req *pb.CheckF
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	_, err = i.entClient.StudentClass.Query().
+	exists, err := i.entClient.StudentClass.Query().
 		Where(studentClass.
 			ClassID(form.ClassID), studentClass.StudentID(studentID)).
 		Exist(ctx)
 
 	if err != nil {
-		if ent.IsNotFound(err) {
-			return &pb.CheckFormViewPermissionResponse{
-				HasPermission: false,
-			}, nil
-		}
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	return &pb.CheckFormViewPermissionResponse{
-		HasPermission: true,
+		HasPermission: exists,
 	}, nil
 }

@@ -237,26 +237,9 @@ func (i *Interactor) SaveQuestionList(ctx context.Context, req *pb.SaveQuestionL
 	}, nil
 }
 
-func convertQuestionTypeToPbQuestionType(questionType question.QuestionType) pb.Question_QuestionType {
-	switch questionType {
-	case question.QuestionTypeText:
-		return pb.Question_QUESTION_TYPE_TEXT
-	case question.QuestionTypeParagraphText:
-		return pb.Question_QUESTION_TYPE_PARAGRAPH_TEXT
-	case question.QuestionTypeCheckbox:
-		return pb.Question_QUESTION_TYPE_CHECKBOX
-	case question.QuestionTypeRadio:
-		return pb.Question_QUESTION_TYPE_RADIO
-	case question.QuestionTypeList:
-		return pb.Question_QUESTION_TYPE_LIST
-	case question.QuestionTypeMultipleChoice:
-		return pb.Question_QUESTION_TYPE_MULTIPLE_CHOICE
-	default:
-		return pb.Question_QUESTION_TYPE_UNSPECIFIED
-	}
-}
-
 func convertPbQuestionTypeToEntQuestionType(pbType pb.Question_QuestionType) question.QuestionType {
+	log.Printf("Converting pbType %v to entType\n", pbType)
+	log.Printf("pbType == pb.Question_QUESTION_TYPE_TEXT: %v\n", pbType == pb.Question_QUESTION_TYPE_TEXT)
 	switch pbType {
 	case pb.Question_QUESTION_TYPE_TEXT:
 		return question.QuestionTypeText

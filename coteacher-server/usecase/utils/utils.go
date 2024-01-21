@@ -4,6 +4,7 @@ import (
 	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
 
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/question"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -85,7 +86,7 @@ func ToPbQuestion(t *ent.Question) *pb.Question {
 	}
 
 	// Convert QuestionType to its corresponding enum in pb.QuestionType
-	questionType := pb.Question_QuestionType(pb.Question_QuestionType_value[t.QuestionType.String()])
+	questionType := convertQuestionTypeToPbQuestionType(t.QuestionType)
 
 	// Construct and return the pb.Question
 	return &pb.Question{
@@ -100,5 +101,24 @@ func ToPbQuestion(t *ent.Question) *pb.Question {
 		Order:           int32(t.Order),
 		CreatedAt:       timestamppb.New(t.CreatedAt),
 		UpdatedAt:       timestamppb.New(t.UpdatedAt),
+	}
+}
+
+func convertQuestionTypeToPbQuestionType(questionType question.QuestionType) pb.Question_QuestionType {
+	switch questionType {
+	case question.QuestionTypeText:
+		return pb.Question_QUESTION_TYPE_TEXT
+	case question.QuestionTypeParagraphText:
+		return pb.Question_QUESTION_TYPE_PARAGRAPH_TEXT
+	case question.QuestionTypeCheckbox:
+		return pb.Question_QUESTION_TYPE_CHECKBOX
+	case question.QuestionTypeRadio:
+		return pb.Question_QUESTION_TYPE_RADIO
+	case question.QuestionTypeList:
+		return pb.Question_QUESTION_TYPE_LIST
+	case question.QuestionTypeMultipleChoice:
+		return pb.Question_QUESTION_TYPE_MULTIPLE_CHOICE
+	default:
+		return pb.Question_QUESTION_TYPE_UNSPECIFIED
 	}
 }

@@ -34,8 +34,12 @@ func (*formServiceServer) DeleteForm(context.Context, *connect.Request[coteacher
 }
 
 // GetFormByID implements coteacherv1connect.FormServiceHandler.
-func (*formServiceServer) GetFormByID(context.Context, *connect.Request[coteacherv1.GetFormByIDRequest]) (*connect.Response[coteacherv1.GetFormByIDResponse], error) {
-	panic("unimplemented")
+func (s *formServiceServer) GetFormByID(ctx context.Context, req *connect.Request[coteacherv1.GetFormByIDRequest]) (*connect.Response[coteacherv1.GetFormByIDResponse], error) {
+	resp, err := s.formInteractor.GetFormByID(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
 
 // GetFormListByClassID implements coteacherv1connect.FormServiceHandler.

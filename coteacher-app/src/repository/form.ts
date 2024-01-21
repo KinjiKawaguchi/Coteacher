@@ -10,6 +10,7 @@ import {
   CheckFormEditPermissionRequest,
   CheckFormViewPermissionRequest,
   CreateFormRequest,
+  GetFormByIDRequest,
   GetFormListByClassIDRequest,
 } from '@/gen/proto/coteacher/v1/form_pb';
 
@@ -46,6 +47,23 @@ class FormRepository {
     return form;
   }
 
+  async getFormById(formId: string): Promise<Form> {
+    const req = new GetFormByIDRequest();
+    req.formId = formId;
+    const res = await this.cli.getFormByID(req);
+    if (!res.form) {
+      throw new Error('form is null');
+    };
+    const form: Form = {
+      id: res.form.id,
+      classId: res.form.classId,
+      name: res.form.name,
+      description: res.form.description,
+      usageLimit: res.form.usageLimit,
+    };
+    return form
+  }
+
   async getFormListByClassId(classId: string): Promise<Form[]> {
     const req = new GetFormListByClassIDRequest();
     req.classId = classId;
@@ -62,7 +80,7 @@ class FormRepository {
     return forms;
   }
 
-  async checkFormEditPermission(formId: string, teacherId: string | null) {
+  async checkFormEditPermission(formId: string, teacherId?: string) {
     const req = new CheckFormEditPermissionRequest();
     req.formId = formId;
     if (teacherId) {
@@ -74,7 +92,7 @@ class FormRepository {
     return res.hasPermission;
   }
 
-  async checkFormViewPermission(formId: string, studentId: string | null) {
+  async checkFormViewPermission(formId: string, studentId?: string) {
     const req = new CheckFormViewPermissionRequest();
     req.formId = formId;
     if (studentId) {
@@ -83,6 +101,7 @@ class FormRepository {
       req.studentId = localStorage.getItem('UserID') || '';
     }
     const res = await this.cli.checkFormViewPermission(req);
+    console.log(res.hasPermission);
     return res.hasPermission;
   }
 }
