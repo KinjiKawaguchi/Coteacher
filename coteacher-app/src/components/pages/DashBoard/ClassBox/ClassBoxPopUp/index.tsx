@@ -1,9 +1,7 @@
 import React from 'react';
-import { IconButton } from '@chakra-ui/react';
-import { MdDeleteForever, MdOutlinePublish, MdSettings } from 'react-icons/md';
+import { MdDeleteForever, MdOutlinePublish } from 'react-icons/md';
 import { IoIosExit } from 'react-icons/io';
 import { TiThMenu } from 'react-icons/ti';
-import { FaUser } from 'react-icons/fa'; // User アイコンの代わり
 import { classInvitationCodeRepo } from '@/repository/classInvitationCode';
 import { studentRepo } from '@/repository/student';
 import { classRepo } from '@/repository/class';
@@ -13,7 +11,6 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
@@ -75,7 +72,7 @@ const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
             <DropdownMenuItem
               onClick={e => handleMenuItemClick(e, handleQuitClass)}
             >
-              <FaUser className="mr-2 h-4 w-4" />
+              <IoIosExit className="mr-2 h-4 w-4" />
               <span>授業を退出</span>
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
             </DropdownMenuItem>
@@ -85,14 +82,14 @@ const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
               <DropdownMenuItem
                 onClick={e => handleMenuItemClick(e, handleIssueInvitationCode)}
               >
-                <FaUser className="mr-2 h-4 w-4" />
+                <MdOutlinePublish className="mr-2 h-4 w-4" />
                 <span>招待コードを発行</span>
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={e => handleMenuItemClick(e, handleDeleteClass)}
               >
-                <MdSettings className="mr-2 h-4 w-4" />
+                <MdDeleteForever className="mr-2 h-4 w-4" />
                 <span>授業を削除</span>
                 <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
               </DropdownMenuItem>

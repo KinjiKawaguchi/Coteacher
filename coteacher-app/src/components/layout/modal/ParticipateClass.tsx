@@ -19,11 +19,13 @@ import { Class } from '@/interfaces';
 type ParticipateClassProps = {
   onClose: () => void;
   fetchClasses: () => Promise<Class[]>;
+  setClasses: React.Dispatch<React.SetStateAction<Class[]>>;
 };
 
 export default function ParticipateClass({
   onClose,
   fetchClasses,
+  setClasses,
 }: ParticipateClassProps) {
   const [invitationCode, setInvitationCode] = useState('');
   const [isParticipating, setIsParticipating] = useState<boolean>(false);
@@ -35,7 +37,7 @@ export default function ParticipateClass({
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && invitationCode === event.currentTarget.value) {
       handleSubmit();
     }
   };
@@ -52,7 +54,9 @@ export default function ParticipateClass({
           title: 'Success',
           description: res.name + 'に参加しました。',
         });
-        await fetchClasses();
+
+        const classes = await fetchClasses();
+        setClasses(classes);
         onClose();
       }
       // TODO: ここを動作させる
