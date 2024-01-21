@@ -1,17 +1,22 @@
 import React from 'react';
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverBody,
-  PopoverContent,
-  Portal,
-  IconButton,
-  Button,
-} from '@chakra-ui/react';
-import { FaEllipsisH, FaPassport, FaTrashAlt } from 'react-icons/fa';
+import { IconButton } from '@chakra-ui/react';
+import { MdDeleteForever, MdOutlinePublish, MdSettings } from 'react-icons/md';
+import { IoIosExit } from 'react-icons/io';
+import { TiThMenu } from 'react-icons/ti';
+import { FaUser } from 'react-icons/fa'; // User アイコンの代わり
 import { classInvitationCodeRepo } from '@/repository/classInvitationCode';
 import { studentRepo } from '@/repository/student';
 import { classRepo } from '@/repository/class';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ClassBoxPopUpProps {
   classId: string;
@@ -39,6 +44,11 @@ const deleteClass = async (classId: string) => {
 const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
   const userType = localStorage.getItem('UserType');
 
+  const handleMenuItemClick = (e, action) => {
+    e.stopPropagation(); // 親コンポーネントへのイベント伝播を停止
+    action();
+  };
+
   const handleIssueInvitationCode = async () => {
     await issueInvitationCode(classId);
   };
@@ -52,62 +62,45 @@ const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
   };
 
   return (
-    <Popover>
-      <PopoverTrigger>
-        <IconButton
-          aria-label="Search database"
-          icon={<FaEllipsisH />}
-          onClick={e => {
-            e.stopPropagation();
-          }}
-        />
-      </PopoverTrigger>
-      <Portal>
-        <PopoverContent>
-          <PopoverBody>
-            {userType === '1' && (
-              <Button
-                leftIcon={<FaTrashAlt />}
-                colorScheme="teal"
-                variant="solid"
-                onClick={e => {
-                  e.stopPropagation();
-                  handleQuitClass();
-                }}
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <button aria-label="メニュー" className="icon-button">
+          <TiThMenu />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56">
+        <DropdownMenuLabel>授業操作</DropdownMenuLabel>
+        <DropdownMenuGroup>
+          {userType === '1' && (
+            <DropdownMenuItem
+              onClick={e => handleMenuItemClick(e, handleQuitClass)}
+            >
+              <FaUser className="mr-2 h-4 w-4" />
+              <span>授業を退出</span>
+              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          )}
+          {userType === '2' && (
+            <>
+              <DropdownMenuItem
+                onClick={e => handleMenuItemClick(e, handleIssueInvitationCode)}
               >
-                授業から退出
-              </Button>
-            )}
-            {userType === '2' && (
-              <>
-                <Button
-                  leftIcon={<FaPassport />}
-                  colorScheme="teal"
-                  variant="solid"
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleIssueInvitationCode();
-                  }}
-                >
-                  授業招待コードを発行
-                </Button>
-                <Button
-                  leftIcon={<FaTrashAlt />}
-                  colorScheme="teal"
-                  variant="solid"
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleDeleteClass();
-                  }}
-                >
-                  授業を削除
-                </Button>
-              </>
-            )}
-          </PopoverBody>
-        </PopoverContent>
-      </Portal>
-    </Popover>
+                <FaUser className="mr-2 h-4 w-4" />
+                <span>招待コードを発行</span>
+                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={e => handleMenuItemClick(e, handleDeleteClass)}
+              >
+                <MdSettings className="mr-2 h-4 w-4" />
+                <span>授業を削除</span>
+                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
