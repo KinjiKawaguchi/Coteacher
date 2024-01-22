@@ -20,9 +20,14 @@ const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
     setQuestionList(newQuestionList);
   };
 
-  // const handleMaxLengthChange = (index: number, maxLength: number) => {
-  //   //
-  // };
+  const handleMaxLengthChange = (index: number, maxLength: number) => {
+    const newQuestionList = [...questionList];
+    const currentQuestion = newQuestionList[index];
+    if (currentQuestion.textQuestion) {
+      currentQuestion.textQuestion.maxLength = maxLength;
+    }
+    setQuestionList(newQuestionList);
+  };
 
   // const handleMaxLengthUsageChange = (index: number) => {
   //   const newQuestionList = [...questionList];
@@ -74,9 +79,9 @@ const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
               value={textQuestion?.maxLength}
               disabled={!question.textQuestion}
               width="50px"
-              // onChange={e =>
-              //   handleMaxLengthChange(index, parseInt(e.target.value))
-              // }
+              onChange={e =>
+                handleMaxLengthChange(index, parseInt(e.target.value))
+              }
             />
             <Text fontSize="sm" color="gray.500">
               characters
