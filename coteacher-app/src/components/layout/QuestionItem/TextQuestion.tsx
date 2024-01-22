@@ -36,7 +36,7 @@ const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
           <FormLabel>{questionText}</FormLabel>
         )}
         <Input
-          disabled={!editable}
+          disabled={editable}
           type="text"
           maxLength={textQuestion?.maxLength}
           placeholder="Your answer"

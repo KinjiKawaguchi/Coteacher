@@ -124,7 +124,10 @@ export default function FormView({ params }: { params: { formid: string } }) {
               setQuestionList={setQuestionList}
             />
             {hasViewPermission && questionList.length > 0 && (
-              <Button>送信</Button>
+              <HStack>
+                <Spacer />
+                <Button>送信</Button>
+              </HStack>
             )}
           </TabsContent>
           {hasEditPermission && (
