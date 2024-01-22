@@ -9,8 +9,6 @@ import (
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 	ent_question "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/question"
 	question "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/question"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/questionoption"
-	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/textquestion"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/utils"
 
 	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
@@ -63,41 +61,6 @@ func (i *Interactor) SaveQuestionList(ctx context.Context, req *pb.SaveQuestionL
 
 	for idx, question := range req.Questions {
 		log.Printf("Processing question %d: %+v\n", idx, question) // 各質問の処理開始ログ
-
-		if len(req.IsDeleted) > idx && req.IsDeleted[idx] {
-			log.Printf("Deleting question %d: %+v\n", idx, question)
-
-			if question.Id != "" {
-				questionID, err := uuid.Parse(question.Id)
-				if err != nil {
-					return nil, connect.NewError(connect.CodeInvalidArgument, err)
-				}
-
-				// Delete the question's related records
-				switch question.QuestionType {
-				case pb.Question_QUESTION_TYPE_TEXT, pb.Question_QUESTION_TYPE_PARAGRAPH_TEXT:
-					_, err = i.entClient.TextQuestion.Delete().
-						Where(textquestion.QuestionID(questionID)).Exec(ctx)
-					if err != nil {
-						return nil, connect.NewError(connect.CodeInternal, err)
-					}
-
-				case pb.Question_QUESTION_TYPE_CHECKBOX, pb.Question_QUESTION_TYPE_RADIO, pb.Question_QUESTION_TYPE_LIST, pb.Question_QUESTION_TYPE_MULTIPLE_CHOICE:
-					_, err = i.entClient.QuestionOption.Delete().
-						Where(questionoption.QuestionID(questionID)).Exec(ctx)
-					if err != nil {
-						return nil, connect.NewError(connect.CodeInternal, err)
-					}
-				}
-
-				// Delete the question
-				err = i.entClient.Question.DeleteOneID(questionID).Exec(ctx)
-				if err != nil {
-					return nil, connect.NewError(connect.CodeInternal, err)
-				}
-			}
-			continue // Skip further processing for this question
-		}
 
 		var dbQuestion *ent.Question
 		var err error

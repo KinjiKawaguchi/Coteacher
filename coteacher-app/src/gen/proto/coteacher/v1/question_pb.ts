@@ -90,11 +90,6 @@ export class SaveQuestionListRequest extends Message<SaveQuestionListRequest> {
    */
   questions: Question[] = [];
 
-  /**
-   * @generated from field: repeated bool is_deleted = 2;
-   */
-  isDeleted: boolean[] = [];
-
   constructor(data?: PartialMessage<SaveQuestionListRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -104,7 +99,6 @@ export class SaveQuestionListRequest extends Message<SaveQuestionListRequest> {
   static readonly typeName = "coteacher.v1.SaveQuestionListRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "questions", kind: "message", T: Question, repeated: true },
-    { no: 2, name: "is_deleted", kind: "scalar", T: 8 /* ScalarType.BOOL */, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SaveQuestionListRequest {
