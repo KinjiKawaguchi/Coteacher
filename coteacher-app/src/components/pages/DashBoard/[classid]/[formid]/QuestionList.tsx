@@ -1,6 +1,6 @@
 // import ListQuestionComponent from '@/components/layout/QuestionItem/ListQuestion';
 // import MultipleChoiceQuestionComponent from '@/components/layout/QuestionItem/MultipleChoiceQuestion';
-// import ParagraphTextQuestionComponent from '@/components/layout/QuestionItem/ParagraphTextQuestion';
+import ParagraphTextQuestionComponent from '@/components/layout/QuestionItem/ParagraphTextQuestion';
 // import RadioQuestionComponent from '@/components/layout/QuestionItem/RadioQuestion';
 // import TextQuestionComponent from '@/components/layout/QuestionItem/TextQuestion';
 import React from 'react';
@@ -53,11 +53,12 @@ export default function QuestionList({
                 )}
               {question.questionType === Question_QuestionType.PARAGRAPH_TEXT &&
                 question.textQuestion && (
-                  <div>unimplemented</div>
-                  // <ParagraphTextQuestionComponent
-                  //   question={question}
-                  //   editable={false}
-                  // />
+                  <ParagraphTextQuestionComponent
+                    questionList={questionList}
+                    index={index}
+                    editable={false}
+                    setQuestionList={setQuestionList}
+                  />
                 )}
               {question.questionType === Question_QuestionType.TEXT &&
                 question.textQuestion && (

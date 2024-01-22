@@ -27,14 +27,26 @@ const CreateQuestionDropdown: React.FC<CreateQuestionDropdownProps> = ({
     questionType: Question_QuestionType
   ) => {
     const updatedList = [...questionList];
-    const newQuestion = {
+
+    let newQuestion: Question = {
       order: index + 1,
-      questionType: questionType, //TODO: 質問を選べるように
+      questionType: questionType, // 質問を選べるようにする TODO: 質問を選べるように
       questionText: '',
       isRequired: false,
       forAiProcessing: false,
       formId: formId,
     };
+
+    // TEXT または PARAGRAPH_TEXT タイプの場合に textQuestion プロパティを追加
+    if (
+      questionType === Question_QuestionType.TEXT ||
+      questionType === Question_QuestionType.PARAGRAPH_TEXT
+    ) {
+      newQuestion = {
+        ...newQuestion,
+        textQuestion: { maxLength: 150 },
+      };
+    }
 
     // 新しい質問をリストに追加
     updatedList.splice(index + 1, 0, newQuestion);

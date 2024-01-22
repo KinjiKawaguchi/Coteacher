@@ -1,5 +1,5 @@
 // import MultipleChoiceQuestionComponent from '@/components/layout/QuestionItem/MultipleChoiceQuestion';
-// import ParagraphTextQuestionComponent from '@/components/layout/QuestionItem/ParagraphTextQuestion';
+import ParagraphTextQuestionComponent from '@/components/layout/QuestionItem/ParagraphTextQuestion';
 // import RadioQuestionComponent from '@/components/layout/QuestionItem/RadioQuestion';
 import TextQuestionComponent from '@/components/layout/QuestionItem/TextQuestion';
 import {
@@ -7,7 +7,6 @@ import {
   FaLongArrowAltUp,
   FaLongArrowAltDown,
 } from 'react-icons/fa';
-import { IoAddCircleOutline } from 'react-icons/io5';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Question_QuestionType } from '@/gen/proto/coteacher/v1/resources_pb';
@@ -96,11 +95,12 @@ export default function EditQuestionList({
                 )}
               {question.questionType === Question_QuestionType.PARAGRAPH_TEXT &&
                 question.textQuestion && (
-                  <div>unimplemented</div>
-                  // <ParagraphTextQuestionComponent
-                  //   question={question}
-                  //   editable={true}
-                  // />
+                  <ParagraphTextQuestionComponent
+                    questionList={questionList}
+                    index={index}
+                    editable={true}
+                    setQuestionList={setQuestionList}
+                  />
                 )}
               {question.questionType === Question_QuestionType.TEXT &&
                 question.textQuestion && (
@@ -151,7 +151,7 @@ export default function EditQuestionList({
           formId={formId}
           questionList={questionList}
           setQuestionList={setQuestionList}
-          index={questionList.length - 1}
+          index={questionList.length}
         />
       </HStack>
     </div>
