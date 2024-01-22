@@ -1,3 +1,5 @@
+import FormView from '@/components/pages/DashBoard/[classid]/[formid]';
+
 export default function FormPage({ params }: { params: { formid: string } }) {
-  return <div>Form {params.formid}</div>;
+  return <FormView params={params} />;
 }

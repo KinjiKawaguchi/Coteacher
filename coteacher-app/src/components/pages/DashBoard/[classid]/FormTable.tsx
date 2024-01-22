@@ -16,10 +16,11 @@ import { Form } from '@/interfaces';
 import { useRouter } from 'next/navigation';
 
 export type FormTableProps = {
+  classId: string;
   forms: Form[]; // 新しいプロパティを追加
 };
 
-export const FormTable: React.FC<FormTableProps> = ({ forms }) => {
+export const FormTable: React.FC<FormTableProps> = ({ classId, forms }) => {
   const userType = localStorage.getItem('UserType');
 
   const columns: ColumnDef<Form>[] = [
@@ -69,7 +70,7 @@ export const FormTable: React.FC<FormTableProps> = ({ forms }) => {
 
   const handleRowClick = (row: any) => {
     const formId = row.original.id; // formIdはrow.originalから取得
-    router.push(`/dashboard/${formId}`);
+    router.push(`/DashBoard/${classId}/${formId}`);
   };
 
   return (

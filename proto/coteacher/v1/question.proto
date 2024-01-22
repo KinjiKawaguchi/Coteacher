@@ -19,7 +19,6 @@ message GetQuestionListByFormIdResponse {
 
 message SaveQuestionListRequest {
   repeated Question questions = 1;
-  repeated bool is_deleted = 2;
 }
 
 message SaveQuestionListResponse {

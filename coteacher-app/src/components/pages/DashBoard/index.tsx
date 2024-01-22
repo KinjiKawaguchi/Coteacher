@@ -18,11 +18,11 @@ export default function DashBoard() {
   }, []);
 
   const fetchStudentClasses = async (): Promise<Class[]> => {
-    return await studentClassRepo.getClassListByStudentId(null);
+    return await studentClassRepo.getClassListByStudentId();
   };
 
   const fetchTeacherClasses = async (): Promise<Class[]> => {
-    return await classRepo.getClassListByTeacherId(null);
+    return await classRepo.getClassListByTeacherId();
   };
 
   if (userType === '1') {

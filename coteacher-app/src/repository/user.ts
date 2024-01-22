@@ -43,7 +43,7 @@ class UserRepository {
     return user;
   }
 
-  async getUserById(id: string | null): Promise<User> {
+  async getUserById(id?: string): Promise<User> {
     const req = new GetUserByIDRequest();
     if (id) {
       req.id = id;
@@ -63,7 +63,7 @@ class UserRepository {
     return user;
   }
 
-  async getUserByEmail(email: string | null): Promise<User> {
+  async getUserByEmail(email?: string): Promise<User> {
     const req = new GetUserByEmailRequest();
     if (email) {
       req.email = email;
@@ -88,7 +88,7 @@ class UserRepository {
     return user;
   }
 
-  async checkUserExistsByEmail(email: string | null): Promise<boolean> {
+  async checkUserExistsByEmail(email?: string): Promise<boolean> {
     const req = new CheckUserExistsByEmailRequest();
     if (email) {
       req.email = email;

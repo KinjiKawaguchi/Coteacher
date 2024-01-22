@@ -20,7 +20,7 @@ class StudentRepository {
     this.cli = createPromiseClient(StudentService, t);
   }
 
-  async checkStudentExistsByID(studentId: string | null): Promise<boolean> {
+  async checkStudentExistsByID(studentId?: string): Promise<boolean> {
     const req = new CheckStudentExistsByIDRequest();
     if (studentId) {
       req.id = studentId;
@@ -31,7 +31,7 @@ class StudentRepository {
     return res.exists;
   }
 
-  async checkStudentExistsByEmail(email: string | null): Promise<boolean> {
+  async checkStudentExistsByEmail(email?: string): Promise<boolean> {
     const req = new CheckStudentExistsByEmailRequest();
     if (email) {
       req.email = email;
