@@ -25,8 +25,8 @@ class ResponseRepository {
   }
 
   async getNumberOfResponseByStudentId(
-    studentId: string | null,
-    formId: string
+    formId: string,
+    studentId?: string,
   ): Promise<number> {
     const req = new GetNumberOfResponsesByStudentIDRequest();
     req.formId = formId;

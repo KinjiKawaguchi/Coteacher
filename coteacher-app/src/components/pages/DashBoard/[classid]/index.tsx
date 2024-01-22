@@ -46,7 +46,7 @@ export default function Class({ params }: { params: { classid: string } }) {
         formList.map(async form => {
           const usage =
             userType === '1'
-              ? await responseRepo.getNumberOfResponseByStudentId(null, form.id)
+              ? await responseRepo.getNumberOfResponseByStudentId(form.id)
               : await responseRepo.getNumberOfResponseByFormId(form.id);
           return { ...form, usage };
         })
@@ -81,7 +81,7 @@ export default function Class({ params }: { params: { classid: string } }) {
         <Flex justifyContent="flex-end">
           <CreateFormDialog params={params} updateFormList={updateFormList} />
         </Flex>
-        <FormTable forms={forms} />
+        <FormTable classId={params.classid} forms={forms} />
       </Container>
     </ChakraProvider>
   );

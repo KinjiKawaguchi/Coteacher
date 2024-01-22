@@ -59,7 +59,7 @@ class ClassRepository {
     await this.cli.deleteClass(req);
   }
 
-  async getClassListByTeacherId(teacherId: string | null): Promise<Class[]> {
+  async getClassListByTeacherId(teacherId?: string): Promise<Class[]> {
     const req = new GetClassListByTeacherIDRequest();
     if (teacherId) {
       req.teacherId = teacherId;

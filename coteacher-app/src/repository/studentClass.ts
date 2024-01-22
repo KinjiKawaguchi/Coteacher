@@ -15,7 +15,7 @@ class StudentClassRepository {
     this.cli = createPromiseClient(StudentClassService, t);
   }
 
-  async getClassListByStudentId(studentId: string | null): Promise<Class[]> {
+  async getClassListByStudentId(studentId?: string): Promise<Class[]> {
     const req = new GetClassListByStudentIDRequest();
     if (studentId) {
       req.studentId = studentId;
