@@ -3,6 +3,7 @@ import { FormControl, FormLabel, HStack, Text } from '@chakra-ui/react';
 import { Input } from '@/components/ui/input';
 import { QuestionComponentProps } from '@/interfaces'; // このパスは適宜変更してください。
 import { Switch } from '@/components/ui/switch';
+import handleQuestionTextChange from './util';
 //TODO: MaxLength周りの実装をする
 
 const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
@@ -13,12 +14,6 @@ const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
 }: QuestionComponentProps) => {
   const question = questionList[index];
   const { questionText, textQuestion, isRequired } = question;
-
-  const handleQuestionTextChange = (index: number, text: string) => {
-    const newQuestionList = [...questionList];
-    newQuestionList[index].questionText = text;
-    setQuestionList(newQuestionList);
-  };
 
   const handleMaxLengthChange = (index: number, maxLength: number) => {
     const newQuestionList = [...questionList];
@@ -54,9 +49,16 @@ const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
           <Input
             type="text"
             value={question.questionText}
-            onChange={e => handleQuestionTextChange(index, e.target.value)}
+            onChange={e =>
+              handleQuestionTextChange(
+                questionList,
+                index,
+                e.target.value,
+                setQuestionList
+              )
+            }
             placeholder={question.questionText}
-          ></Input>
+          />
         )}
         {!editable && <FormLabel>{questionText}</FormLabel>}
         <Input

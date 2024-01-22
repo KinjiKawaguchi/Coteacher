@@ -15,7 +15,7 @@ import { Question } from '@/interfaces';
 import { Box, HStack, Spacer } from '@chakra-ui/react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-
+import CreateQuestionDropdown from './CreateQuestionDropdown';
 interface EditQuestionListProps {
   formId: string;
   questionList: Question[];
@@ -54,54 +54,20 @@ export default function EditQuestionList({
     setQuestionList(updatedList);
   };
 
-  const handleAddQuestionButtonClick = (index: number) => {
-    const updatedList = [...questionList];
-    const newQuestion = {
-      order: index + 1,
-      questionType: Question_QuestionType.TEXT, //TODO: 質問を選べるように
-      questionText: '',
-      isRequired: false,
-      forAiProcessing: false,
-      textQuestion: {
-        maxLength: 100,
-      },
-      formId: formId,
-    };
-
-    // 新しい質問をリストに追加
-    updatedList.splice(index + 1, 0, newQuestion);
-
-    // 追加した質問の後ろの質問の順序を更新
-    for (let i = index + 2; i < updatedList.length; i++) {
-      updatedList[i].order += 1;
-    }
-
-    setQuestionList(updatedList);
-  };
-
   return (
     <div>
       {questionList.map((question, index) => {
         if (question.order === -1) return null;
-        // const questionComponentInput: QuestionComponentProps = {
-        //   questionList,
-        //   index,
-        //   editable: true,
-        //   setQuestionList,
-        // };
         return (
           <div key={question.id || index}>
             <HStack>
               <Separator className="my-4" />
-              <Button
-                id={`addButton-${index}`}
-                variant="ghost"
-                onClick={() => {
-                  handleAddQuestionButtonClick(index - 1);
-                }}
-              >
-                <IoAddCircleOutline size={24} />
-              </Button>
+              <CreateQuestionDropdown
+                formId={formId}
+                questionList={questionList}
+                setQuestionList={setQuestionList}
+                index={index - 1}
+              />
             </HStack>
             <Box
               border="1px"
@@ -181,15 +147,12 @@ export default function EditQuestionList({
       })}
       <HStack>
         <Separator className="my-4" />
-        <Button
-          id={`addButton-${questionList.length}`}
-          variant="ghost"
-          onClick={() => {
-            handleAddQuestionButtonClick(questionList.length - 1);
-          }}
-        >
-          <IoAddCircleOutline size={24} />
-        </Button>
+        <CreateQuestionDropdown
+          formId={formId}
+          questionList={questionList}
+          setQuestionList={setQuestionList}
+          index={questionList.length - 1}
+        />
       </HStack>
     </div>
   );
