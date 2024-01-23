@@ -61,4 +61,6 @@ export interface QuestionComponentProps {
   index: number;
   editable: boolean;
   setQuestionList: (questionList: Question[]) => void;
+  answerList?: string[];
+  setAnswerList?: (answerList: string[]) => void;
 }
