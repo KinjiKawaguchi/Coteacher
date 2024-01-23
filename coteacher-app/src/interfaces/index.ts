@@ -27,6 +27,8 @@ export type Form = {
   name: string;
   description: string;
   usageLimit: number;
+  systemPrompt: string;
+  usage?: number; // for frontend
 };
 
 export type Question = {

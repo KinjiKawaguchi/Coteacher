@@ -42,6 +42,20 @@ func (fc *FormCreate) SetDescription(s string) *FormCreate {
 	return fc
 }
 
+// SetSystemPrompt sets the "system__prompt" field.
+func (fc *FormCreate) SetSystemPrompt(s string) *FormCreate {
+	fc.mutation.SetSystemPrompt(s)
+	return fc
+}
+
+// SetNillableSystemPrompt sets the "system__prompt" field if the given value is not nil.
+func (fc *FormCreate) SetNillableSystemPrompt(s *string) *FormCreate {
+	if s != nil {
+		fc.SetSystemPrompt(*s)
+	}
+	return fc
+}
+
 // SetUsageLimit sets the "usage_limit" field.
 func (fc *FormCreate) SetUsageLimit(i int) *FormCreate {
 	fc.mutation.SetUsageLimit(i)
@@ -160,6 +174,10 @@ func (fc *FormCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (fc *FormCreate) defaults() {
+	if _, ok := fc.mutation.SystemPrompt(); !ok {
+		v := form.DefaultSystemPrompt
+		fc.mutation.SetSystemPrompt(v)
+	}
 	if _, ok := fc.mutation.CreatedAt(); !ok {
 		v := form.DefaultCreatedAt()
 		fc.mutation.SetCreatedAt(v)
@@ -184,6 +202,9 @@ func (fc *FormCreate) check() error {
 	}
 	if _, ok := fc.mutation.Description(); !ok {
 		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "Form.description"`)}
+	}
+	if _, ok := fc.mutation.SystemPrompt(); !ok {
+		return &ValidationError{Name: "system__prompt", err: errors.New(`ent: missing required field "Form.system__prompt"`)}
 	}
 	if _, ok := fc.mutation.UsageLimit(); !ok {
 		return &ValidationError{Name: "usage_limit", err: errors.New(`ent: missing required field "Form.usage_limit"`)}
@@ -239,6 +260,10 @@ func (fc *FormCreate) createSpec() (*Form, *sqlgraph.CreateSpec) {
 	if value, ok := fc.mutation.Description(); ok {
 		_spec.SetField(form.FieldDescription, field.TypeString, value)
 		_node.Description = value
+	}
+	if value, ok := fc.mutation.SystemPrompt(); ok {
+		_spec.SetField(form.FieldSystemPrompt, field.TypeString, value)
+		_node.SystemPrompt = value
 	}
 	if value, ok := fc.mutation.UsageLimit(); ok {
 		_spec.SetField(form.FieldUsageLimit, field.TypeInt, value)

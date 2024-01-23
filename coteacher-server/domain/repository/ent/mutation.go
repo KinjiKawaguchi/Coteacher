@@ -2162,6 +2162,7 @@ type FormMutation struct {
 	id               *uuid.UUID
 	name             *string
 	description      *string
+	system__prompt   *string
 	usage_limit      *int
 	addusage_limit   *int
 	created_at       *time.Time
@@ -2390,6 +2391,42 @@ func (m *FormMutation) OldDescription(ctx context.Context) (v string, err error)
 // ResetDescription resets all changes to the "description" field.
 func (m *FormMutation) ResetDescription() {
 	m.description = nil
+}
+
+// SetSystemPrompt sets the "system__prompt" field.
+func (m *FormMutation) SetSystemPrompt(s string) {
+	m.system__prompt = &s
+}
+
+// SystemPrompt returns the value of the "system__prompt" field in the mutation.
+func (m *FormMutation) SystemPrompt() (r string, exists bool) {
+	v := m.system__prompt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSystemPrompt returns the old "system__prompt" field's value of the Form entity.
+// If the Form object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FormMutation) OldSystemPrompt(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSystemPrompt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSystemPrompt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSystemPrompt: %w", err)
+	}
+	return oldValue.SystemPrompt, nil
+}
+
+// ResetSystemPrompt resets all changes to the "system__prompt" field.
+func (m *FormMutation) ResetSystemPrompt() {
+	m.system__prompt = nil
 }
 
 // SetUsageLimit sets the "usage_limit" field.
@@ -2689,7 +2726,7 @@ func (m *FormMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FormMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.class != nil {
 		fields = append(fields, form.FieldClassID)
 	}
@@ -2698,6 +2735,9 @@ func (m *FormMutation) Fields() []string {
 	}
 	if m.description != nil {
 		fields = append(fields, form.FieldDescription)
+	}
+	if m.system__prompt != nil {
+		fields = append(fields, form.FieldSystemPrompt)
 	}
 	if m.usage_limit != nil {
 		fields = append(fields, form.FieldUsageLimit)
@@ -2722,6 +2762,8 @@ func (m *FormMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case form.FieldDescription:
 		return m.Description()
+	case form.FieldSystemPrompt:
+		return m.SystemPrompt()
 	case form.FieldUsageLimit:
 		return m.UsageLimit()
 	case form.FieldCreatedAt:
@@ -2743,6 +2785,8 @@ func (m *FormMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case form.FieldDescription:
 		return m.OldDescription(ctx)
+	case form.FieldSystemPrompt:
+		return m.OldSystemPrompt(ctx)
 	case form.FieldUsageLimit:
 		return m.OldUsageLimit(ctx)
 	case form.FieldCreatedAt:
@@ -2778,6 +2822,13 @@ func (m *FormMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case form.FieldSystemPrompt:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSystemPrompt(v)
 		return nil
 	case form.FieldUsageLimit:
 		v, ok := value.(int)
@@ -2872,6 +2923,9 @@ func (m *FormMutation) ResetField(name string) error {
 		return nil
 	case form.FieldDescription:
 		m.ResetDescription()
+		return nil
+	case form.FieldSystemPrompt:
+		m.ResetSystemPrompt()
 		return nil
 	case form.FieldUsageLimit:
 		m.ResetUsageLimit()

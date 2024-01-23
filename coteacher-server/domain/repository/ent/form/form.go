@@ -21,6 +21,8 @@ const (
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldSystemPrompt holds the string denoting the system__prompt field in the database.
+	FieldSystemPrompt = "system__prompt"
 	// FieldUsageLimit holds the string denoting the usage_limit field in the database.
 	FieldUsageLimit = "usage_limit"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -64,6 +66,7 @@ var Columns = []string{
 	FieldClassID,
 	FieldName,
 	FieldDescription,
+	FieldSystemPrompt,
 	FieldUsageLimit,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -80,6 +83,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultSystemPrompt holds the default value on creation for the "system__prompt" field.
+	DefaultSystemPrompt string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -111,6 +116,11 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// BySystemPrompt orders the results by the system__prompt field.
+func BySystemPrompt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSystemPrompt, opts...).ToFunc()
 }
 
 // ByUsageLimit orders the results by the usage_limit field.

@@ -52,8 +52,12 @@ func (s *formServiceServer) GetFormListByClassID(ctx context.Context, req *conne
 }
 
 // UpdateForm implements coteacherv1connect.FormServiceHandler.
-func (*formServiceServer) UpdateForm(context.Context, *connect.Request[coteacherv1.UpdateFormRequest]) (*connect.Response[coteacherv1.UpdateFormResponse], error) {
-	panic("unimplemented")
+func (s *formServiceServer) UpdateForm(ctx context.Context, req *connect.Request[coteacherv1.UpdateFormRequest]) (*connect.Response[coteacherv1.UpdateFormResponse], error) {
+	resp, err := s.formInteractor.UpdateForm(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
 
 // CheckFormEditPermission implements coteacherv1connect.FormServiceHandler.

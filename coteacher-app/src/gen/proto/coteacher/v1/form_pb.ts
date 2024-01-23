@@ -252,9 +252,9 @@ export class GetFormListByClassIDResponse extends Message<GetFormListByClassIDRe
  */
 export class UpdateFormRequest extends Message<UpdateFormRequest> {
   /**
-   * @generated from field: string form_id = 1;
+   * @generated from field: string id = 1;
    */
-  formId = "";
+  id = "";
 
   /**
    * @generated from field: string name = 2;
@@ -271,6 +271,11 @@ export class UpdateFormRequest extends Message<UpdateFormRequest> {
    */
   usageLimit = 0;
 
+  /**
+   * @generated from field: string system_prompt = 5;
+   */
+  systemPrompt = "";
+
   constructor(data?: PartialMessage<UpdateFormRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -279,10 +284,11 @@ export class UpdateFormRequest extends Message<UpdateFormRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "coteacher.v1.UpdateFormRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "usage_limit", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 5, name: "system_prompt", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdateFormRequest {

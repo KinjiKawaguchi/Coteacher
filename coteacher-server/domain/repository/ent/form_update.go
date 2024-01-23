@@ -74,6 +74,20 @@ func (fu *FormUpdate) SetNillableDescription(s *string) *FormUpdate {
 	return fu
 }
 
+// SetSystemPrompt sets the "system__prompt" field.
+func (fu *FormUpdate) SetSystemPrompt(s string) *FormUpdate {
+	fu.mutation.SetSystemPrompt(s)
+	return fu
+}
+
+// SetNillableSystemPrompt sets the "system__prompt" field if the given value is not nil.
+func (fu *FormUpdate) SetNillableSystemPrompt(s *string) *FormUpdate {
+	if s != nil {
+		fu.SetSystemPrompt(*s)
+	}
+	return fu
+}
+
 // SetUsageLimit sets the "usage_limit" field.
 func (fu *FormUpdate) SetUsageLimit(i int) *FormUpdate {
 	fu.mutation.ResetUsageLimit()
@@ -265,6 +279,9 @@ func (fu *FormUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := fu.mutation.Description(); ok {
 		_spec.SetField(form.FieldDescription, field.TypeString, value)
 	}
+	if value, ok := fu.mutation.SystemPrompt(); ok {
+		_spec.SetField(form.FieldSystemPrompt, field.TypeString, value)
+	}
 	if value, ok := fu.mutation.UsageLimit(); ok {
 		_spec.SetField(form.FieldUsageLimit, field.TypeInt, value)
 	}
@@ -454,6 +471,20 @@ func (fuo *FormUpdateOne) SetDescription(s string) *FormUpdateOne {
 func (fuo *FormUpdateOne) SetNillableDescription(s *string) *FormUpdateOne {
 	if s != nil {
 		fuo.SetDescription(*s)
+	}
+	return fuo
+}
+
+// SetSystemPrompt sets the "system__prompt" field.
+func (fuo *FormUpdateOne) SetSystemPrompt(s string) *FormUpdateOne {
+	fuo.mutation.SetSystemPrompt(s)
+	return fuo
+}
+
+// SetNillableSystemPrompt sets the "system__prompt" field if the given value is not nil.
+func (fuo *FormUpdateOne) SetNillableSystemPrompt(s *string) *FormUpdateOne {
+	if s != nil {
+		fuo.SetSystemPrompt(*s)
 	}
 	return fuo
 }
@@ -678,6 +709,9 @@ func (fuo *FormUpdateOne) sqlSave(ctx context.Context) (_node *Form, err error) 
 	}
 	if value, ok := fuo.mutation.Description(); ok {
 		_spec.SetField(form.FieldDescription, field.TypeString, value)
+	}
+	if value, ok := fuo.mutation.SystemPrompt(); ok {
+		_spec.SetField(form.FieldSystemPrompt, field.TypeString, value)
 	}
 	if value, ok := fuo.mutation.UsageLimit(); ok {
 		_spec.SetField(form.FieldUsageLimit, field.TypeInt, value)

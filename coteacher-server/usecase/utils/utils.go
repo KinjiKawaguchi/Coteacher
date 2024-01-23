@@ -52,13 +52,14 @@ func ToPbClass(t *ent.Class) *pb.Class {
 
 func ToPbForm(t *ent.Form) *pb.Form {
 	return &pb.Form{
-		Id:          t.ID.String(),
-		ClassId:     t.ClassID.String(),
-		Name:        t.Name,
-		Description: t.Description,
-		UsageLimit:  int32(t.UsageLimit),
-		CreatedAt:   timestamppb.New(t.CreatedAt),
-		UpdatedAt:   timestamppb.New(t.UpdatedAt),
+		Id:           t.ID.String(),
+		ClassId:      t.ClassID.String(),
+		Name:         t.Name,
+		Description:  t.Description,
+		UsageLimit:   int32(t.UsageLimit),
+		SystemPrompt: t.SystemPrompt,
+		CreatedAt:    timestamppb.New(t.CreatedAt),
+		UpdatedAt:    timestamppb.New(t.UpdatedAt),
 	}
 }
 
