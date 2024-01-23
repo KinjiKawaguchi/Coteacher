@@ -21,6 +21,7 @@ import { Question, Form } from '@/interfaces';
 import QuestionList from './QuestionList';
 import EditQuestionList from './EditQuestionList';
 import toast from '@/libs/utils/toast';
+import FormSetting from './FormSetting';
 
 export default function FormView({ params }: { params: { formid: string } }) {
   const [hasEditPermission, setHasEditPermission] = useState<boolean | null>(
@@ -62,7 +63,6 @@ export default function FormView({ params }: { params: { formid: string } }) {
 
   // remoteQuestionList と questionList を比較する useEffect
   useEffect(() => {
-    console.log('remoteQuestionList:', remoteQuestionList);
     setShowSaveButton(!isEqual(remoteQuestionList, questionList));
   }, [remoteQuestionList, questionList]);
 
@@ -140,7 +140,9 @@ export default function FormView({ params }: { params: { formid: string } }) {
                 />
               </TabsContent>
               <TabsContent value="response"></TabsContent>
-              <TabsContent value="setting"></TabsContent>
+              <TabsContent value="setting">
+                {form && <FormSetting form={form} setForm={setForm} />}
+              </TabsContent>
             </>
           )}
         </Tabs>
