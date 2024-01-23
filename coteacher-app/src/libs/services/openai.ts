@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 
 // グローバルに一度だけOpenAIインスタンスを作成
 const openai = new OpenAI({
-  apiKey: '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',
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true, // ***注意*** クライアントサイドの実行を許可
 });
 
