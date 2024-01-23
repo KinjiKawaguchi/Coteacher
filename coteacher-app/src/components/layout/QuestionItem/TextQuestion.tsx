@@ -1,82 +1,65 @@
 import React from 'react';
 import { FormControl, FormLabel, HStack, Text } from '@chakra-ui/react';
 import { Input } from '@/components/ui/input';
-import { QuestionComponentProps } from '@/interfaces'; // このパスは適宜変更してください。
+import { QuestionComponentProps } from '@/interfaces'; // 必要に応じてパスを変更してください。
 import { Switch } from '@/components/ui/switch';
-//TODO: MaxLength周りの実装をする
+import { handleQuestionTextChange, handleMaxLengthChange } from './util';
 
+// TextQuestionComponent: テキストベースの質問フォームをレンダリングするコンポーネント
 const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
   questionList,
   index,
   editable,
   setQuestionList,
-}: QuestionComponentProps) => {
+}) => {
   const question = questionList[index];
   const { questionText, textQuestion, isRequired } = question;
-
-  const handleQuestionTextChange = (index: number, text: string) => {
-    const newQuestionList = [...questionList];
-    newQuestionList[index].questionText = text;
-    setQuestionList(newQuestionList);
-  };
-
-  // const handleMaxLengthChange = (index: number, maxLength: number) => {
-  //   //
-  // };
-
-  // const handleMaxLengthUsageChange = (index: number) => {
-  //   const newQuestionList = [...questionList];
-  //   const currentQuestion = newQuestionList[index];
-
-  //   if (currentQuestion.textQuestion) {
-  //     // textQuestion を未定義にする
-  //     currentQuestion.textQuestion = undefined;
-  //   } else {
-  //     // textQuestion が未定義の場合、新しいオブジェクトを作成
-  //     currentQuestion.textQuestion = {
-  //       ...(currentQuestion.textQuestion ?? {}),
-  //       questionId: currentQuestion.id,
-  //       max_length: 100, // ここに適切な初期値を設定
-  //     };
-  //   }
-  //   setQuestionList(newQuestionList);
-  // };
 
   return (
     <>
       <FormControl isRequired={isRequired}>
-        {editable && (
+        {editable ? (
           <Input
             type="text"
             value={question.questionText}
-            onChange={e => handleQuestionTextChange(index, e.target.value)}
+            onChange={e =>
+              handleQuestionTextChange(
+                questionList,
+                index,
+                e.target.value,
+                setQuestionList
+              )
+            }
             placeholder={question.questionText}
-          ></Input>
+          />
+        ) : (
+          <FormLabel>{questionText}</FormLabel>
         )}
-        {!editable && <FormLabel>{questionText}</FormLabel>}
         <Input
           disabled={editable}
           type="text"
-          maxLength={100}
+          maxLength={textQuestion?.maxLength}
           placeholder="Your answer"
         />
         {editable && (
           <HStack>
-            <Switch
-              defaultChecked={question.textQuestion !== undefined}
-              //onClick={() => handleMaxLengthUsageChange(index)}
-            />
+            <Switch defaultChecked={textQuestion !== undefined} />
             <Text fontSize="sm" color="gray.500">
               Maximum length:
             </Text>
             <Input
               type="number"
-              value={textQuestion?.maxLength}
-              disabled={!question.textQuestion}
+              value={textQuestion?.maxLength || ''}
+              disabled={!textQuestion}
               width="50px"
-              // onChange={e =>
-              //   handleMaxLengthChange(index, parseInt(e.target.value))
-              // }
+              onChange={e =>
+                handleMaxLengthChange(
+                  questionList,
+                  index,
+                  parseInt(e.target.value),
+                  setQuestionList
+                )
+              }
             />
             <Text fontSize="sm" color="gray.500">
               characters

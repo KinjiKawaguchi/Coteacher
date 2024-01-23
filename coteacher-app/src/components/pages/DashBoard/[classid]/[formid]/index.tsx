@@ -34,6 +34,7 @@ export default function FormView({ params }: { params: { formid: string } }) {
   const [questionList, setQuestionList] = useState<Question[]>([]);
   const [remoteQuestionList, setRemoteQuestionList] = useState<Question[]>([]);
   const [showSaveButton, setShowSaveButton] = useState(false); // 保存ボタン表示用の状態
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,6 +79,7 @@ export default function FormView({ params }: { params: { formid: string } }) {
 
   // 保存ボタンのクリックハンドラー（ここに保存ロジックを実装）
   const handleSave = async () => {
+    setSaving(true);
     const savedQuestionList = await questionRepo.saveQuestionList(questionList);
     setRemoteQuestionList(savedQuestionList);
     setQuestionList(savedQuestionList);
@@ -85,6 +87,7 @@ export default function FormView({ params }: { params: { formid: string } }) {
       title: '保存しました',
       status: 'success',
     });
+    setSaving(false);
   };
 
   return (
@@ -94,7 +97,12 @@ export default function FormView({ params }: { params: { formid: string } }) {
           <ArrowLeft />
         </Button>
         <Spacer />
-        {showSaveButton && <Button onClick={handleSave}>保存する</Button>}
+        {showSaveButton &&
+          (saving ? (
+            <Spinner />
+          ) : (
+            <Button onClick={handleSave}>保存する</Button>
+          ))}
         <Spacer />
       </HStack>
       <Container maxWidth="container.sm">
@@ -111,9 +119,15 @@ export default function FormView({ params }: { params: { formid: string } }) {
             )}
           </TabsList>
           <TabsContent value="question">
-            <QuestionList questionList={questionList} />
+            <QuestionList
+              questionList={questionList}
+              setQuestionList={setQuestionList}
+            />
             {hasViewPermission && questionList.length > 0 && (
-              <Button>送信</Button>
+              <HStack>
+                <Spacer />
+                <Button>送信</Button>
+              </HStack>
             )}
           </TabsContent>
           {hasEditPermission && (

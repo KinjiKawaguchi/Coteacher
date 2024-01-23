@@ -2,7 +2,6 @@ package form
 
 import (
 	"context"
-	"log"
 
 	"connectrpc.com/connect"
 
@@ -55,19 +54,14 @@ func (i *Interactor) GetQuestionListByFormID(ctx context.Context, req *pb.GetQue
 }
 
 func (i *Interactor) SaveQuestionList(ctx context.Context, req *pb.SaveQuestionListRequest) (*pb.SaveQuestionListResponse, error) {
-	log.Println("SaveQuestionList started") // 関数開始時のログ
-
 	var pbQuestions []*pb.Question
 
-	for idx, question := range req.Questions {
-		log.Printf("Processing question %d: %+v\n", idx, question) // 各質問の処理開始ログ
-
+	for _, question := range req.Questions {
 		var dbQuestion *ent.Question
 		var err error
 
 		// Determine if we're updating an existing question or creating a new one
 		if question.Id != "" {
-			log.Printf("Updating question %d: %+v\n", idx, question)
 			questionID, err := uuid.Parse(question.Id)
 			if err != nil {
 				return nil, connect.NewError(connect.CodeInvalidArgument, err)
@@ -94,7 +88,6 @@ func (i *Interactor) SaveQuestionList(ctx context.Context, req *pb.SaveQuestionL
 				return nil, connect.NewError(connect.CodeInternal, err)
 			}
 		} else {
-			log.Printf("Creating question %d: %+v\n", idx, question)
 			// Create new question
 			formID, err := uuid.Parse(question.FormId)
 			createQuery := i.entClient.Question.
@@ -110,8 +103,6 @@ func (i *Interactor) SaveQuestionList(ctx context.Context, req *pb.SaveQuestionL
 			if err != nil {
 				return nil, connect.NewError(connect.CodeInternal, err)
 			}
-
-			log.Printf("Created question %d: %+v\n", idx, question)
 		}
 
 		// Handle additional details based on QuestionType
@@ -132,7 +123,6 @@ func (i *Interactor) SaveQuestionList(ctx context.Context, req *pb.SaveQuestionL
 						return nil, connect.NewError(connect.CodeInternal, err)
 					}
 				} else {
-					log.Printf("Creating TextQuestion for question %d: %+v\n", idx, question)
 					// Create new TextQuestion
 					_, err = i.entClient.TextQuestion.
 						Create().
@@ -142,7 +132,6 @@ func (i *Interactor) SaveQuestionList(ctx context.Context, req *pb.SaveQuestionL
 					if err != nil {
 						return nil, connect.NewError(connect.CodeInternal, err)
 					}
-					log.Printf("Created TextQuestion for question %d: %+v\n", idx, question)
 				}
 			}
 
@@ -178,7 +167,6 @@ func (i *Interactor) SaveQuestionList(ctx context.Context, req *pb.SaveQuestionL
 			}
 		}
 
-		log.Printf("Retrieving question %d: %+v\n", idx, question)
 		dbQuestion, err = i.entClient.Question.Query().
 			Where(ent_question.ID(dbQuestion.ID)).
 			WithTextQuestion().
@@ -192,7 +180,6 @@ func (i *Interactor) SaveQuestionList(ctx context.Context, req *pb.SaveQuestionL
 		pbQuestion := utils.ToPbQuestion(dbQuestion)
 		pbQuestions = append(pbQuestions, pbQuestion)
 
-		log.Println("Question processed successfully") // 質問の処理が成功したことを示すログ
 	}
 
 	return &pb.SaveQuestionListResponse{
@@ -201,8 +188,6 @@ func (i *Interactor) SaveQuestionList(ctx context.Context, req *pb.SaveQuestionL
 }
 
 func convertPbQuestionTypeToEntQuestionType(pbType pb.Question_QuestionType) question.QuestionType {
-	log.Printf("Converting pbType %v to entType\n", pbType)
-	log.Printf("pbType == pb.Question_QUESTION_TYPE_TEXT: %v\n", pbType == pb.Question_QUESTION_TYPE_TEXT)
 	switch pbType {
 	case pb.Question_QUESTION_TYPE_TEXT:
 		return question.QuestionTypeText

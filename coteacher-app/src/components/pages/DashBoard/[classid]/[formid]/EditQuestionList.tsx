@@ -1,5 +1,5 @@
 // import MultipleChoiceQuestionComponent from '@/components/layout/QuestionItem/MultipleChoiceQuestion';
-// import ParagraphTextQuestionComponent from '@/components/layout/QuestionItem/ParagraphTextQuestion';
+import ParagraphTextQuestionComponent from '@/components/layout/QuestionItem/ParagraphTextQuestion';
 // import RadioQuestionComponent from '@/components/layout/QuestionItem/RadioQuestion';
 import TextQuestionComponent from '@/components/layout/QuestionItem/TextQuestion';
 import {
@@ -7,7 +7,6 @@ import {
   FaLongArrowAltUp,
   FaLongArrowAltDown,
 } from 'react-icons/fa';
-import { IoAddCircleOutline } from 'react-icons/io5';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Question_QuestionType } from '@/gen/proto/coteacher/v1/resources_pb';
@@ -15,7 +14,7 @@ import { Question } from '@/interfaces';
 import { Box, HStack, Spacer } from '@chakra-ui/react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-
+import CreateQuestionDropdown from './CreateQuestionDropdown';
 interface EditQuestionListProps {
   formId: string;
   questionList: Question[];
@@ -54,54 +53,20 @@ export default function EditQuestionList({
     setQuestionList(updatedList);
   };
 
-  const handleAddQuestionButtonClick = (index: number) => {
-    const updatedList = [...questionList];
-    const newQuestion = {
-      order: index + 1,
-      questionType: Question_QuestionType.TEXT, //TODO: 質問を選べるように
-      questionText: '',
-      isRequired: false,
-      forAiProcessing: false,
-      textQuestion: {
-        maxLength: 100,
-      },
-      formId: formId,
-    };
-
-    // 新しい質問をリストに追加
-    updatedList.splice(index + 1, 0, newQuestion);
-
-    // 追加した質問の後ろの質問の順序を更新
-    for (let i = index + 2; i < updatedList.length; i++) {
-      updatedList[i].order += 1;
-    }
-
-    setQuestionList(updatedList);
-  };
-
   return (
     <div>
       {questionList.map((question, index) => {
         if (question.order === -1) return null;
-        // const questionComponentInput: QuestionComponentProps = {
-        //   questionList,
-        //   index,
-        //   editable: true,
-        //   setQuestionList,
-        // };
         return (
           <div key={question.id || index}>
             <HStack>
               <Separator className="my-4" />
-              <Button
-                id={`addButton-${index}`}
-                variant="ghost"
-                onClick={() => {
-                  handleAddQuestionButtonClick(index - 1);
-                }}
-              >
-                <IoAddCircleOutline size={24} />
-              </Button>
+              <CreateQuestionDropdown
+                formId={formId}
+                questionList={questionList}
+                setQuestionList={setQuestionList}
+                index={index - 1}
+              />
             </HStack>
             <Box
               border="1px"
@@ -130,11 +95,12 @@ export default function EditQuestionList({
                 )}
               {question.questionType === Question_QuestionType.PARAGRAPH_TEXT &&
                 question.textQuestion && (
-                  <div>unimplemented</div>
-                  // <ParagraphTextQuestionComponent
-                  //   question={question}
-                  //   editable={true}
-                  // />
+                  <ParagraphTextQuestionComponent
+                    questionList={questionList}
+                    index={index}
+                    editable={true}
+                    setQuestionList={setQuestionList}
+                  />
                 )}
               {question.questionType === Question_QuestionType.TEXT &&
                 question.textQuestion && (
@@ -181,15 +147,12 @@ export default function EditQuestionList({
       })}
       <HStack>
         <Separator className="my-4" />
-        <Button
-          id={`addButton-${questionList.length}`}
-          variant="ghost"
-          onClick={() => {
-            handleAddQuestionButtonClick(questionList.length - 1);
-          }}
-        >
-          <IoAddCircleOutline size={24} />
-        </Button>
+        <CreateQuestionDropdown
+          formId={formId}
+          questionList={questionList}
+          setQuestionList={setQuestionList}
+          index={questionList.length}
+        />
       </HStack>
     </div>
   );
