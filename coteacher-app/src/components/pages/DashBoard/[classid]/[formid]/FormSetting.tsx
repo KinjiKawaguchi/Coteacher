@@ -13,6 +13,15 @@ import { Input } from '@/components/ui/input';
 import { formRepo } from '@/repository/form';
 import toast from '@/libs/utils/toast';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface FormSettingProps {
   form: Form;
@@ -87,12 +96,29 @@ export default function FormSetting({ form, setForm }: FormSettingProps) {
           </AccordionItem>
         </Accordion>
       </VStack>
-      {showSaveButton && (
-        <HStack>
-          <Spacer />
-          <Button onClick={handleSaveButtonClick}>Save</Button>
-        </HStack>
-      )}
+      {/* TODO: 削除機能を実装 */}
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive"> フォームを削除</Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>フォームを削除しますか？</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <Button variant="destructive">続行</Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <HStack>
+        {showSaveButton && (
+          <>
+            <Spacer />
+            <Button onClick={handleSaveButtonClick}>Save</Button>
+          </>
+        )}
+      </HStack>
     </>
   );
 }
