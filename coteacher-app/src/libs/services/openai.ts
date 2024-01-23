@@ -18,7 +18,7 @@ function createContent(
   let content = `{\ninstructions: '${form.systemPrompt}',\nable_conversation: false,\nquestions: [`;
 
   questionList.forEach((question, index) => {
-    if (question.order !== -1) {
+    if (question.order !== -1 && question.forAiProcessing) {
       content += `{ \nquestion_type: '${question.questionType}',\nquestion_text: '${question.questionText}',\nanswer: '${answerList[index]}' }`;
       if (index < questionList.length - 1) content += ',';
     }
