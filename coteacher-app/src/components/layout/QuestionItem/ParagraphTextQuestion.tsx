@@ -3,7 +3,11 @@ import { FormControl, FormLabel, HStack, Text } from '@chakra-ui/react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { QuestionComponentProps } from '@/interfaces'; // 必要に応じてパスを変更してください。
-import { handleQuestionTextChange, handleMaxLengthChange } from './util';
+import {
+  handleQuestionTextChange,
+  handleMaxLengthChange,
+  handleAnswerChange,
+} from './util';
 import { Switch } from '@/components/ui/switch';
 
 // ParagraphTextQuestionComponent: パラグラフ形式の質問フォームをレンダリングするコンポーネント
@@ -12,6 +16,8 @@ const ParagraphTextQuestionComponent: React.FC<QuestionComponentProps> = ({
   index,
   editable,
   setQuestionList,
+  answerList,
+  setAnswerList,
 }) => {
   const question = questionList[index];
   const { questionText, isRequired, textQuestion } = question;
@@ -39,6 +45,9 @@ const ParagraphTextQuestionComponent: React.FC<QuestionComponentProps> = ({
         disabled={editable}
         placeholder="Your answer"
         maxLength={textQuestion?.maxLength}
+        onChange={e =>
+          handleAnswerChange(answerList|| [""], index, e.target.value, setAnswerList)
+        }
       />
       {editable && (
         <HStack>
