@@ -86,6 +86,7 @@ var (
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Size: 2147483647},
+		{Name: "system__prompt", Type: field.TypeString, Size: 2147483647, Default: ""},
 		{Name: "usage_limit", Type: field.TypeInt},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -99,7 +100,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "forms_classes_forms",
-				Columns:    []*schema.Column{FormsColumns[6]},
+				Columns:    []*schema.Column{FormsColumns[7]},
 				RefColumns: []*schema.Column{ClassesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

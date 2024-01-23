@@ -19,6 +19,7 @@ func (Form) Fields() []ent.Field {
 		field.UUID("class_id", uuid.UUID{}).StorageKey("class_id"),
 		field.String("name"),
 		field.Text("description"),
+		field.Text("system__prompt").Default(""),
 		field.Int("usage_limit"),
 		field.Time("created_at").Default(time.Now),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),

@@ -42,10 +42,11 @@ message GetFormListByClassIDResponse {
 }
 
 message UpdateFormRequest {
-  string form_id = 1;
+  string id = 1;
   string name = 2;
   string description = 3;
   int32 usage_limit = 4;
+  string system_prompt = 5;
 }
 
 message UpdateFormResponse {

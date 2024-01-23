@@ -25,6 +25,8 @@ type Form struct {
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// SystemPrompt holds the value of the "system__prompt" field.
+	SystemPrompt string `json:"system__prompt,omitempty"`
 	// UsageLimit holds the value of the "usage_limit" field.
 	UsageLimit int `json:"usage_limit,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -88,7 +90,7 @@ func (*Form) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case form.FieldUsageLimit:
 			values[i] = new(sql.NullInt64)
-		case form.FieldName, form.FieldDescription:
+		case form.FieldName, form.FieldDescription, form.FieldSystemPrompt:
 			values[i] = new(sql.NullString)
 		case form.FieldCreatedAt, form.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -132,6 +134,12 @@ func (f *Form) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				f.Description = value.String
+			}
+		case form.FieldSystemPrompt:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field system__prompt", values[i])
+			} else if value.Valid {
+				f.SystemPrompt = value.String
 			}
 		case form.FieldUsageLimit:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -210,6 +218,9 @@ func (f *Form) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(f.Description)
+	builder.WriteString(", ")
+	builder.WriteString("system__prompt=")
+	builder.WriteString(f.SystemPrompt)
 	builder.WriteString(", ")
 	builder.WriteString("usage_limit=")
 	builder.WriteString(fmt.Sprintf("%v", f.UsageLimit))

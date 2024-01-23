@@ -71,6 +71,11 @@ func Description(v string) predicate.Form {
 	return predicate.Form(sql.FieldEQ(FieldDescription, v))
 }
 
+// SystemPrompt applies equality check predicate on the "system__prompt" field. It's identical to SystemPromptEQ.
+func SystemPrompt(v string) predicate.Form {
+	return predicate.Form(sql.FieldEQ(FieldSystemPrompt, v))
+}
+
 // UsageLimit applies equality check predicate on the "usage_limit" field. It's identical to UsageLimitEQ.
 func UsageLimit(v int) predicate.Form {
 	return predicate.Form(sql.FieldEQ(FieldUsageLimit, v))
@@ -234,6 +239,71 @@ func DescriptionEqualFold(v string) predicate.Form {
 // DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
 func DescriptionContainsFold(v string) predicate.Form {
 	return predicate.Form(sql.FieldContainsFold(FieldDescription, v))
+}
+
+// SystemPromptEQ applies the EQ predicate on the "system__prompt" field.
+func SystemPromptEQ(v string) predicate.Form {
+	return predicate.Form(sql.FieldEQ(FieldSystemPrompt, v))
+}
+
+// SystemPromptNEQ applies the NEQ predicate on the "system__prompt" field.
+func SystemPromptNEQ(v string) predicate.Form {
+	return predicate.Form(sql.FieldNEQ(FieldSystemPrompt, v))
+}
+
+// SystemPromptIn applies the In predicate on the "system__prompt" field.
+func SystemPromptIn(vs ...string) predicate.Form {
+	return predicate.Form(sql.FieldIn(FieldSystemPrompt, vs...))
+}
+
+// SystemPromptNotIn applies the NotIn predicate on the "system__prompt" field.
+func SystemPromptNotIn(vs ...string) predicate.Form {
+	return predicate.Form(sql.FieldNotIn(FieldSystemPrompt, vs...))
+}
+
+// SystemPromptGT applies the GT predicate on the "system__prompt" field.
+func SystemPromptGT(v string) predicate.Form {
+	return predicate.Form(sql.FieldGT(FieldSystemPrompt, v))
+}
+
+// SystemPromptGTE applies the GTE predicate on the "system__prompt" field.
+func SystemPromptGTE(v string) predicate.Form {
+	return predicate.Form(sql.FieldGTE(FieldSystemPrompt, v))
+}
+
+// SystemPromptLT applies the LT predicate on the "system__prompt" field.
+func SystemPromptLT(v string) predicate.Form {
+	return predicate.Form(sql.FieldLT(FieldSystemPrompt, v))
+}
+
+// SystemPromptLTE applies the LTE predicate on the "system__prompt" field.
+func SystemPromptLTE(v string) predicate.Form {
+	return predicate.Form(sql.FieldLTE(FieldSystemPrompt, v))
+}
+
+// SystemPromptContains applies the Contains predicate on the "system__prompt" field.
+func SystemPromptContains(v string) predicate.Form {
+	return predicate.Form(sql.FieldContains(FieldSystemPrompt, v))
+}
+
+// SystemPromptHasPrefix applies the HasPrefix predicate on the "system__prompt" field.
+func SystemPromptHasPrefix(v string) predicate.Form {
+	return predicate.Form(sql.FieldHasPrefix(FieldSystemPrompt, v))
+}
+
+// SystemPromptHasSuffix applies the HasSuffix predicate on the "system__prompt" field.
+func SystemPromptHasSuffix(v string) predicate.Form {
+	return predicate.Form(sql.FieldHasSuffix(FieldSystemPrompt, v))
+}
+
+// SystemPromptEqualFold applies the EqualFold predicate on the "system__prompt" field.
+func SystemPromptEqualFold(v string) predicate.Form {
+	return predicate.Form(sql.FieldEqualFold(FieldSystemPrompt, v))
+}
+
+// SystemPromptContainsFold applies the ContainsFold predicate on the "system__prompt" field.
+func SystemPromptContainsFold(v string) predicate.Form {
+	return predicate.Form(sql.FieldContainsFold(FieldSystemPrompt, v))
 }
 
 // UsageLimitEQ applies the EQ predicate on the "usage_limit" field.

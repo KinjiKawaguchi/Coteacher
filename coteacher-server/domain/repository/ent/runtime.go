@@ -67,12 +67,16 @@ func init() {
 	classinvitationcode.DefaultID = classinvitationcodeDescID.Default.(func() uuid.UUID)
 	formFields := schema.Form{}.Fields()
 	_ = formFields
+	// formDescSystemPrompt is the schema descriptor for system__prompt field.
+	formDescSystemPrompt := formFields[4].Descriptor()
+	// form.DefaultSystemPrompt holds the default value on creation for the system__prompt field.
+	form.DefaultSystemPrompt = formDescSystemPrompt.Default.(string)
 	// formDescCreatedAt is the schema descriptor for created_at field.
-	formDescCreatedAt := formFields[5].Descriptor()
+	formDescCreatedAt := formFields[6].Descriptor()
 	// form.DefaultCreatedAt holds the default value on creation for the created_at field.
 	form.DefaultCreatedAt = formDescCreatedAt.Default.(func() time.Time)
 	// formDescUpdatedAt is the schema descriptor for updated_at field.
-	formDescUpdatedAt := formFields[6].Descriptor()
+	formDescUpdatedAt := formFields[7].Descriptor()
 	// form.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	form.DefaultUpdatedAt = formDescUpdatedAt.Default.(func() time.Time)
 	// form.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
