@@ -86,6 +86,30 @@ func (i *Interactor) CreateForm(ctx context.Context, req *pb.CreateFormRequest) 
 	}, nil
 }
 
+func (i *Interactor) UpdateForm(ctx context.Context, req *pb.UpdateFormRequest) (*pb.UpdateFormResponse, error) {
+	// Parse form ID.
+	formID, err := uuid.Parse(req.Id)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	// Update form.
+	form, err := i.entClient.Form.UpdateOneID(formID).
+		SetName(req.Name).
+		SetDescription(req.Description).
+		SetUsageLimit(int(req.UsageLimit)).
+		SetSystemPrompt(req.SystemPrompt).
+		Save(ctx)
+
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return &pb.UpdateFormResponse{
+		Form: utils.ToPbForm(form),
+	}, nil
+}
+
 func (i *Interactor) CheckFormEditPermission(ctx context.Context, req *pb.CheckFormEditPermissionRequest) (*pb.CheckFormEditPermissionResponse, error) {
 	// Get form by id.
 	formID, err := uuid.Parse(req.FormId)

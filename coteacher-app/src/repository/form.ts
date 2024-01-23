@@ -12,6 +12,7 @@ import {
   CreateFormRequest,
   GetFormByIDRequest,
   GetFormListByClassIDRequest,
+  UpdateFormRequest,
 } from '@/gen/proto/coteacher/v1/form_pb';
 
 export interface CreateFormInput {
@@ -43,6 +44,7 @@ class FormRepository {
       name: res.form.name,
       description: res.form.description,
       usageLimit: res.form.usageLimit,
+      systemPrompt: res.form.systemPrompt,
     };
     return form;
   }
@@ -53,15 +55,16 @@ class FormRepository {
     const res = await this.cli.getFormByID(req);
     if (!res.form) {
       throw new Error('form is null');
-    };
+    }
     const form: Form = {
       id: res.form.id,
       classId: res.form.classId,
       name: res.form.name,
       description: res.form.description,
       usageLimit: res.form.usageLimit,
+      systemPrompt: res.form.systemPrompt,
     };
-    return form
+    return form;
   }
 
   async getFormListByClassId(classId: string): Promise<Form[]> {
@@ -75,9 +78,32 @@ class FormRepository {
         name: f.name,
         description: f.description,
         usageLimit: f.usageLimit,
+        systemPrompt: f.systemPrompt,
       };
     });
     return forms;
+  }
+
+  async updateForm(form: Form) {
+    const req = new UpdateFormRequest();
+    req.id = form.id;
+    req.name = form.name;
+    req.description = form.description;
+    req.usageLimit = form.usageLimit;
+    req.systemPrompt = form.systemPrompt;
+    const res = await this.cli.updateForm(req);
+    if (!res.form) {
+      throw new Error('form is null');
+    }
+    const updatedForm: Form = {
+      id: res.form.id,
+      classId: res.form.classId,
+      name: res.form.name,
+      description: res.form.description,
+      usageLimit: res.form.usageLimit,
+      systemPrompt: res.form.systemPrompt,
+    };
+    return updatedForm;
   }
 
   async checkFormEditPermission(formId: string, teacherId?: string) {
