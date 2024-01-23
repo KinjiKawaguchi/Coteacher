@@ -4,6 +4,7 @@ import {
   useReactTable,
   getCoreRowModel,
   flexRender,
+  Row,
 } from '@tanstack/react-table';
 import {
   Table,
@@ -45,7 +46,7 @@ export const FormTable: React.FC<FormTableProps> = ({ classId, forms }) => {
           {
             accessorKey: 'usage',
             header: '使用回数',
-            cell: ({ row }) => row.original.usage,
+            cell: ({ row }: { row: Row<Form> }) => row.original.usage,
           },
         ]
       : []),
@@ -54,7 +55,7 @@ export const FormTable: React.FC<FormTableProps> = ({ classId, forms }) => {
           {
             accessorKey: 'usage',
             header: '総使用回数',
-            cell: ({ row }) => row.original.usage,
+            cell: ({ row }: { row: Row<Form> }) => row.original.usage,
           },
         ]
       : []),
@@ -68,7 +69,7 @@ export const FormTable: React.FC<FormTableProps> = ({ classId, forms }) => {
 
   const router = useRouter();
 
-  const handleRowClick = (row: any) => {
+  const handleRowClick = (row: Row<Form>) => {
     const formId = row.original.id; // formIdはrow.originalから取得
     router.push(`/DashBoard/${classId}/${formId}`);
   };
