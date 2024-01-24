@@ -50,7 +50,7 @@ export default function FormView({ params }: { params: { formid: string } }) {
       const fetchedQuestions = await questionRepo.getQuestionListByFormId(
         params.formid
       );
-      await setRemoteQuestionList(fetchedQuestions);
+      setRemoteQuestionList(fetchedQuestions);
       const sortedQuestions = fetchedQuestions.sort(
         (a, b) => a.order - b.order
       ); // orderに基づいてソート
@@ -122,13 +122,9 @@ export default function FormView({ params }: { params: { formid: string } }) {
             <QuestionList
               questionList={questionList}
               setQuestionList={setQuestionList}
+              hasViewPermission={hasViewPermission}
+              form={form}
             />
-            {hasViewPermission && questionList.length > 0 && (
-              <HStack>
-                <Spacer />
-                <Button>送信</Button>
-              </HStack>
-            )}
           </TabsContent>
           {hasEditPermission && (
             <>

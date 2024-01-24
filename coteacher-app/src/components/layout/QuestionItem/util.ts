@@ -24,3 +24,16 @@ export function handleMaxLengthChange(
   }
   setQuestionList(newQuestionList);
 }
+
+export function handleAnswerChange(
+  answerList: string[],
+  index: number,
+  text: string,
+  setAnswerList?: (answerList: string[]) => void
+) {
+  const newAnswerList = [...answerList];
+  newAnswerList[index] = text;
+  if (setAnswerList) {
+    setAnswerList(newAnswerList);
+  }
+}

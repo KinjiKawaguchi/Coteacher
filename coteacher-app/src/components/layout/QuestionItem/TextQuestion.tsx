@@ -3,7 +3,11 @@ import { FormControl, FormLabel, HStack, Text } from '@chakra-ui/react';
 import { Input } from '@/components/ui/input';
 import { QuestionComponentProps } from '@/interfaces'; // 必要に応じてパスを変更してください。
 import { Switch } from '@/components/ui/switch';
-import { handleQuestionTextChange, handleMaxLengthChange } from './util';
+import {
+  handleQuestionTextChange,
+  handleMaxLengthChange,
+  handleAnswerChange,
+} from './util';
 
 // TextQuestionComponent: テキストベースの質問フォームをレンダリングするコンポーネント
 const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
@@ -11,6 +15,8 @@ const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
   index,
   editable,
   setQuestionList,
+  answerList,
+  setAnswerList,
 }) => {
   const question = questionList[index];
   const { questionText, textQuestion, isRequired } = question;
@@ -40,6 +46,14 @@ const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
           type="text"
           maxLength={textQuestion?.maxLength}
           placeholder="Your answer"
+          onChange={e =>
+            handleAnswerChange(
+              answerList || [''],
+              index,
+              e.target.value,
+              setAnswerList
+            )
+          }
         />
         {editable && (
           <HStack>
