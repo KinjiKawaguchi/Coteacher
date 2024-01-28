@@ -18,7 +18,7 @@ function createContent(
       return `{
         question_type: '${question.questionType}',
         question_text: '${question.questionText}',
-        answer: '${answerList[index]}'
+        answer: '${answerList[index + 1]}'
       }`;
     })
     .join(',');
@@ -39,6 +39,8 @@ export async function callOpenAI(
 
   const userName = localStorage.getItem('UserName') || '';
   // OpenAIのAPIリクエスト
+
+  console.log(content);
   const response = await openai.chat.completions.create({
     model: 'gpt-4',
     messages: [
@@ -53,13 +55,14 @@ export async function callOpenAI(
           'questions{\n' +
           '[question_type:AIの入力のために先生が用意した質問のタイプ\n' +
           'question_text:AIの入力のために先生が用意した質問\n' +
-          'answer:生徒の回答\n' +
+          'answer:その質問に対する生徒の回答\n' +
           ']}\n' +
           '}\n' +
           'あなたの最も重要視すべきことは、生徒が理解し、定着し、応用できるような学習を促すことと、生徒の学習意欲や自主性を高めることです。' +
           '生徒の理解度や意欲を常に把握し、それに応じた対応をしましょう。' +
           '生徒が自分で考え、答えを導き出すことができるよう、ヒントやサポートを与えましょう。' +
-          '生徒が学ぶ楽しさや喜びを感じられるよう、コミュニケーションを大切にしましょう。',
+          '生徒が学ぶ楽しさや喜びを感じられるよう、コミュニケーションを大切にしましょう。' +
+          'とにかく元気にポジティブな返答をしましょう。',
       },
       {
         role: 'user',
@@ -69,7 +72,7 @@ export async function callOpenAI(
         role: 'assistant',
         content:
           userName +
-          'さん、先生の補助をする、GPT先生だよ、よろしく！！\nただし解決のための直接的な回答は出来ないから、これから教えるヒントを活かしてがんばって！！',
+          'さん、先生の補助をする、元気でポジティブなGPT先生だよ！！！よろしく！！\nただし解決のための直接的な回答は出来ないから、これから教えるヒントを活かしてがんばって！！',
       },
     ],
     temperature: 2,
@@ -78,6 +81,6 @@ export async function callOpenAI(
     frequency_penalty: 0,
     presence_penalty: 0,
   });
-
+  console.log(response);
   return response;
 }
