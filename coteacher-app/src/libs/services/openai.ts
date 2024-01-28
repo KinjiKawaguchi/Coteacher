@@ -7,28 +7,28 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true, // ***注意*** クライアントサイドの実行を許可
 });
 
-// ユーザー名の取得
-const userName = '河口欣仁';
-
 function createContent(
   form: Form,
   questionList: Question[],
   answerList: string[]
-) {
-  let content = `{\ninstructions: '${form.systemPrompt}',\nable_conversation: false,\nquestions: [`;
+): string {
+  const questionsContent = questionList
+    .filter(question => question.order !== -1 && question.forAiProcessing)
+    .map((question, index) => {
+      return `{
+        question_type: '${question.questionType}',
+        question_text: '${question.questionText}',
+        answer: '${answerList[index]}'
+      }`;
+    })
+    .join(',');
 
-  questionList.forEach((question, index) => {
-    if (question.order !== -1 && question.forAiProcessing) {
-      content += `{ \nquestion_type: '${question.questionType}',\nquestion_text: '${question.questionText}',\nanswer: '${answerList[index]}' }`;
-      if (index < questionList.length - 1) content += ',';
-    }
-  });
-
-  content += '\n]\n}';
-
-  return content;
+  return `{
+    instructions: '${form.systemPrompt}',
+    able_conversation: false,
+    questions: [${questionsContent}]
+  }`;
 }
-
 // OpenAI APIを呼び出す関数
 export async function callOpenAI(
   form: Form,
@@ -37,6 +37,7 @@ export async function callOpenAI(
 ) {
   const content = createContent(form, questionList, answerList);
 
+  const userName = localStorage.getItem('UserName') || '';
   // OpenAIのAPIリクエスト
   const response = await openai.chat.completions.create({
     model: 'gpt-4',
@@ -44,8 +45,21 @@ export async function callOpenAI(
       {
         role: 'system',
         content:
-          'あなたは、多くの生徒を持つ先生が拾いきれない疑問、質問、意見などに対して代わりに生徒と対話を行います。\n先生が用意したAIに提供する情報の生徒からの入力は以下のフォーマットによって与えられます。\n' +
-          content,
+          'あなたは、多くの生徒を持つ先生が拾いきれない疑問、質問、意見などに対して代わりに生徒と対話を行います。\n' +
+          '先生が用意したAIに提供する情報の生徒からの入力は以下のフォーマットによって与えられます。\n' +
+          '{\n' +
+          'instructions:"先生からの指示"\n' +
+          'able_conversation:一問一答かどうか\n' +
+          'questions{\n' +
+          '[question_type:AIの入力のために先生が用意した質問のタイプ\n' +
+          'question_text:AIの入力のために先生が用意した質問\n' +
+          'answer:生徒の回答\n' +
+          ']}\n' +
+          '}\n' +
+          'あなたの最も重要視すべきことは、生徒が理解し、定着し、応用できるような学習を促すことと、生徒の学習意欲や自主性を高めることです。' +
+          '生徒の理解度や意欲を常に把握し、それに応じた対応をしましょう。' +
+          '生徒が自分で考え、答えを導き出すことができるよう、ヒントやサポートを与えましょう。' +
+          '生徒が学ぶ楽しさや喜びを感じられるよう、コミュニケーションを大切にしましょう。',
       },
       {
         role: 'user',
