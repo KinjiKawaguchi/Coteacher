@@ -79,4 +79,5 @@ export type Response = {
   formId: string;
   studentId: string;
   answerList: Answer[];
+  aiResponse: string;
 };
