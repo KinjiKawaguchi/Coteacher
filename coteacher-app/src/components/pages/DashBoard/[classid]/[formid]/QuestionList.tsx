@@ -1,7 +1,7 @@
 // import ListQuestionComponent from '@/components/layout/QuestionItem/ListQuestion';
 // import MultipleChoiceQuestionComponent from '@/components/layout/QuestionItem/MultipleChoiceQuestion';
 import ParagraphTextQuestionComponent from '@/components/layout/QuestionItem/ParagraphTextQuestion';
-// import RadioQuestionComponent from '@/components/layout/QuestionItem/RadioQuestion';
+import RadioQuestionComponent from '@/components/layout/QuestionItem/RadioQuestion';
 // import TextQuestionComponent from '@/components/layout/QuestionItem/TextQuestion';
 import React from 'react';
 import { Form, Question } from '@/interfaces'; // このパスは適宜変更してください。
@@ -64,27 +64,29 @@ export default function QuestionList({
               p={4}
               mb={4}
             >
-              {question.questionType === Question_QuestionType.CHECKBOX &&
-                question.textQuestion && <div>unimplemented</div>}
-              {question.questionType === Question_QuestionType.LIST &&
-                question.textQuestion && (
-                  <div>unimplemented</div>
-                  // <ListQuestionComponent question={question} editable={false} />
-                )}
-              {question.questionType === Question_QuestionType.RADIO &&
-                question.textQuestion && (
-                  <div>unimplemented</div>
-                  // <RadioQuestionComponent question={question} editable={false} />
-                )}
+              {question.questionType === Question_QuestionType.CHECKBOX && (
+                <div>unimplemented</div>
+              )}
+              {question.questionType === Question_QuestionType.LIST && (
+                <div>unimplemented</div>
+                // <ListQuestionComponent question={question} editable={false} />
+              )}
+              {question.questionType === Question_QuestionType.RADIO && (
+                <RadioQuestionComponent
+                  questionList={questionList}
+                  index={index}
+                  editable={false}
+                  setQuestionList={setQuestionList}
+                />
+              )}
               {question.questionType ===
-                Question_QuestionType.MULTIPLE_CHOICE &&
-                question.textQuestion && (
-                  <div>unimplemented</div>
-                  // <MultipleChoiceQuestionComponent
-                  //   question={question}
-                  //   editable={false}
-                  // />
-                )}
+                Question_QuestionType.MULTIPLE_CHOICE && (
+                <div>unimplemented</div>
+                // <MultipleChoiceQuestionComponent
+                //   question={question}
+                //   editable={false}
+                // />
+              )}
               {question.questionType === Question_QuestionType.PARAGRAPH_TEXT &&
                 question.textQuestion && (
                   <ParagraphTextQuestionComponent

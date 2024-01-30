@@ -78,9 +78,11 @@ export default function Class({ params }: { params: { classid: string } }) {
       <Container maxWidth="container.sm">
         <UserHeader />
         <ClassHeader classId={params.classid} />
-        <Flex justifyContent="flex-end">
-          <CreateFormDialog params={params} updateFormList={updateFormList} />
-        </Flex>
+        {hasEditPermission && (
+          <Flex justifyContent="flex-end">
+            <CreateFormDialog params={params} updateFormList={updateFormList} />
+          </Flex>
+        )}
         <FormTable classId={params.classid} forms={forms} />
       </Container>
     </ChakraProvider>

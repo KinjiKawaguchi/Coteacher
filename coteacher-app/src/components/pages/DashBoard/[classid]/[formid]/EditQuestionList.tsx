@@ -1,6 +1,6 @@
 // import MultipleChoiceQuestionComponent from '@/components/layout/QuestionItem/MultipleChoiceQuestion';
 import ParagraphTextQuestionComponent from '@/components/layout/QuestionItem/ParagraphTextQuestion';
-// import RadioQuestionComponent from '@/components/layout/QuestionItem/RadioQuestion';
+import RadioQuestionComponent from '@/components/layout/QuestionItem/RadioQuestion';
 import TextQuestionComponent from '@/components/layout/QuestionItem/TextQuestion';
 import {
   FaRegTrashAlt,
@@ -26,6 +26,20 @@ export default function EditQuestionList({
   questionList,
   setQuestionList,
 }: EditQuestionListProps) {
+  const handleAddQuestionOptionButton = (index: number) => {
+    const updatedList = [...questionList];
+    updatedList[index] = {
+      ...updatedList[index],
+      options: [
+        ...(updatedList[index].options || []),
+        {
+          optionText: '',
+          order: updatedList[index].options?.length || 0,
+        },
+      ],
+    };
+    setQuestionList(updatedList);
+  };
   const handleIsRequiredChange = (index: number) => {
     const updatedList = [...questionList];
     updatedList[index] = {
@@ -75,24 +89,28 @@ export default function EditQuestionList({
               p={4}
               mb={4}
             >
-              {question.questionType === Question_QuestionType.CHECKBOX &&
-                question.textQuestion && <div>unimplemented</div>}
-              {question.questionType === Question_QuestionType.LIST &&
-                question.textQuestion && <div>unimplemented</div>}
-              {question.questionType === Question_QuestionType.RADIO &&
-                question.textQuestion && (
-                  <div>unimplemented</div>
-                  // <RadioQuestionComponent question={question} editable={true} />
-                )}
+              {question.questionType === Question_QuestionType.CHECKBOX && (
+                <div>unimplemented</div>
+              )}
+              {question.questionType === Question_QuestionType.LIST && (
+                <div>unimplemented</div>
+              )}
+              {question.questionType === Question_QuestionType.RADIO && (
+                <RadioQuestionComponent
+                  questionList={questionList}
+                  index={index}
+                  editable={true}
+                  setQuestionList={setQuestionList}
+                />
+              )}
               {question.questionType ===
-                Question_QuestionType.MULTIPLE_CHOICE &&
-                question.textQuestion && (
-                  <div>unimplemented</div>
-                  // <MultipleChoiceQuestionComponent
-                  //   question={question}
-                  //   editable={true}
-                  // />
-                )}
+                Question_QuestionType.MULTIPLE_CHOICE && (
+                <div>unimplemented</div>
+                // <MultipleChoiceQuestionComponent
+                //   question={question}
+                //   editable={true}
+                // />
+              )}
               {question.questionType === Question_QuestionType.PARAGRAPH_TEXT &&
                 question.textQuestion && (
                   <ParagraphTextQuestionComponent
@@ -111,6 +129,18 @@ export default function EditQuestionList({
                     index={index}
                   />
                 )}
+              {(question.questionType === Question_QuestionType.CHECKBOX ||
+                question.questionType === Question_QuestionType.LIST ||
+                question.questionType === Question_QuestionType.RADIO ||
+                question.questionType ===
+                  Question_QuestionType.MULTIPLE_CHOICE) && (
+                <Button
+                  variant="ghost"
+                  onClick={() => handleAddQuestionOptionButton(index)}
+                >
+                  ＋オプションを追加
+                </Button>
+              )}
               <HStack>
                 <Switch
                   id={`isRequired-${index}`}
