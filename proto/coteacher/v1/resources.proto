@@ -111,7 +111,8 @@ message Response {
     repeated QuestionOption selected_options = 5;
   }
   repeated Answer answers = 4;
-  string created_at = 5;
-  string updated_at = 6;
+  string ai_response = 5;
+  string created_at = 6;
+  string updated_at = 7;
 }
 

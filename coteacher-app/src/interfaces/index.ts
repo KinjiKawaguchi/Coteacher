@@ -63,4 +63,21 @@ export interface QuestionComponentProps {
   setQuestionList: (questionList: Question[]) => void;
   answerList?: string[];
   setAnswerList?: (answerList: string[]) => void;
+  answerText?: string;
 }
+
+export type Answer = {
+  id: string;
+  responseId: string;
+  question: Question;
+  answerText: string;
+  selectedOptionList?: Option[];
+};
+
+export type Response = {
+  id: string;
+  formId: string;
+  studentId: string;
+  answerList: Answer[];
+  aiResponse: string;
+};

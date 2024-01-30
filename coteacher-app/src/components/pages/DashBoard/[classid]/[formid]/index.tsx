@@ -22,6 +22,7 @@ import QuestionList from './QuestionList';
 import EditQuestionList from './EditQuestionList';
 import toast from '@/libs/utils/toast';
 import FormSetting from './FormSetting';
+import ResponseList from './ResponseList';
 
 export default function FormView({ params }: { params: { formid: string } }) {
   const [hasEditPermission, setHasEditPermission] = useState<boolean | null>(
@@ -135,7 +136,9 @@ export default function FormView({ params }: { params: { formid: string } }) {
                   setQuestionList={setQuestionList}
                 />
               </TabsContent>
-              <TabsContent value="response"></TabsContent>
+              <TabsContent value="response">
+                <ResponseList />
+              </TabsContent>
               <TabsContent value="setting">
                 {form && <FormSetting form={form} setForm={setForm} />}
               </TabsContent>

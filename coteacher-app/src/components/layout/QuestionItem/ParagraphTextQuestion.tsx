@@ -18,6 +18,7 @@ const ParagraphTextQuestionComponent: React.FC<QuestionComponentProps> = ({
   setQuestionList,
   answerList,
   setAnswerList,
+  answerText,
 }) => {
   const question = questionList[index];
   const { questionText, isRequired, textQuestion } = question;
@@ -41,14 +42,29 @@ const ParagraphTextQuestionComponent: React.FC<QuestionComponentProps> = ({
       ) : (
         <FormLabel>{questionText}</FormLabel>
       )}
-      <Textarea
-        disabled={editable}
-        placeholder="Your answer"
-        maxLength={textQuestion?.maxLength}
-        onChange={e =>
-          handleAnswerChange(answerList|| [""], index, e.target.value, setAnswerList)
-        }
-      />
+      {answerText && (
+        <Textarea
+          disabled={editable}
+          maxLength={textQuestion?.maxLength}
+          placeholder="Your answer"
+          value={answerText}
+        />
+      )}
+      {!answerText && (
+        <Textarea
+          disabled={editable}
+          placeholder="Your answer"
+          maxLength={textQuestion?.maxLength}
+          onChange={e =>
+            handleAnswerChange(
+              answerList || [''],
+              index,
+              e.target.value,
+              setAnswerList
+            )
+          }
+        />
+      )}
       {editable && (
         <HStack>
           <Switch defaultChecked={textQuestion !== undefined} />

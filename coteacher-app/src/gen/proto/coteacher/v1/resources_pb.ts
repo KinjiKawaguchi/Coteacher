@@ -714,12 +714,17 @@ export class Response extends Message<Response> {
   answers: Response_Answer[] = [];
 
   /**
-   * @generated from field: string created_at = 5;
+   * @generated from field: string ai_response = 5;
+   */
+  aiResponse = "";
+
+  /**
+   * @generated from field: string created_at = 6;
    */
   createdAt = "";
 
   /**
-   * @generated from field: string updated_at = 6;
+   * @generated from field: string updated_at = 7;
    */
   updatedAt = "";
 
@@ -735,8 +740,9 @@ export class Response extends Message<Response> {
     { no: 2, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "student_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "answers", kind: "message", T: Response_Answer, repeated: true },
-    { no: 5, name: "created_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 6, name: "updated_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "ai_response", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "created_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 7, name: "updated_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Response {
