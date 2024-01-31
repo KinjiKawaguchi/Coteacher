@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { GetNumberOfResponsesByFormIDRequest, GetNumberOfResponsesByFormIDResponse, GetNumberOfResponsesByStudentIDRequest, GetNumberOfResponsesByStudentIDResponse } from "./response_pb";
+import { GetNumberOfResponsesByFormIDRequest, GetNumberOfResponsesByFormIDResponse, GetNumberOfResponsesByStudentIDRequest, GetNumberOfResponsesByStudentIDResponse, GetResponseListByFormIDRequest, GetResponseListByFormIDResponse, SubmitResponseRequest, SubmitResponseResponse } from "./response_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -28,6 +28,24 @@ export const ResponseService = {
       name: "GetNumberOfResponsesByFormID",
       I: GetNumberOfResponsesByFormIDRequest,
       O: GetNumberOfResponsesByFormIDResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc coteacher.v1.ResponseService.GetResponseListByFormID
+     */
+    getResponseListByFormID: {
+      name: "GetResponseListByFormID",
+      I: GetResponseListByFormIDRequest,
+      O: GetResponseListByFormIDResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc coteacher.v1.ResponseService.SubmitResponse
+     */
+    submitResponse: {
+      name: "SubmitResponse",
+      I: SubmitResponseRequest,
+      O: SubmitResponseResponse,
       kind: MethodKind.Unary,
     },
   }

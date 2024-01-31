@@ -67,15 +67,15 @@ export interface QuestionComponentProps {
 }
 
 export type Answer = {
-  id: string;
-  responseId: string;
+  id?: string;
+  responseId?: string;
   question: Question;
   answerText: string;
   selectedOptionList?: Option[];
 };
 
 export type Response = {
-  id: string;
+  id?: string;
   formId: string;
   studentId: string;
   answerList: Answer[];

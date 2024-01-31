@@ -21,6 +21,8 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	ResponseService_GetNumberOfResponsesByStudentID_FullMethodName = "/coteacher.v1.ResponseService/GetNumberOfResponsesByStudentID"
 	ResponseService_GetNumberOfResponsesByFormID_FullMethodName    = "/coteacher.v1.ResponseService/GetNumberOfResponsesByFormID"
+	ResponseService_GetResponseListByFormID_FullMethodName         = "/coteacher.v1.ResponseService/GetResponseListByFormID"
+	ResponseService_SubmitResponse_FullMethodName                  = "/coteacher.v1.ResponseService/SubmitResponse"
 )
 
 // ResponseServiceClient is the client API for ResponseService service.
@@ -29,6 +31,8 @@ const (
 type ResponseServiceClient interface {
 	GetNumberOfResponsesByStudentID(ctx context.Context, in *GetNumberOfResponsesByStudentIDRequest, opts ...grpc.CallOption) (*GetNumberOfResponsesByStudentIDResponse, error)
 	GetNumberOfResponsesByFormID(ctx context.Context, in *GetNumberOfResponsesByFormIDRequest, opts ...grpc.CallOption) (*GetNumberOfResponsesByFormIDResponse, error)
+	GetResponseListByFormID(ctx context.Context, in *GetResponseListByFormIDRequest, opts ...grpc.CallOption) (*GetResponseListByFormIDResponse, error)
+	SubmitResponse(ctx context.Context, in *SubmitResponseRequest, opts ...grpc.CallOption) (*SubmitResponseResponse, error)
 }
 
 type responseServiceClient struct {
@@ -57,12 +61,32 @@ func (c *responseServiceClient) GetNumberOfResponsesByFormID(ctx context.Context
 	return out, nil
 }
 
+func (c *responseServiceClient) GetResponseListByFormID(ctx context.Context, in *GetResponseListByFormIDRequest, opts ...grpc.CallOption) (*GetResponseListByFormIDResponse, error) {
+	out := new(GetResponseListByFormIDResponse)
+	err := c.cc.Invoke(ctx, ResponseService_GetResponseListByFormID_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *responseServiceClient) SubmitResponse(ctx context.Context, in *SubmitResponseRequest, opts ...grpc.CallOption) (*SubmitResponseResponse, error) {
+	out := new(SubmitResponseResponse)
+	err := c.cc.Invoke(ctx, ResponseService_SubmitResponse_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ResponseServiceServer is the server API for ResponseService service.
 // All implementations should embed UnimplementedResponseServiceServer
 // for forward compatibility
 type ResponseServiceServer interface {
 	GetNumberOfResponsesByStudentID(context.Context, *GetNumberOfResponsesByStudentIDRequest) (*GetNumberOfResponsesByStudentIDResponse, error)
 	GetNumberOfResponsesByFormID(context.Context, *GetNumberOfResponsesByFormIDRequest) (*GetNumberOfResponsesByFormIDResponse, error)
+	GetResponseListByFormID(context.Context, *GetResponseListByFormIDRequest) (*GetResponseListByFormIDResponse, error)
+	SubmitResponse(context.Context, *SubmitResponseRequest) (*SubmitResponseResponse, error)
 }
 
 // UnimplementedResponseServiceServer should be embedded to have forward compatible implementations.
@@ -74,6 +98,12 @@ func (UnimplementedResponseServiceServer) GetNumberOfResponsesByStudentID(contex
 }
 func (UnimplementedResponseServiceServer) GetNumberOfResponsesByFormID(context.Context, *GetNumberOfResponsesByFormIDRequest) (*GetNumberOfResponsesByFormIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNumberOfResponsesByFormID not implemented")
+}
+func (UnimplementedResponseServiceServer) GetResponseListByFormID(context.Context, *GetResponseListByFormIDRequest) (*GetResponseListByFormIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetResponseListByFormID not implemented")
+}
+func (UnimplementedResponseServiceServer) SubmitResponse(context.Context, *SubmitResponseRequest) (*SubmitResponseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitResponse not implemented")
 }
 
 // UnsafeResponseServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -123,6 +153,42 @@ func _ResponseService_GetNumberOfResponsesByFormID_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ResponseService_GetResponseListByFormID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetResponseListByFormIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ResponseServiceServer).GetResponseListByFormID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ResponseService_GetResponseListByFormID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ResponseServiceServer).GetResponseListByFormID(ctx, req.(*GetResponseListByFormIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ResponseService_SubmitResponse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitResponseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ResponseServiceServer).SubmitResponse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ResponseService_SubmitResponse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ResponseServiceServer).SubmitResponse(ctx, req.(*SubmitResponseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ResponseService_ServiceDesc is the grpc.ServiceDesc for ResponseService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -137,6 +203,14 @@ var ResponseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetNumberOfResponsesByFormID",
 			Handler:    _ResponseService_GetNumberOfResponsesByFormID_Handler,
+		},
+		{
+			MethodName: "GetResponseListByFormID",
+			Handler:    _ResponseService_GetResponseListByFormID_Handler,
+		},
+		{
+			MethodName: "SubmitResponse",
+			Handler:    _ResponseService_SubmitResponse_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

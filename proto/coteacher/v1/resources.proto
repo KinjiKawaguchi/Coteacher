@@ -108,8 +108,8 @@ message Response {
     string response_id = 2;
     string question_id = 3;
     string answer_text = 4;
-    repeated QuestionOption selected_options = 5;
-  }
+    repeated string answer_option_ids = 5;
+}
   repeated Answer answers = 4;
   string ai_response = 5;
   string created_at = 6;

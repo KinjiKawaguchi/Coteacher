@@ -787,9 +787,9 @@ export class Response_Answer extends Message<Response_Answer> {
   answerText = "";
 
   /**
-   * @generated from field: repeated coteacher.v1.QuestionOption selected_options = 5;
+   * @generated from field: repeated string answer_option_ids = 5;
    */
-  selectedOptions: QuestionOption[] = [];
+  answerOptionIds: string[] = [];
 
   constructor(data?: PartialMessage<Response_Answer>) {
     super();
@@ -803,7 +803,7 @@ export class Response_Answer extends Message<Response_Answer> {
     { no: 2, name: "response_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "question_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "answer_text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 5, name: "selected_options", kind: "message", T: QuestionOption, repeated: true },
+    { no: 5, name: "answer_option_ids", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Response_Answer {
