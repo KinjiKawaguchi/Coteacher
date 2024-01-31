@@ -1,24 +1,26 @@
 import React from 'react';
 import { Question } from '@/interfaces';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+// import {
+//   Select,
+//   SelectContent,
+//   SelectGroup,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from '@/components/ui/select';
 
 type ListQuestionComponentProps = {
   question: Question;
   editable: boolean;
 };
 
-const ListQuestionComponent: React.FC<ListQuestionComponentProps> = ({
-  question,
-  editable,
-}) => {
-  const { questionText, options, isRequired } = question;
+const ListQuestionComponent: React.FC<ListQuestionComponentProps> = (
+  {
+    // question,
+    //editable,
+  }
+) => {
+  // const { questionText, options, isRequired } = question;
 
   return (
     <>
