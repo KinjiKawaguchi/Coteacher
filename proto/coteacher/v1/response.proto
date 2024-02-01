@@ -34,6 +34,8 @@ message GetResponseListByFormIDRequest {
 
 message GetResponseListByFormIDResponse {
   repeated Response responses = 1;
+  repeated Question questions = 2;
+  repeated User students = 3;
 }
 
 message SubmitResponseRequest {

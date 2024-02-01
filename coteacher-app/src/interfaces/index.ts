@@ -1,4 +1,5 @@
 import { Question_QuestionType } from '@/gen/proto/coteacher/v1/resources_pb';
+import { UserType } from '@/gen/proto/coteacher/v1/user_pb';
 
 export type Class = {
   id: string;
@@ -10,7 +11,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  user_type: number;
+  user_type: UserType;
 };
 
 export type ClassInvitationCode = {
@@ -70,14 +71,14 @@ export type Answer = {
   id?: string;
   responseId?: string;
   question: Question;
-  answerText: string;
+  answerText?: string;
   selectedOptionList?: Option[];
 };
 
 export type Response = {
   id?: string;
   formId: string;
-  studentId: string;
+  student: User;
   answerList: Answer[];
   aiResponse: string;
 };

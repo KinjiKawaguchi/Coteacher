@@ -5,7 +5,7 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
-import { Response, Response_Answer } from "./resources_pb";
+import { Question, Response, Response_Answer, User } from "./resources_pb";
 
 /**
  * @generated from message coteacher.v1.GetNumberOfResponsesByStudentIDRequest
@@ -207,6 +207,16 @@ export class GetResponseListByFormIDResponse extends Message<GetResponseListByFo
    */
   responses: Response[] = [];
 
+  /**
+   * @generated from field: repeated coteacher.v1.Question questions = 2;
+   */
+  questions: Question[] = [];
+
+  /**
+   * @generated from field: repeated coteacher.v1.User students = 3;
+   */
+  students: User[] = [];
+
   constructor(data?: PartialMessage<GetResponseListByFormIDResponse>) {
     super();
     proto3.util.initPartial(data, this);
@@ -216,6 +226,8 @@ export class GetResponseListByFormIDResponse extends Message<GetResponseListByFo
   static readonly typeName = "coteacher.v1.GetResponseListByFormIDResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "responses", kind: "message", T: Response, repeated: true },
+    { no: 2, name: "questions", kind: "message", T: Question, repeated: true },
+    { no: 3, name: "students", kind: "message", T: User, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetResponseListByFormIDResponse {

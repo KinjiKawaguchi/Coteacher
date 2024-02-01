@@ -8,15 +8,18 @@ import { ResponseService } from '@/gen/proto/coteacher/v1/response_connect';
 import {
   GetNumberOfResponsesByFormIDRequest,
   GetNumberOfResponsesByStudentIDRequest,
+  GetResponseListByFormIDRequest,
   // GetResponseListByFormIDRequest,
   SubmitResponseRequest,
 } from '@/gen/proto/coteacher/v1/response_pb';
 import {
   Answer as INTERFACE_Answer,
-  // Response as INTERFACE_Response,
-  // Option as INTERFACE_Option,
+  Response as INTERFACE_Response,
+  Question,
+  User,
 } from '@/interfaces';
 import { Response_Answer } from '@/gen/proto/coteacher/v1/resources_pb';
+import { UserType } from '@/gen/proto/coteacher/v1/user_pb';
 
 class ResponseRepository {
   readonly cli: PromiseClient<typeof ResponseService>;
@@ -62,14 +65,11 @@ class ResponseRepository {
     }
     req.answers = answerList.map(a => {
       const answer = new Response_Answer();
-      answer.answerText = a.answerText;
+      answer.answerText = a.answerText ?? '';
       if (a.question.id) answer.questionId = a.question.id;
       if (a.selectedOptionList) {
         answer.answerOptionIds = a.selectedOptionList
-          // まず、未定義の値をフィルタリングして、定義済みのオブジェクトのみを処理します。
           .filter(o => o !== undefined)
-          // 次に、フィルタリングされた配列に対してマップを実行します。各要素が定義済みであることが確実なので、安全に 'id' にアクセスできます。
-          // 'id' が未定義の場合は、デフォルト値（空の文字列など）を使用します。
           .map(o => o.id || '');
       }
       return answer;
@@ -77,6 +77,76 @@ class ResponseRepository {
     req.aiResponse = aiResponse;
     const res = await this.cli.submitResponse(req);
     return res.success;
+  }
+
+  async getResponseListByFormId(formId: string): Promise<INTERFACE_Response[]> {
+    const req = new GetResponseListByFormIDRequest();
+    req.formId = formId;
+    const res = await this.cli.getResponseListByFormID(req);
+
+    const responseList = res.responses.flatMap(r => {
+      const matchedStudent = res.students.find(s => s.id === r.studentId);
+      if (!matchedStudent) return [];
+
+      const student: User = {
+        id: matchedStudent.id,
+        name: matchedStudent.name,
+        email: matchedStudent.email,
+        user_type: UserType.STUDENT,
+      };
+
+      const response: INTERFACE_Response = {
+        id: r.id,
+        formId: r.formId,
+        student: student,
+        aiResponse: r.aiResponse,
+        answerList: r.answers.flatMap(a => {
+          if (!res.questions) return [];
+          const matchedQuestion = res.questions.find(
+            q => q.id === a.questionId
+          );
+          if (!matchedQuestion) return [];
+
+          const question: Question = {
+            id: matchedQuestion.id,
+            formId: matchedQuestion.formId,
+            questionType: matchedQuestion.questionType,
+            questionText: matchedQuestion.questionText,
+            isRequired: matchedQuestion.isRequired,
+            forAiProcessing: matchedQuestion.forAiProcessing,
+            order: matchedQuestion.order,
+            options: matchedQuestion.options,
+          };
+
+          const answer: INTERFACE_Answer = {
+            id: a.id,
+            responseId: a.responseId,
+            question: question,
+            answerText: a.answerText,
+            selectedOptionList: a.answerOptionIds.flatMap(optionId => {
+              if (!question.options) return [];
+              const matchedOption = question.options.find(
+                option => option.id === optionId
+              );
+              if (!matchedOption) return [];
+
+              return [
+                {
+                  id: matchedOption.id,
+                  questionId: matchedOption.questionId,
+                  optionText: matchedOption.optionText,
+                  order: matchedOption.order,
+                },
+              ];
+            }),
+          };
+          return [answer];
+        }),
+      };
+      return [response];
+    });
+
+    return responseList;
   }
 
   // async getResponseListByFormId(
