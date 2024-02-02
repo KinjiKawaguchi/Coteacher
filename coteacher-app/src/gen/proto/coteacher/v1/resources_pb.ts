@@ -719,14 +719,14 @@ export class Response extends Message<Response> {
   aiResponse = "";
 
   /**
-   * @generated from field: string created_at = 6;
+   * @generated from field: google.protobuf.Timestamp created_at = 6;
    */
-  createdAt = "";
+  createdAt?: Timestamp;
 
   /**
-   * @generated from field: string updated_at = 7;
+   * @generated from field: google.protobuf.Timestamp updated_at = 7;
    */
-  updatedAt = "";
+  updatedAt?: Timestamp;
 
   constructor(data?: PartialMessage<Response>) {
     super();
@@ -741,8 +741,8 @@ export class Response extends Message<Response> {
     { no: 3, name: "student_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "answers", kind: "message", T: Response_Answer, repeated: true },
     { no: 5, name: "ai_response", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 6, name: "created_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 7, name: "updated_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "created_at", kind: "message", T: Timestamp },
+    { no: 7, name: "updated_at", kind: "message", T: Timestamp },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Response {

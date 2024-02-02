@@ -112,7 +112,7 @@ message Response {
 }
   repeated Answer answers = 4;
   string ai_response = 5;
-  string created_at = 6;
-  string updated_at = 7;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
 }
 
