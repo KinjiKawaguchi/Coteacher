@@ -46,6 +46,11 @@ const CreateQuestionDropdown: React.FC<CreateQuestionDropdownProps> = ({
         ...newQuestion,
         textQuestion: { maxLength: 150 },
       };
+    } else {
+      newQuestion = {
+        ...newQuestion,
+        options: [{ optionText: '', order: 0 }],
+      };
     }
 
     // 新しい質問をリストに追加
@@ -57,6 +62,7 @@ const CreateQuestionDropdown: React.FC<CreateQuestionDropdownProps> = ({
     }
 
     setQuestionList(updatedList);
+    console.log(updatedList);
   };
 
   return (
