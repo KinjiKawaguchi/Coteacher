@@ -9,6 +9,7 @@ service ResponseService {
   rpc GetNumberOfResponsesByFormID(GetNumberOfResponsesByFormIDRequest) returns (GetNumberOfResponsesByFormIDResponse);
   rpc GetResponseListByFormID(GetResponseListByFormIDRequest) returns (GetResponseListByFormIDResponse);
   rpc SubmitResponse(SubmitResponseRequest) returns (SubmitResponseResponse);
+  rpc SubmitAIResponse(SubmitAIResponseRequest) returns (SubmitAIResponseResponse);
 }
 
 message GetNumberOfResponsesByStudentIDRequest {
@@ -46,5 +47,15 @@ message SubmitResponseRequest {
 }
 
 message SubmitResponseResponse {
+  bool success = 1;
+  string response_id = 2;
+}
+
+message SubmitAIResponseRequest {
+  string response_id = 1;
+  string ai_response = 2;
+}
+
+message SubmitAIResponseResponse {
   bool success = 1;
 }

@@ -311,6 +311,11 @@ export class SubmitResponseResponse extends Message<SubmitResponseResponse> {
    */
   success = false;
 
+  /**
+   * @generated from field: string response_id = 2;
+   */
+  responseId = "";
+
   constructor(data?: PartialMessage<SubmitResponseResponse>) {
     super();
     proto3.util.initPartial(data, this);
@@ -320,6 +325,7 @@ export class SubmitResponseResponse extends Message<SubmitResponseResponse> {
   static readonly typeName = "coteacher.v1.SubmitResponseResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "success", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 2, name: "response_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SubmitResponseResponse {
@@ -336,6 +342,86 @@ export class SubmitResponseResponse extends Message<SubmitResponseResponse> {
 
   static equals(a: SubmitResponseResponse | PlainMessage<SubmitResponseResponse> | undefined, b: SubmitResponseResponse | PlainMessage<SubmitResponseResponse> | undefined): boolean {
     return proto3.util.equals(SubmitResponseResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.SubmitAIResponseRequest
+ */
+export class SubmitAIResponseRequest extends Message<SubmitAIResponseRequest> {
+  /**
+   * @generated from field: string response_id = 1;
+   */
+  responseId = "";
+
+  /**
+   * @generated from field: string ai_response = 2;
+   */
+  aiResponse = "";
+
+  constructor(data?: PartialMessage<SubmitAIResponseRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.SubmitAIResponseRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "response_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "ai_response", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SubmitAIResponseRequest {
+    return new SubmitAIResponseRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): SubmitAIResponseRequest {
+    return new SubmitAIResponseRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): SubmitAIResponseRequest {
+    return new SubmitAIResponseRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: SubmitAIResponseRequest | PlainMessage<SubmitAIResponseRequest> | undefined, b: SubmitAIResponseRequest | PlainMessage<SubmitAIResponseRequest> | undefined): boolean {
+    return proto3.util.equals(SubmitAIResponseRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.SubmitAIResponseResponse
+ */
+export class SubmitAIResponseResponse extends Message<SubmitAIResponseResponse> {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success = false;
+
+  constructor(data?: PartialMessage<SubmitAIResponseResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.SubmitAIResponseResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "success", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SubmitAIResponseResponse {
+    return new SubmitAIResponseResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): SubmitAIResponseResponse {
+    return new SubmitAIResponseResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): SubmitAIResponseResponse {
+    return new SubmitAIResponseResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: SubmitAIResponseResponse | PlainMessage<SubmitAIResponseResponse> | undefined, b: SubmitAIResponseResponse | PlainMessage<SubmitAIResponseResponse> | undefined): boolean {
+    return proto3.util.equals(SubmitAIResponseResponse, a, b);
   }
 }
 

@@ -57,7 +57,7 @@ const ParagraphTextQuestionComponent: React.FC<QuestionComponentProps> = ({
           maxLength={textQuestion?.maxLength}
           onChange={e =>
             handleAnswerChange(
-              answerList || [''],
+              answerList || [],
               index,
               e.target.value,
               setAnswerList

@@ -23,6 +23,7 @@ const (
 	ResponseService_GetNumberOfResponsesByFormID_FullMethodName    = "/coteacher.v1.ResponseService/GetNumberOfResponsesByFormID"
 	ResponseService_GetResponseListByFormID_FullMethodName         = "/coteacher.v1.ResponseService/GetResponseListByFormID"
 	ResponseService_SubmitResponse_FullMethodName                  = "/coteacher.v1.ResponseService/SubmitResponse"
+	ResponseService_SubmitAIResponse_FullMethodName                = "/coteacher.v1.ResponseService/SubmitAIResponse"
 )
 
 // ResponseServiceClient is the client API for ResponseService service.
@@ -33,6 +34,7 @@ type ResponseServiceClient interface {
 	GetNumberOfResponsesByFormID(ctx context.Context, in *GetNumberOfResponsesByFormIDRequest, opts ...grpc.CallOption) (*GetNumberOfResponsesByFormIDResponse, error)
 	GetResponseListByFormID(ctx context.Context, in *GetResponseListByFormIDRequest, opts ...grpc.CallOption) (*GetResponseListByFormIDResponse, error)
 	SubmitResponse(ctx context.Context, in *SubmitResponseRequest, opts ...grpc.CallOption) (*SubmitResponseResponse, error)
+	SubmitAIResponse(ctx context.Context, in *SubmitAIResponseRequest, opts ...grpc.CallOption) (*SubmitAIResponseResponse, error)
 }
 
 type responseServiceClient struct {
@@ -79,6 +81,15 @@ func (c *responseServiceClient) SubmitResponse(ctx context.Context, in *SubmitRe
 	return out, nil
 }
 
+func (c *responseServiceClient) SubmitAIResponse(ctx context.Context, in *SubmitAIResponseRequest, opts ...grpc.CallOption) (*SubmitAIResponseResponse, error) {
+	out := new(SubmitAIResponseResponse)
+	err := c.cc.Invoke(ctx, ResponseService_SubmitAIResponse_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ResponseServiceServer is the server API for ResponseService service.
 // All implementations should embed UnimplementedResponseServiceServer
 // for forward compatibility
@@ -87,6 +98,7 @@ type ResponseServiceServer interface {
 	GetNumberOfResponsesByFormID(context.Context, *GetNumberOfResponsesByFormIDRequest) (*GetNumberOfResponsesByFormIDResponse, error)
 	GetResponseListByFormID(context.Context, *GetResponseListByFormIDRequest) (*GetResponseListByFormIDResponse, error)
 	SubmitResponse(context.Context, *SubmitResponseRequest) (*SubmitResponseResponse, error)
+	SubmitAIResponse(context.Context, *SubmitAIResponseRequest) (*SubmitAIResponseResponse, error)
 }
 
 // UnimplementedResponseServiceServer should be embedded to have forward compatible implementations.
@@ -104,6 +116,9 @@ func (UnimplementedResponseServiceServer) GetResponseListByFormID(context.Contex
 }
 func (UnimplementedResponseServiceServer) SubmitResponse(context.Context, *SubmitResponseRequest) (*SubmitResponseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitResponse not implemented")
+}
+func (UnimplementedResponseServiceServer) SubmitAIResponse(context.Context, *SubmitAIResponseRequest) (*SubmitAIResponseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitAIResponse not implemented")
 }
 
 // UnsafeResponseServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -189,6 +204,24 @@ func _ResponseService_SubmitResponse_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ResponseService_SubmitAIResponse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitAIResponseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ResponseServiceServer).SubmitAIResponse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ResponseService_SubmitAIResponse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ResponseServiceServer).SubmitAIResponse(ctx, req.(*SubmitAIResponseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ResponseService_ServiceDesc is the grpc.ServiceDesc for ResponseService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -211,6 +244,10 @@ var ResponseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SubmitResponse",
 			Handler:    _ResponseService_SubmitResponse_Handler,
+		},
+		{
+			MethodName: "SubmitAIResponse",
+			Handler:    _ResponseService_SubmitAIResponse_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

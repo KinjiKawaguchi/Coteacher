@@ -105,6 +105,32 @@ func ToPbQuestion(t *ent.Question) *pb.Question {
 	}
 }
 
+func ToPbResponse(t *ent.Response) *pb.Response {
+	return &pb.Response{
+		Id:         t.ID.String(),
+		FormId:     t.FormID.String(),
+		StudentId:  t.StudentID.String(),
+		Answers:    ToPbAnswers(t.Edges.Answer),
+		AiResponse: t.AiResponse,
+		CreatedAt:  timestamppb.New(t.CreatedAt),
+		UpdatedAt:  timestamppb.New(t.UpdatedAt),
+	}
+}
+
+func ToPbAnswers(t []*ent.Answer) []*pb.Response_Answer {
+	var pbAnswers []*pb.Response_Answer
+	for _, answer := range t {
+		pbAnswers = append(pbAnswers, &pb.Response_Answer{
+			Id:         answer.ID.String(),
+			ResponseId: answer.ResponseID.String(),
+			QuestionId: answer.QuestionID.String(),
+			Order:      int32(answer.Order),
+			AnswerText: answer.AnswerText,
+		})
+	}
+	return pbAnswers
+}
+
 func convertQuestionTypeToPbQuestionType(questionType question.QuestionType) pb.Question_QuestionType {
 	switch questionType {
 	case question.QuestionTypeText:

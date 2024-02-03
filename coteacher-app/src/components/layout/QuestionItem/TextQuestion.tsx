@@ -59,7 +59,7 @@ const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
             placeholder="Your answer"
             onChange={e =>
               handleAnswerChange(
-                answerList || [''],
+                answerList || [],
                 index,
                 e.target.value,
                 setAnswerList
