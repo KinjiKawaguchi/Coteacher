@@ -35,6 +35,12 @@ func (ac *AnswerCreate) SetResponseID(u uuid.UUID) *AnswerCreate {
 	return ac
 }
 
+// SetOrder sets the "order" field.
+func (ac *AnswerCreate) SetOrder(i int) *AnswerCreate {
+	ac.mutation.SetOrder(i)
+	return ac
+}
+
 // SetAnswerText sets the "answer_text" field.
 func (ac *AnswerCreate) SetAnswerText(s string) *AnswerCreate {
 	ac.mutation.SetAnswerText(s)
@@ -137,6 +143,9 @@ func (ac *AnswerCreate) check() error {
 	if _, ok := ac.mutation.ResponseID(); !ok {
 		return &ValidationError{Name: "response_id", err: errors.New(`ent: missing required field "Answer.response_id"`)}
 	}
+	if _, ok := ac.mutation.Order(); !ok {
+		return &ValidationError{Name: "order", err: errors.New(`ent: missing required field "Answer.order"`)}
+	}
 	if _, ok := ac.mutation.QuestionID(); !ok {
 		return &ValidationError{Name: "question", err: errors.New(`ent: missing required edge "Answer.question"`)}
 	}
@@ -177,6 +186,10 @@ func (ac *AnswerCreate) createSpec() (*Answer, *sqlgraph.CreateSpec) {
 	if id, ok := ac.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
+	}
+	if value, ok := ac.mutation.Order(); ok {
+		_spec.SetField(answer.FieldOrder, field.TypeInt, value)
+		_node.Order = value
 	}
 	if value, ok := ac.mutation.AnswerText(); ok {
 		_spec.SetField(answer.FieldAnswerText, field.TypeString, value)

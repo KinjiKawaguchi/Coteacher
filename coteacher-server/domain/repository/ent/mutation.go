@@ -58,6 +58,8 @@ type AnswerMutation struct {
 	op                    Op
 	typ                   string
 	id                    *uuid.UUID
+	_order                *int
+	add_order             *int
 	answer_text           *string
 	clearedFields         map[string]struct{}
 	question              *uuid.UUID
@@ -246,6 +248,62 @@ func (m *AnswerMutation) OldResponseID(ctx context.Context) (v uuid.UUID, err er
 // ResetResponseID resets all changes to the "response_id" field.
 func (m *AnswerMutation) ResetResponseID() {
 	m.response = nil
+}
+
+// SetOrder sets the "order" field.
+func (m *AnswerMutation) SetOrder(i int) {
+	m._order = &i
+	m.add_order = nil
+}
+
+// Order returns the value of the "order" field in the mutation.
+func (m *AnswerMutation) Order() (r int, exists bool) {
+	v := m._order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrder returns the old "order" field's value of the Answer entity.
+// If the Answer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnswerMutation) OldOrder(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrder is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrder requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrder: %w", err)
+	}
+	return oldValue.Order, nil
+}
+
+// AddOrder adds i to the "order" field.
+func (m *AnswerMutation) AddOrder(i int) {
+	if m.add_order != nil {
+		*m.add_order += i
+	} else {
+		m.add_order = &i
+	}
+}
+
+// AddedOrder returns the value that was added to the "order" field in this mutation.
+func (m *AnswerMutation) AddedOrder() (r int, exists bool) {
+	v := m.add_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetOrder resets all changes to the "order" field.
+func (m *AnswerMutation) ResetOrder() {
+	m._order = nil
+	m.add_order = nil
 }
 
 // SetAnswerText sets the "answer_text" field.
@@ -439,12 +497,15 @@ func (m *AnswerMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AnswerMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.question != nil {
 		fields = append(fields, answer.FieldQuestionID)
 	}
 	if m.response != nil {
 		fields = append(fields, answer.FieldResponseID)
+	}
+	if m._order != nil {
+		fields = append(fields, answer.FieldOrder)
 	}
 	if m.answer_text != nil {
 		fields = append(fields, answer.FieldAnswerText)
@@ -461,6 +522,8 @@ func (m *AnswerMutation) Field(name string) (ent.Value, bool) {
 		return m.QuestionID()
 	case answer.FieldResponseID:
 		return m.ResponseID()
+	case answer.FieldOrder:
+		return m.Order()
 	case answer.FieldAnswerText:
 		return m.AnswerText()
 	}
@@ -476,6 +539,8 @@ func (m *AnswerMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldQuestionID(ctx)
 	case answer.FieldResponseID:
 		return m.OldResponseID(ctx)
+	case answer.FieldOrder:
+		return m.OldOrder(ctx)
 	case answer.FieldAnswerText:
 		return m.OldAnswerText(ctx)
 	}
@@ -501,6 +566,13 @@ func (m *AnswerMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetResponseID(v)
 		return nil
+	case answer.FieldOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrder(v)
+		return nil
 	case answer.FieldAnswerText:
 		v, ok := value.(string)
 		if !ok {
@@ -515,13 +587,21 @@ func (m *AnswerMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *AnswerMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.add_order != nil {
+		fields = append(fields, answer.FieldOrder)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *AnswerMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case answer.FieldOrder:
+		return m.AddedOrder()
+	}
 	return nil, false
 }
 
@@ -530,6 +610,13 @@ func (m *AnswerMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *AnswerMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case answer.FieldOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOrder(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Answer numeric field %s", name)
 }
@@ -571,6 +658,9 @@ func (m *AnswerMutation) ResetField(name string) error {
 		return nil
 	case answer.FieldResponseID:
 		m.ResetResponseID()
+		return nil
+	case answer.FieldOrder:
+		m.ResetOrder()
 		return nil
 	case answer.FieldAnswerText:
 		m.ResetAnswerText()

@@ -11,6 +11,7 @@ var (
 	// AnswersColumns holds the columns for the "answers" table.
 	AnswersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "order", Type: field.TypeInt},
 		{Name: "answer_text", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "question_id", Type: field.TypeUUID},
 		{Name: "response_id", Type: field.TypeUUID},
@@ -23,13 +24,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "answers_questions_answer",
-				Columns:    []*schema.Column{AnswersColumns[2]},
+				Columns:    []*schema.Column{AnswersColumns[3]},
 				RefColumns: []*schema.Column{QuestionsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "answers_responses_answer",
-				Columns:    []*schema.Column{AnswersColumns[3]},
+				Columns:    []*schema.Column{AnswersColumns[4]},
 				RefColumns: []*schema.Column{ResponsesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
