@@ -1,4 +1,4 @@
-import { Form, Question } from '@/interfaces';
+import { Answer, Form, Question } from '@/interfaces';
 import OpenAI from 'openai';
 
 // グローバルに一度だけOpenAIインスタンスを作成
@@ -10,7 +10,7 @@ const openai = new OpenAI({
 function createContent(
   form: Form,
   questionList: Question[],
-  answerList: string[]
+  answerList: Answer[]
 ): string {
   const questionsContent = questionList
     .filter(question => question.order !== -1 && question.forAiProcessing)
@@ -18,7 +18,7 @@ function createContent(
       return `{
         question_type: '${question.questionType}',
         question_text: '${question.questionText}',
-        answer: '${answerList[index + 1]}'
+        answer: '${answerList[index + 1].answerText}'
       }`;
     })
     .join(',');
@@ -33,7 +33,7 @@ function createContent(
 export async function callOpenAI(
   form: Form,
   questionList: Question[],
-  answerList: string[]
+  answerList: Answer[]
 ) {
   const content = createContent(form, questionList, answerList);
 

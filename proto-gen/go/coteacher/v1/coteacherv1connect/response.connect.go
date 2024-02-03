@@ -39,6 +39,15 @@ const (
 	// ResponseServiceGetNumberOfResponsesByFormIDProcedure is the fully-qualified name of the
 	// ResponseService's GetNumberOfResponsesByFormID RPC.
 	ResponseServiceGetNumberOfResponsesByFormIDProcedure = "/coteacher.v1.ResponseService/GetNumberOfResponsesByFormID"
+	// ResponseServiceGetResponseListByFormIDProcedure is the fully-qualified name of the
+	// ResponseService's GetResponseListByFormID RPC.
+	ResponseServiceGetResponseListByFormIDProcedure = "/coteacher.v1.ResponseService/GetResponseListByFormID"
+	// ResponseServiceSubmitResponseProcedure is the fully-qualified name of the ResponseService's
+	// SubmitResponse RPC.
+	ResponseServiceSubmitResponseProcedure = "/coteacher.v1.ResponseService/SubmitResponse"
+	// ResponseServiceSubmitAIResponseProcedure is the fully-qualified name of the ResponseService's
+	// SubmitAIResponse RPC.
+	ResponseServiceSubmitAIResponseProcedure = "/coteacher.v1.ResponseService/SubmitAIResponse"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
@@ -46,12 +55,18 @@ var (
 	responseServiceServiceDescriptor                               = v1.File_coteacher_v1_response_proto.Services().ByName("ResponseService")
 	responseServiceGetNumberOfResponsesByStudentIDMethodDescriptor = responseServiceServiceDescriptor.Methods().ByName("GetNumberOfResponsesByStudentID")
 	responseServiceGetNumberOfResponsesByFormIDMethodDescriptor    = responseServiceServiceDescriptor.Methods().ByName("GetNumberOfResponsesByFormID")
+	responseServiceGetResponseListByFormIDMethodDescriptor         = responseServiceServiceDescriptor.Methods().ByName("GetResponseListByFormID")
+	responseServiceSubmitResponseMethodDescriptor                  = responseServiceServiceDescriptor.Methods().ByName("SubmitResponse")
+	responseServiceSubmitAIResponseMethodDescriptor                = responseServiceServiceDescriptor.Methods().ByName("SubmitAIResponse")
 )
 
 // ResponseServiceClient is a client for the coteacher.v1.ResponseService service.
 type ResponseServiceClient interface {
 	GetNumberOfResponsesByStudentID(context.Context, *connect.Request[v1.GetNumberOfResponsesByStudentIDRequest]) (*connect.Response[v1.GetNumberOfResponsesByStudentIDResponse], error)
 	GetNumberOfResponsesByFormID(context.Context, *connect.Request[v1.GetNumberOfResponsesByFormIDRequest]) (*connect.Response[v1.GetNumberOfResponsesByFormIDResponse], error)
+	GetResponseListByFormID(context.Context, *connect.Request[v1.GetResponseListByFormIDRequest]) (*connect.Response[v1.GetResponseListByFormIDResponse], error)
+	SubmitResponse(context.Context, *connect.Request[v1.SubmitResponseRequest]) (*connect.Response[v1.SubmitResponseResponse], error)
+	SubmitAIResponse(context.Context, *connect.Request[v1.SubmitAIResponseRequest]) (*connect.Response[v1.SubmitAIResponseResponse], error)
 }
 
 // NewResponseServiceClient constructs a client for the coteacher.v1.ResponseService service. By
@@ -76,6 +91,24 @@ func NewResponseServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(responseServiceGetNumberOfResponsesByFormIDMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		getResponseListByFormID: connect.NewClient[v1.GetResponseListByFormIDRequest, v1.GetResponseListByFormIDResponse](
+			httpClient,
+			baseURL+ResponseServiceGetResponseListByFormIDProcedure,
+			connect.WithSchema(responseServiceGetResponseListByFormIDMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		submitResponse: connect.NewClient[v1.SubmitResponseRequest, v1.SubmitResponseResponse](
+			httpClient,
+			baseURL+ResponseServiceSubmitResponseProcedure,
+			connect.WithSchema(responseServiceSubmitResponseMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		submitAIResponse: connect.NewClient[v1.SubmitAIResponseRequest, v1.SubmitAIResponseResponse](
+			httpClient,
+			baseURL+ResponseServiceSubmitAIResponseProcedure,
+			connect.WithSchema(responseServiceSubmitAIResponseMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -83,6 +116,9 @@ func NewResponseServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 type responseServiceClient struct {
 	getNumberOfResponsesByStudentID *connect.Client[v1.GetNumberOfResponsesByStudentIDRequest, v1.GetNumberOfResponsesByStudentIDResponse]
 	getNumberOfResponsesByFormID    *connect.Client[v1.GetNumberOfResponsesByFormIDRequest, v1.GetNumberOfResponsesByFormIDResponse]
+	getResponseListByFormID         *connect.Client[v1.GetResponseListByFormIDRequest, v1.GetResponseListByFormIDResponse]
+	submitResponse                  *connect.Client[v1.SubmitResponseRequest, v1.SubmitResponseResponse]
+	submitAIResponse                *connect.Client[v1.SubmitAIResponseRequest, v1.SubmitAIResponseResponse]
 }
 
 // GetNumberOfResponsesByStudentID calls
@@ -96,10 +132,28 @@ func (c *responseServiceClient) GetNumberOfResponsesByFormID(ctx context.Context
 	return c.getNumberOfResponsesByFormID.CallUnary(ctx, req)
 }
 
+// GetResponseListByFormID calls coteacher.v1.ResponseService.GetResponseListByFormID.
+func (c *responseServiceClient) GetResponseListByFormID(ctx context.Context, req *connect.Request[v1.GetResponseListByFormIDRequest]) (*connect.Response[v1.GetResponseListByFormIDResponse], error) {
+	return c.getResponseListByFormID.CallUnary(ctx, req)
+}
+
+// SubmitResponse calls coteacher.v1.ResponseService.SubmitResponse.
+func (c *responseServiceClient) SubmitResponse(ctx context.Context, req *connect.Request[v1.SubmitResponseRequest]) (*connect.Response[v1.SubmitResponseResponse], error) {
+	return c.submitResponse.CallUnary(ctx, req)
+}
+
+// SubmitAIResponse calls coteacher.v1.ResponseService.SubmitAIResponse.
+func (c *responseServiceClient) SubmitAIResponse(ctx context.Context, req *connect.Request[v1.SubmitAIResponseRequest]) (*connect.Response[v1.SubmitAIResponseResponse], error) {
+	return c.submitAIResponse.CallUnary(ctx, req)
+}
+
 // ResponseServiceHandler is an implementation of the coteacher.v1.ResponseService service.
 type ResponseServiceHandler interface {
 	GetNumberOfResponsesByStudentID(context.Context, *connect.Request[v1.GetNumberOfResponsesByStudentIDRequest]) (*connect.Response[v1.GetNumberOfResponsesByStudentIDResponse], error)
 	GetNumberOfResponsesByFormID(context.Context, *connect.Request[v1.GetNumberOfResponsesByFormIDRequest]) (*connect.Response[v1.GetNumberOfResponsesByFormIDResponse], error)
+	GetResponseListByFormID(context.Context, *connect.Request[v1.GetResponseListByFormIDRequest]) (*connect.Response[v1.GetResponseListByFormIDResponse], error)
+	SubmitResponse(context.Context, *connect.Request[v1.SubmitResponseRequest]) (*connect.Response[v1.SubmitResponseResponse], error)
+	SubmitAIResponse(context.Context, *connect.Request[v1.SubmitAIResponseRequest]) (*connect.Response[v1.SubmitAIResponseResponse], error)
 }
 
 // NewResponseServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -120,12 +174,36 @@ func NewResponseServiceHandler(svc ResponseServiceHandler, opts ...connect.Handl
 		connect.WithSchema(responseServiceGetNumberOfResponsesByFormIDMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	responseServiceGetResponseListByFormIDHandler := connect.NewUnaryHandler(
+		ResponseServiceGetResponseListByFormIDProcedure,
+		svc.GetResponseListByFormID,
+		connect.WithSchema(responseServiceGetResponseListByFormIDMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	responseServiceSubmitResponseHandler := connect.NewUnaryHandler(
+		ResponseServiceSubmitResponseProcedure,
+		svc.SubmitResponse,
+		connect.WithSchema(responseServiceSubmitResponseMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	responseServiceSubmitAIResponseHandler := connect.NewUnaryHandler(
+		ResponseServiceSubmitAIResponseProcedure,
+		svc.SubmitAIResponse,
+		connect.WithSchema(responseServiceSubmitAIResponseMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/coteacher.v1.ResponseService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ResponseServiceGetNumberOfResponsesByStudentIDProcedure:
 			responseServiceGetNumberOfResponsesByStudentIDHandler.ServeHTTP(w, r)
 		case ResponseServiceGetNumberOfResponsesByFormIDProcedure:
 			responseServiceGetNumberOfResponsesByFormIDHandler.ServeHTTP(w, r)
+		case ResponseServiceGetResponseListByFormIDProcedure:
+			responseServiceGetResponseListByFormIDHandler.ServeHTTP(w, r)
+		case ResponseServiceSubmitResponseProcedure:
+			responseServiceSubmitResponseHandler.ServeHTTP(w, r)
+		case ResponseServiceSubmitAIResponseProcedure:
+			responseServiceSubmitAIResponseHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -141,4 +219,16 @@ func (UnimplementedResponseServiceHandler) GetNumberOfResponsesByStudentID(conte
 
 func (UnimplementedResponseServiceHandler) GetNumberOfResponsesByFormID(context.Context, *connect.Request[v1.GetNumberOfResponsesByFormIDRequest]) (*connect.Response[v1.GetNumberOfResponsesByFormIDResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.ResponseService.GetNumberOfResponsesByFormID is not implemented"))
+}
+
+func (UnimplementedResponseServiceHandler) GetResponseListByFormID(context.Context, *connect.Request[v1.GetResponseListByFormIDRequest]) (*connect.Response[v1.GetResponseListByFormIDResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.ResponseService.GetResponseListByFormID is not implemented"))
+}
+
+func (UnimplementedResponseServiceHandler) SubmitResponse(context.Context, *connect.Request[v1.SubmitResponseRequest]) (*connect.Response[v1.SubmitResponseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.ResponseService.SubmitResponse is not implemented"))
+}
+
+func (UnimplementedResponseServiceHandler) SubmitAIResponse(context.Context, *connect.Request[v1.SubmitAIResponseRequest]) (*connect.Response[v1.SubmitAIResponseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.ResponseService.SubmitAIResponse is not implemented"))
 }

@@ -64,6 +64,11 @@ func ResponseID(v uuid.UUID) predicate.Answer {
 	return predicate.Answer(sql.FieldEQ(FieldResponseID, v))
 }
 
+// Order applies equality check predicate on the "order" field. It's identical to OrderEQ.
+func Order(v int) predicate.Answer {
+	return predicate.Answer(sql.FieldEQ(FieldOrder, v))
+}
+
 // AnswerText applies equality check predicate on the "answer_text" field. It's identical to AnswerTextEQ.
 func AnswerText(v string) predicate.Answer {
 	return predicate.Answer(sql.FieldEQ(FieldAnswerText, v))
@@ -107,6 +112,46 @@ func ResponseIDIn(vs ...uuid.UUID) predicate.Answer {
 // ResponseIDNotIn applies the NotIn predicate on the "response_id" field.
 func ResponseIDNotIn(vs ...uuid.UUID) predicate.Answer {
 	return predicate.Answer(sql.FieldNotIn(FieldResponseID, vs...))
+}
+
+// OrderEQ applies the EQ predicate on the "order" field.
+func OrderEQ(v int) predicate.Answer {
+	return predicate.Answer(sql.FieldEQ(FieldOrder, v))
+}
+
+// OrderNEQ applies the NEQ predicate on the "order" field.
+func OrderNEQ(v int) predicate.Answer {
+	return predicate.Answer(sql.FieldNEQ(FieldOrder, v))
+}
+
+// OrderIn applies the In predicate on the "order" field.
+func OrderIn(vs ...int) predicate.Answer {
+	return predicate.Answer(sql.FieldIn(FieldOrder, vs...))
+}
+
+// OrderNotIn applies the NotIn predicate on the "order" field.
+func OrderNotIn(vs ...int) predicate.Answer {
+	return predicate.Answer(sql.FieldNotIn(FieldOrder, vs...))
+}
+
+// OrderGT applies the GT predicate on the "order" field.
+func OrderGT(v int) predicate.Answer {
+	return predicate.Answer(sql.FieldGT(FieldOrder, v))
+}
+
+// OrderGTE applies the GTE predicate on the "order" field.
+func OrderGTE(v int) predicate.Answer {
+	return predicate.Answer(sql.FieldGTE(FieldOrder, v))
+}
+
+// OrderLT applies the LT predicate on the "order" field.
+func OrderLT(v int) predicate.Answer {
+	return predicate.Answer(sql.FieldLT(FieldOrder, v))
+}
+
+// OrderLTE applies the LTE predicate on the "order" field.
+func OrderLTE(v int) predicate.Answer {
+	return predicate.Answer(sql.FieldLTE(FieldOrder, v))
 }
 
 // AnswerTextEQ applies the EQ predicate on the "answer_text" field.

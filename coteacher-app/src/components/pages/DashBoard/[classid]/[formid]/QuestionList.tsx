@@ -3,8 +3,8 @@
 import ParagraphTextQuestionComponent from '@/components/layout/QuestionItem/ParagraphTextQuestion';
 import RadioQuestionComponent from '@/components/layout/QuestionItem/RadioQuestion';
 // import TextQuestionComponent from '@/components/layout/QuestionItem/TextQuestion';
-import React from 'react';
-import { Form, Question } from '@/interfaces'; // このパスは適宜変更してください。
+import React, { useEffect } from 'react';
+import { Answer, Form, Question } from '@/interfaces'; // このパスは適宜変更してください。
 import { Box, HStack, Skeleton, Spacer, Stack } from '@chakra-ui/react';
 import { Question_QuestionType } from '@/gen/proto/coteacher/v1/resources_pb';
 import TextQuestionComponent from '@/components/layout/QuestionItem/TextQuestion';
@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { DialogTitle } from '@radix-ui/react-dialog';
+import { responseRepo } from '@/repository/response';
 interface QuestionListProps {
   questionList: Question[];
   setQuestionList: (questionList: Question[]) => void;
@@ -33,17 +34,46 @@ export default function QuestionList({
 }: QuestionListProps) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [responseContent, setResponseContent] = React.useState('');
-  const [answerList, setAnswerList] = React.useState<string[]>([]);
+  const [answerList, setAnswerList] = React.useState<Answer[]>([]);
+
+  // `questionList` が変更されたときにのみ回答リストを再計算
+  useEffect(() => {
+    const validAnswers = questionList.reduce((acc, question) => {
+      if (question.order === -1) return acc; // '-1' で省かれた質問を無視
+
+      const answer: Answer = {
+        question: question,
+        order: acc.length, // 累積リストの長さを新しい `order` として使用
+        answerText: '',
+        selectedOptionList: [],
+      };
+
+      acc.push(answer); // 有効な回答を累積リストに追加
+      return acc;
+    }, [] as Answer[]);
+
+    setAnswerList(validAnswers); // 最終的な回答リストを設定
+  }, [questionList]);
 
   const handleAnswerSubmit = async () => {
     try {
       setResponseContent(''); // レスポンス内容をリセット
       setIsLoading(true); // ローディング開始
-      console.log(answerList);
+      const submitResponseReponse = await responseRepo.submitResponse(
+        form?.id || '',
+        answerList
+      ); // 回答を保存
+      if (!submitResponseReponse.success)
+        throw new Error('Failed to submit response');
       if (form) {
-        const response = await callOpenAI(form, questionList, answerList);
-        setResponseContent(response.choices[0].message.content || ''); // レスポンス内容を設定
-        console.log(response);
+        const AiResponse = (await callOpenAI(form, questionList, answerList))
+          .choices[0].message.content;
+        if (!AiResponse) throw new Error('AI response is empty');
+        setResponseContent(AiResponse);
+        responseRepo.submitAiResponse(
+          submitResponseReponse.responseId,
+          AiResponse
+        );
       }
     } catch (error) {
       console.error('OpenAI API call failed:', error);

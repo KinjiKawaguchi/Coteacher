@@ -1,4 +1,4 @@
-import { Question } from '@/interfaces';
+import { Answer, Question } from '@/interfaces';
 
 export function handleQuestionTextChange(
   questionList: Question[],
@@ -26,13 +26,13 @@ export function handleMaxLengthChange(
 }
 
 export function handleAnswerChange(
-  answerList: string[],
+  answerList: Answer[],
   index: number,
   text: string,
-  setAnswerList?: (answerList: string[]) => void
+  setAnswerList?: (answerList: Answer[]) => void
 ) {
   const newAnswerList = [...answerList];
-  newAnswerList[index] = text;
+  newAnswerList[index].answerText = text;
   if (setAnswerList) {
     setAnswerList(newAnswerList);
   }

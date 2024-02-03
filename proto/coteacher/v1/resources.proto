@@ -107,12 +107,13 @@ message Response {
     string id = 1;
     string response_id = 2;
     string question_id = 3;
-    string answer_text = 4;
-    repeated QuestionOption selected_options = 5;
-  }
+    int32 order = 4;
+    string answer_text = 5;
+    repeated string answer_option_ids = 6;
+}
   repeated Answer answers = 4;
   string ai_response = 5;
-  string created_at = 6;
-  string updated_at = 7;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
 }
 

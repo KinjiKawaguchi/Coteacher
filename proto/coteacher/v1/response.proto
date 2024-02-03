@@ -2,9 +2,14 @@ syntax = "proto3";
 
 package coteacher.v1;
 
+import "coteacher/v1/resources.proto";
+
 service ResponseService {
   rpc GetNumberOfResponsesByStudentID(GetNumberOfResponsesByStudentIDRequest) returns (GetNumberOfResponsesByStudentIDResponse);
   rpc GetNumberOfResponsesByFormID(GetNumberOfResponsesByFormIDRequest) returns (GetNumberOfResponsesByFormIDResponse);
+  rpc GetResponseListByFormID(GetResponseListByFormIDRequest) returns (GetResponseListByFormIDResponse);
+  rpc SubmitResponse(SubmitResponseRequest) returns (SubmitResponseResponse);
+  rpc SubmitAIResponse(SubmitAIResponseRequest) returns (SubmitAIResponseResponse);
 }
 
 message GetNumberOfResponsesByStudentIDRequest {
@@ -22,4 +27,35 @@ message GetNumberOfResponsesByFormIDRequest {
 
 message GetNumberOfResponsesByFormIDResponse {
   int32 number_of_responses = 1;
+}
+
+message GetResponseListByFormIDRequest {
+  string form_id = 1;
+}
+
+message GetResponseListByFormIDResponse {
+  repeated Response responses = 1;
+  repeated Question questions = 2;
+  repeated User students = 3;
+}
+
+message SubmitResponseRequest {
+  string form_id = 1;
+  string student_id = 2;
+  repeated Response.Answer answers = 3;
+  string ai_response = 4;
+}
+
+message SubmitResponseResponse {
+  bool success = 1;
+  string response_id = 2;
+}
+
+message SubmitAIResponseRequest {
+  string response_id = 1;
+  string ai_response = 2;
+}
+
+message SubmitAIResponseResponse {
+  bool success = 1;
 }

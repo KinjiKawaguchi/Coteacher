@@ -59,6 +59,27 @@ func (au *AnswerUpdate) SetNillableResponseID(u *uuid.UUID) *AnswerUpdate {
 	return au
 }
 
+// SetOrder sets the "order" field.
+func (au *AnswerUpdate) SetOrder(i int) *AnswerUpdate {
+	au.mutation.ResetOrder()
+	au.mutation.SetOrder(i)
+	return au
+}
+
+// SetNillableOrder sets the "order" field if the given value is not nil.
+func (au *AnswerUpdate) SetNillableOrder(i *int) *AnswerUpdate {
+	if i != nil {
+		au.SetOrder(*i)
+	}
+	return au
+}
+
+// AddOrder adds i to the "order" field.
+func (au *AnswerUpdate) AddOrder(i int) *AnswerUpdate {
+	au.mutation.AddOrder(i)
+	return au
+}
+
 // SetAnswerText sets the "answer_text" field.
 func (au *AnswerUpdate) SetAnswerText(s string) *AnswerUpdate {
 	au.mutation.SetAnswerText(s)
@@ -191,6 +212,12 @@ func (au *AnswerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := au.mutation.Order(); ok {
+		_spec.SetField(answer.FieldOrder, field.TypeInt, value)
+	}
+	if value, ok := au.mutation.AddedOrder(); ok {
+		_spec.AddField(answer.FieldOrder, field.TypeInt, value)
 	}
 	if value, ok := au.mutation.AnswerText(); ok {
 		_spec.SetField(answer.FieldAnswerText, field.TypeString, value)
@@ -346,6 +373,27 @@ func (auo *AnswerUpdateOne) SetNillableResponseID(u *uuid.UUID) *AnswerUpdateOne
 	if u != nil {
 		auo.SetResponseID(*u)
 	}
+	return auo
+}
+
+// SetOrder sets the "order" field.
+func (auo *AnswerUpdateOne) SetOrder(i int) *AnswerUpdateOne {
+	auo.mutation.ResetOrder()
+	auo.mutation.SetOrder(i)
+	return auo
+}
+
+// SetNillableOrder sets the "order" field if the given value is not nil.
+func (auo *AnswerUpdateOne) SetNillableOrder(i *int) *AnswerUpdateOne {
+	if i != nil {
+		auo.SetOrder(*i)
+	}
+	return auo
+}
+
+// AddOrder adds i to the "order" field.
+func (auo *AnswerUpdateOne) AddOrder(i int) *AnswerUpdateOne {
+	auo.mutation.AddOrder(i)
 	return auo
 }
 
@@ -511,6 +559,12 @@ func (auo *AnswerUpdateOne) sqlSave(ctx context.Context) (_node *Answer, err err
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := auo.mutation.Order(); ok {
+		_spec.SetField(answer.FieldOrder, field.TypeInt, value)
+	}
+	if value, ok := auo.mutation.AddedOrder(); ok {
+		_spec.AddField(answer.FieldOrder, field.TypeInt, value)
 	}
 	if value, ok := auo.mutation.AnswerText(); ok {
 		_spec.SetField(answer.FieldAnswerText, field.TypeString, value)

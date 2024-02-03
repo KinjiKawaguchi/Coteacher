@@ -51,10 +51,10 @@ export default function FormView({ params }: { params: { formid: string } }) {
       const fetchedQuestions = await questionRepo.getQuestionListByFormId(
         params.formid
       );
-      setRemoteQuestionList(fetchedQuestions);
-      const sortedQuestions = fetchedQuestions.sort(
-        (a, b) => a.order - b.order
-      ); // orderに基づいてソート
+      const sortedQuestions = fetchedQuestions
+        .filter(question => question.order !== -1) // orderが-1のものを除外
+        .sort((a, b) => a.order - b.order); // orderに基づいてソート
+      setRemoteQuestionList(sortedQuestions);
       setQuestionList(sortedQuestions);
       setIsLoading(false);
     };
