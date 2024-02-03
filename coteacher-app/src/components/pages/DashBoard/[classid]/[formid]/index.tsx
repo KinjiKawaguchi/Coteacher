@@ -137,7 +137,7 @@ export default function FormView({ params }: { params: { formid: string } }) {
                 />
               </TabsContent>
               <TabsContent value="response">
-                <ResponseList />
+                <ResponseList formId={params.formid} />
               </TabsContent>
               <TabsContent value="setting">
                 {form && <FormSetting form={form} setForm={setForm} />}
