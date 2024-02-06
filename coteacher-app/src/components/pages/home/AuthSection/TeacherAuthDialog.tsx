@@ -45,12 +45,7 @@ const TeacherAuthDialog = () => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>先生用ログイン</DialogTitle>
-          <DialogDescription>
-            <Alert>
-              <AlertDescription>
-                先生用アカウントの新規登録は現在受け付けておりません
-              </AlertDescription>
-            </Alert>
+          <DialogDescription>           
             入力されたメールに認証リンクを送信します。
           </DialogDescription>
         </DialogHeader>

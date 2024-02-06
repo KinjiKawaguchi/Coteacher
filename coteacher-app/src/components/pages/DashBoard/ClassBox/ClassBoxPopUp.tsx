@@ -72,7 +72,7 @@ const ClassBoxPopUp = ({ classId }: ClassBoxPopUpProps) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <button aria-label="メニュー" className="icon-button">
           <TiThMenu />
         </button>
