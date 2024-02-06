@@ -26,7 +26,3 @@ jobs:
       - name: Run build
         run: npm run build
         working-directory: ./coteacher-app
-
-      - name: Check for build artifacts
-        run: ls build/ # またはビルド成果物が格納されるディレクトリ
-        working-directory: ./coteacher-app
