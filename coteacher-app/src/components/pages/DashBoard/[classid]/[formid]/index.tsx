@@ -25,6 +25,7 @@ import FormSetting from './FormSetting';
 import ResponseList from './ResponseList';
 
 export default function FormView({ params }: { params: { formid: string } }) {
+  const router = useRouter();
   const [hasEditPermission, setHasEditPermission] = useState<boolean | null>(
     null
   );
@@ -80,9 +81,6 @@ export default function FormView({ params }: { params: { formid: string } }) {
     return <div>アクセス権限がありません</div>;
   }
 
-  const router = useRouter();
-  const navBack = () => router.back();
-
   // 保存ボタンのクリックハンドラー（ここに保存ロジックを実装）
   const handleSave = async () => {
     setSaving(true);
@@ -99,7 +97,7 @@ export default function FormView({ params }: { params: { formid: string } }) {
   return (
     <ChakraProvider theme={theme}>
       <HStack>
-        <Button variant="ghost" onClick={navBack}>
+        <Button variant="ghost" onClick={() => router.back()}>
           <ArrowLeft />
         </Button>
         <Spacer />

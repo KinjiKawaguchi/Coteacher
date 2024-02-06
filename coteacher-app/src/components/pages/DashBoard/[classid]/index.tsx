@@ -14,6 +14,7 @@ import { Form } from '@/interfaces';
 import { responseRepo } from '@/repository/response';
 
 export default function Class({ params }: { params: { classid: string } }) {
+  const router = useRouter();
   const [hasEditPermission, setHasEditPermission] = useState<boolean | null>(
     null
   );
@@ -67,12 +68,10 @@ export default function Class({ params }: { params: { classid: string } }) {
     return <div>権限がありません</div>;
   }
 
-  const router = useRouter();
-  const navDashBoard = () => router.back();
 
   return (
     <ChakraProvider theme={theme}>
-      <Button variant="ghost" onClick={navDashBoard}>
+      <Button variant="ghost" onClick={() => router.back()}>
         <ArrowLeft />
       </Button>
       <Container maxWidth="container.sm">
