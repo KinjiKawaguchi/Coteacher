@@ -1,0 +1,32 @@
+name: Build on PR
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20' # プロジェクトに合わせてNode.jsのバージョンを指定
+
+      - name: Change directory to coteacher-app
+        run: cd coteacher-app
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./coteacher-app
+
+      - name: Run build
+        run: npm run build
+        working-directory: ./coteacher-app
+
+      - name: Check for build artifacts
+        run: ls build/ # またはビルド成果物が格納されるディレクトリ
+        working-directory: ./coteacher-app
