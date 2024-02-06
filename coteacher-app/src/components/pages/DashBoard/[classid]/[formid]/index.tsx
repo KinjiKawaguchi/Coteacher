@@ -33,8 +33,8 @@ export default function FormView({ params }: { params: { formid: string } }) {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [form, setForm] = useState<Form | null>(null);
-  const [questionList, setQuestionList] = useState<Question[]>([]);
-  const [remoteQuestionList, setRemoteQuestionList] = useState<Question[]>([]);
+  const [questionList, setQuestionList] = useState<Question[]>([]); // 質問リストの状態(ローカル)
+  const [remoteQuestionList, setRemoteQuestionList] = useState<Question[]>([]); // 質問リストの状態(リモート)
   const [showSaveButton, setShowSaveButton] = useState(false); // 保存ボタン表示用の状態
   const [saving, setSaving] = useState(false);
 
@@ -51,9 +51,9 @@ export default function FormView({ params }: { params: { formid: string } }) {
       const fetchedQuestions = await questionRepo.getQuestionListByFormId(
         params.formid
       );
-      const sortedQuestions = fetchedQuestions
-        .filter(question => question.order !== -1) // orderが-1のものを除外
-        .sort((a, b) => a.order - b.order); // orderに基づいてソート
+      const sortedQuestions = fetchedQuestions.sort(
+        (a, b) => a.order - b.order
+      ); // !orderに基づいてソート,リモートでorderが-1のものはAPI側で除外される
       setRemoteQuestionList(sortedQuestions);
       setQuestionList(sortedQuestions);
       setIsLoading(false);
@@ -61,6 +61,11 @@ export default function FormView({ params }: { params: { formid: string } }) {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    // !questionListは常にorderでソートされている
+    setQuestionList(questionList.sort((a, b) => a.order - b.order));
+  }, [questionList]);
 
   // remoteQuestionList と questionList を比較する useEffect
   useEffect(() => {
@@ -137,7 +142,7 @@ export default function FormView({ params }: { params: { formid: string } }) {
                 />
               </TabsContent>
               <TabsContent value="response">
-                <ResponseList />
+                <ResponseList formId={params.formid} />
               </TabsContent>
               <TabsContent value="setting">
                 {form && <FormSetting form={form} setForm={setForm} />}

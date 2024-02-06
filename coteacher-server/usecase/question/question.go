@@ -45,7 +45,9 @@ func (i *Interactor) GetQuestionListByFormID(ctx context.Context, req *pb.GetQue
 	// Process questions.
 	var pbQuestions []*pb.Question
 	for _, q := range questions {
-		pbQuestions = append(pbQuestions, utils.ToPbQuestion(q))
+		if q.Order >= 0 { // 削除された質問は返さない
+			pbQuestions = append(pbQuestions, utils.ToPbQuestion(q))
+		}
 	}
 
 	return &pb.GetQuestionListByFormIdResponse{
@@ -177,8 +179,10 @@ func (i *Interactor) SaveQuestionList(ctx context.Context, req *pb.SaveQuestionL
 		}
 
 		// Convert the updated dbQuestion to protobuf Question
-		pbQuestion := utils.ToPbQuestion(dbQuestion)
-		pbQuestions = append(pbQuestions, pbQuestion)
+		if dbQuestion.Order >= 0 { // 削除された質問は返さない
+			pbQuestion := utils.ToPbQuestion(dbQuestion)
+			pbQuestions = append(pbQuestions, pbQuestion)
+		}
 
 	}
 

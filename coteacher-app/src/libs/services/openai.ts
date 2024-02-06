@@ -14,12 +14,14 @@ function createContent(
 ): string {
   const questionsContent = questionList
     .filter(question => question.order !== -1 && question.forAiProcessing)
-    .map((question, index) => {
+    .map(question => {
+      // 回答を order プロパティに基づいて探す
+      const answer = answerList.find(answer => answer.order === question.order);
       return `{
-        question_type: '${question.questionType}',
-        question_text: '${question.questionText}',
-        answer: '${answerList[index + 1].answerText}'
-      }`;
+      question_type: '${question.questionType}',
+      question_text: '${question.questionText}',
+      answer: '${answer ? answer.answerText : '回答なし'}'
+    }`;
     })
     .join(',');
 
