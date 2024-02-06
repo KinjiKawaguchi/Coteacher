@@ -15,6 +15,7 @@ import { Box, HStack, Spacer } from '@chakra-ui/react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import CreateQuestionDropdown from './CreateQuestionDropdown';
+
 interface EditQuestionListProps {
   formId: string;
   questionList: Question[];
@@ -60,26 +61,50 @@ export default function EditQuestionList({
 
   const handleDeleteButtonClick = (index: number) => {
     const updatedList = [...questionList];
-    updatedList[index] = {
-      ...updatedList[index],
-      order: -1,
-    };
+    if (updatedList[index].id) {
+      // 既存の質問の場合は order を -1 にする
+      updatedList[index] = {
+        ...updatedList[index],
+        order: -1,
+      };
+      for (let i = index + 1; i < updatedList.length; i++) {
+        updatedList[i] = {
+          ...updatedList[i],
+          order: updatedList[i].order - 1,
+        };
+      }
+    } else {
+      // 新規追加した質問の場合は削除
+      updatedList.splice(index, 1);
+      for (let i = index; i < updatedList.length; i++) {
+        updatedList[i] = {
+          ...updatedList[i],
+          order: i,
+        };
+      }
+    }
+    // 後ろの質問の順序を更新
+
     setQuestionList(updatedList);
   };
+
+  let visibleQuestionIndex = -1; //!可視の質問のindexを初期化
 
   return (
     <div>
       {questionList.map((question, index) => {
-        if (question.order === -1) return null;
+        if (question.order === -1) return null; //!orderが-1のものは非表示
+        visibleQuestionIndex++; //!可視の質問のindexを更新
         return (
-          <div key={question.id || index}>
+          <div key={question.id || `question-${index}`}>
             <HStack>
               <Separator className="my-4" />
               <CreateQuestionDropdown
                 formId={formId}
                 questionList={questionList}
                 setQuestionList={setQuestionList}
-                index={index - 1}
+                index={index}
+                order={visibleQuestionIndex}
               />
             </HStack>
             <Box
@@ -182,6 +207,7 @@ export default function EditQuestionList({
           questionList={questionList}
           setQuestionList={setQuestionList}
           index={questionList.length}
+          order={visibleQuestionIndex + 1}
         />
       </HStack>
     </div>
