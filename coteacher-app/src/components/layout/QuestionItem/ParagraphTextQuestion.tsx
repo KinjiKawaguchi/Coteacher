@@ -46,7 +46,12 @@ const ParagraphTextQuestionComponent: React.FC<QuestionComponentProps> = ({
         placeholder="Your answer"
         maxLength={textQuestion?.maxLength}
         onChange={e =>
-          handleAnswerChange(answerList|| [""], index, e.target.value, setAnswerList)
+          handleAnswerChange(
+            answerList || [''],
+            index,
+            e.target.value,
+            setAnswerList
+          )
         }
       />
       {editable && (
