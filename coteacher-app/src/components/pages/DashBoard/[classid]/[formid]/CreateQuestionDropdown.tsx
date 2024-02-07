@@ -99,6 +99,7 @@ const CreateQuestionDropdown: React.FC<CreateQuestionDropdownProps> = ({
         >
           ラジオボタン
         </DropdownMenuItem>
+        {/*
         <DropdownMenuItem
           onClick={() =>
             handleAddQuestionButtonClick(index, Question_QuestionType.CHECKBOX)
@@ -122,7 +123,7 @@ const CreateQuestionDropdown: React.FC<CreateQuestionDropdownProps> = ({
           }
         >
           リスト
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );
