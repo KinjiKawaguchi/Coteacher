@@ -22,8 +22,10 @@ import QuestionList from './QuestionList';
 import EditQuestionList from './EditQuestionList';
 import toast from '@/libs/utils/toast';
 import FormSetting from './FormSetting';
+import ResponseList from './ResponseList';
 
 export default function FormView({ params }: { params: { formid: string } }) {
+  const router = useRouter();
   const [hasEditPermission, setHasEditPermission] = useState<boolean | null>(
     null
   );
@@ -32,8 +34,8 @@ export default function FormView({ params }: { params: { formid: string } }) {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [form, setForm] = useState<Form | null>(null);
-  const [questionList, setQuestionList] = useState<Question[]>([]);
-  const [remoteQuestionList, setRemoteQuestionList] = useState<Question[]>([]);
+  const [questionList, setQuestionList] = useState<Question[]>([]); // 質問リストの状態(ローカル)
+  const [remoteQuestionList, setRemoteQuestionList] = useState<Question[]>([]); // 質問リストの状態(リモート)
   const [showSaveButton, setShowSaveButton] = useState(false); // 保存ボタン表示用の状態
   const [saving, setSaving] = useState(false);
 
@@ -50,16 +52,21 @@ export default function FormView({ params }: { params: { formid: string } }) {
       const fetchedQuestions = await questionRepo.getQuestionListByFormId(
         params.formid
       );
-      setRemoteQuestionList(fetchedQuestions);
       const sortedQuestions = fetchedQuestions.sort(
         (a, b) => a.order - b.order
-      ); // orderに基づいてソート
+      ); // !orderに基づいてソート,リモートでorderが-1のものはAPI側で除外される
+      setRemoteQuestionList(sortedQuestions);
       setQuestionList(sortedQuestions);
       setIsLoading(false);
     };
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    // !questionListは常にorderでソートされている
+    setQuestionList(questionList.sort((a, b) => a.order - b.order));
+  }, [questionList]);
 
   // remoteQuestionList と questionList を比較する useEffect
   useEffect(() => {
@@ -73,9 +80,6 @@ export default function FormView({ params }: { params: { formid: string } }) {
   if (!hasEditPermission && !hasViewPermission) {
     return <div>アクセス権限がありません</div>;
   }
-
-  const router = useRouter();
-  const navBack = () => router.back();
 
   // 保存ボタンのクリックハンドラー（ここに保存ロジックを実装）
   const handleSave = async () => {
@@ -93,7 +97,7 @@ export default function FormView({ params }: { params: { formid: string } }) {
   return (
     <ChakraProvider theme={theme}>
       <HStack>
-        <Button variant="ghost" onClick={navBack}>
+        <Button variant="ghost" onClick={() => router.back()}>
           <ArrowLeft />
         </Button>
         <Spacer />
@@ -135,7 +139,9 @@ export default function FormView({ params }: { params: { formid: string } }) {
                   setQuestionList={setQuestionList}
                 />
               </TabsContent>
-              <TabsContent value="response"></TabsContent>
+              <TabsContent value="response">
+                <ResponseList formId={params.formid} />
+              </TabsContent>
               <TabsContent value="setting">
                 {form && <FormSetting form={form} setForm={setForm} />}
               </TabsContent>

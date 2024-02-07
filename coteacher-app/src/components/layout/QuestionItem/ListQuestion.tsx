@@ -1,5 +1,14 @@
+
 // import React from 'react';
 // import { Question } from '@/interfaces';
+// import {
+//   Select,
+//   SelectContent,
+//   SelectGroup,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from '@/components/ui/select';
 
 // type ListQuestionComponentProps = {
 //   question: Question;
@@ -11,6 +20,7 @@
 //   editable,
 // }) => {
 //   const { questionText, oaptions, isRequired } = question;
+
 
 //   return (
 //     <>

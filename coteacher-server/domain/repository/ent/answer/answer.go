@@ -17,6 +17,8 @@ const (
 	FieldQuestionID = "question_id"
 	// FieldResponseID holds the string denoting the response_id field in the database.
 	FieldResponseID = "response_id"
+	// FieldOrder holds the string denoting the order field in the database.
+	FieldOrder = "order"
 	// FieldAnswerText holds the string denoting the answer_text field in the database.
 	FieldAnswerText = "answer_text"
 	// EdgeQuestion holds the string denoting the question edge name in mutations.
@@ -55,6 +57,7 @@ var Columns = []string{
 	FieldID,
 	FieldQuestionID,
 	FieldResponseID,
+	FieldOrder,
 	FieldAnswerText,
 }
 
@@ -89,6 +92,11 @@ func ByQuestionID(opts ...sql.OrderTermOption) OrderOption {
 // ByResponseID orders the results by the response_id field.
 func ByResponseID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldResponseID, opts...).ToFunc()
+}
+
+// ByOrder orders the results by the order field.
+func ByOrder(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOrder, opts...).ToFunc()
 }
 
 // ByAnswerText orders the results by the answer_text field.

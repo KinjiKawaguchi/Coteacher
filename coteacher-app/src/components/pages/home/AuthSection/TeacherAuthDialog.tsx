@@ -6,7 +6,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
 import { EMAIL_REGEX } from '@/constants';
 import { sendEmailLink } from '@/libs/utils/auth/auth';
@@ -46,11 +45,6 @@ const TeacherAuthDialog = () => {
         <DialogHeader>
           <DialogTitle>先生用ログイン</DialogTitle>
           <DialogDescription>
-            <Alert>
-              <AlertDescription>
-                先生用アカウントの新規登録は現在受け付けておりません
-              </AlertDescription>
-            </Alert>
             入力されたメールに認証リンクを送信します。
           </DialogDescription>
         </DialogHeader>

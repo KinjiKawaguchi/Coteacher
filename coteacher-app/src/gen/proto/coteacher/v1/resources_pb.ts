@@ -714,14 +714,19 @@ export class Response extends Message<Response> {
   answers: Response_Answer[] = [];
 
   /**
-   * @generated from field: string created_at = 5;
+   * @generated from field: string ai_response = 5;
    */
-  createdAt = "";
+  aiResponse = "";
 
   /**
-   * @generated from field: string updated_at = 6;
+   * @generated from field: google.protobuf.Timestamp created_at = 6;
    */
-  updatedAt = "";
+  createdAt?: Timestamp;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp updated_at = 7;
+   */
+  updatedAt?: Timestamp;
 
   constructor(data?: PartialMessage<Response>) {
     super();
@@ -735,8 +740,9 @@ export class Response extends Message<Response> {
     { no: 2, name: "form_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "student_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "answers", kind: "message", T: Response_Answer, repeated: true },
-    { no: 5, name: "created_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 6, name: "updated_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "ai_response", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "created_at", kind: "message", T: Timestamp },
+    { no: 7, name: "updated_at", kind: "message", T: Timestamp },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Response {
@@ -776,14 +782,19 @@ export class Response_Answer extends Message<Response_Answer> {
   questionId = "";
 
   /**
-   * @generated from field: string answer_text = 4;
+   * @generated from field: int32 order = 4;
+   */
+  order = 0;
+
+  /**
+   * @generated from field: string answer_text = 5;
    */
   answerText = "";
 
   /**
-   * @generated from field: repeated coteacher.v1.QuestionOption selected_options = 5;
+   * @generated from field: repeated string answer_option_ids = 6;
    */
-  selectedOptions: QuestionOption[] = [];
+  answerOptionIds: string[] = [];
 
   constructor(data?: PartialMessage<Response_Answer>) {
     super();
@@ -796,8 +807,9 @@ export class Response_Answer extends Message<Response_Answer> {
     { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "response_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "question_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 4, name: "answer_text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 5, name: "selected_options", kind: "message", T: QuestionOption, repeated: true },
+    { no: 4, name: "order", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 5, name: "answer_text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "answer_option_ids", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Response_Answer {

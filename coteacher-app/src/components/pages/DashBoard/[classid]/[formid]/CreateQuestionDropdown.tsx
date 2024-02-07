@@ -14,6 +14,7 @@ type CreateQuestionDropdownProps = {
   questionList: Question[];
   setQuestionList: (questionList: Question[]) => void;
   index: number;
+  order: number;
 };
 
 const CreateQuestionDropdown: React.FC<CreateQuestionDropdownProps> = ({
@@ -21,6 +22,7 @@ const CreateQuestionDropdown: React.FC<CreateQuestionDropdownProps> = ({
   questionList,
   setQuestionList,
   index,
+  order,
 }) => {
   const handleAddQuestionButtonClick = (
     index: number,
@@ -29,8 +31,8 @@ const CreateQuestionDropdown: React.FC<CreateQuestionDropdownProps> = ({
     const updatedList = [...questionList];
 
     let newQuestion: Question = {
-      order: index + 1,
-      questionType: questionType, // 質問を選べるようにする TODO: 質問を選べるように
+      order: order, // 一時的なorder値; 後で更新
+      questionType: questionType,
       questionText: '',
       isRequired: false,
       forAiProcessing: false,
@@ -53,16 +55,16 @@ const CreateQuestionDropdown: React.FC<CreateQuestionDropdownProps> = ({
       };
     }
 
-    // 新しい質問をリストに追加
-    updatedList.splice(index + 1, 0, newQuestion);
-
-    // 追加した質問の後ろの質問の順序を更新
-    for (let i = index + 2; i < updatedList.length; i++) {
-      updatedList[i].order += 1;
+    // 先に既存のorderを更新
+    for (let i = index; i < updatedList.length; i++) {
+      updatedList[i].order = i + 1;
     }
 
+    // 新しい質問をリストに挿入
+    updatedList.splice(index, 0, newQuestion);
+
+    // 質問リストを更新
     setQuestionList(updatedList);
-    console.log(updatedList);
   };
 
   return (

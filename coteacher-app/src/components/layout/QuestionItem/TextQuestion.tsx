@@ -17,6 +17,7 @@ const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
   setQuestionList,
   answerList,
   setAnswerList,
+  answerText,
 }) => {
   const question = questionList[index];
   const { questionText, textQuestion, isRequired } = question;
@@ -41,20 +42,32 @@ const TextQuestionComponent: React.FC<QuestionComponentProps> = ({
         ) : (
           <FormLabel>{questionText}</FormLabel>
         )}
-        <Input
-          disabled={editable}
-          type="text"
-          maxLength={textQuestion?.maxLength}
-          placeholder="Your answer"
-          onChange={e =>
-            handleAnswerChange(
-              answerList || [''],
-              index,
-              e.target.value,
-              setAnswerList
-            )
-          }
-        />
+        {answerText && (
+          <Input
+            disabled={editable}
+            type="text"
+            maxLength={textQuestion?.maxLength}
+            placeholder="Your answer"
+            value={answerText}
+          />
+        )}
+        {!answerText && (
+          <Input
+            disabled={editable}
+            type="text"
+            maxLength={textQuestion?.maxLength}
+            placeholder="Your answer"
+            onChange={e =>
+              handleAnswerChange(
+                answerList || [],
+                index,
+                e.target.value,
+                setAnswerList
+              )
+            }
+          />
+        )}
+
         {editable && (
           <HStack>
             <Switch defaultChecked={textQuestion !== undefined} />
