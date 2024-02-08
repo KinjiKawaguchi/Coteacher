@@ -4,21 +4,17 @@ managed:
   go_package_prefix:
     default: github.com/KinjiKawaguchi/Coteacher/proto-gen/go
 plugins:
+  # Go用の設定 (サーバー側)
   - plugin: buf.build/protocolbuffers/go
-    out: ../proto-gen/go
+    out: ../coteacher-server/proto-gen/go
     opt:
       - paths=source_relative
   - plugin: buf.build/grpc/go
-    out: ../proto-gen/go
+    out: ../coteacher-server/proto-gen/go
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
-  # for backend
-  - plugin: buf.build/connectrpc/go
-    out: ../proto-gen/go
-    opt:
-      - paths=source_relative
-      - require_unimplemented_servers=false
+  # Next.js用の設定 (クライアント側)
   - plugin: buf.build/bufbuild/connect-es:v0.13.0
     out: ../coteacher-app/src/gen/proto
     opt:
