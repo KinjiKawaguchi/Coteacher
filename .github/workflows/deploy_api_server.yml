@@ -9,7 +9,7 @@ on:
       - develop
       - ci/server
     paths:
-      - 'backend/**''
+      - "backend/**"
 jobs:
   setup-build-deploy:
     name: Setup, Build, and Deploy
@@ -23,7 +23,7 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           skip_install: false
-          version: '>= 363.0.0'
+          version: ">= 363.0.0"
 
       - name: Auth
         uses: google-github-actions/auth@v2
