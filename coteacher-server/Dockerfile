@@ -1,37 +1,53 @@
-# ビルドステージ
-FROM golang:1.21 AS builder
+# First stage: build environment
+FROM golang:1.21.5 AS builder
 
-# プロジェクトのルートディレクトリに作業ディレクトリを設定
-WORKDIR /app
-
-# プロトコル生成ファイルをコピー
-COPY ./proto-gen ./proto-gen
-
-# go.mod と go.sum をコピー
-COPY go.mod go.sum ./
-# 依存関係をダウンロード
-RUN go mod download
-
-# ソースコードをコピー
+WORKDIR /srv/grpc
 COPY . .
 
-# アプリケーションをビルド
-RUN go build -tags timetzdata -o coteacher-backend ./cmd/server
+# ARGでビルド時の引数を定義
+ARG DSN
+ARG DB_USER_NAME
+ARG DB_PASSWORD
+ARG DB_ADDR
+ARG DB_NAME
+ARG FRONTEND_URL
+ARG PORT
 
-# 実行ステージ
-FROM ubuntu:22.04
+# .env ファイルを生成
+RUN echo "DSN=$DSN" > .env \
+    && echo "DB_USER_NAME=$DB_USER_NAME" >> .env \
+    && echo "DB_PASSWORD=$DB_PASSWORD" >> .env \
+    && echo "DB_ADDR=$DB_ADDR" >> .env \
+    && echo "DB_NAME=$DB_NAME" >> .env \
+    && echo "FRONTEND_URL=$FRONTEND_URL" >> .env \
+    && echo "PORT=$PORT" >> .env
+
+RUN go mod download
+
+ARG VERS="3.11.4"
+ARG ARCH="linux-x86_64"
+
+RUN CGO_ENABLED=0 GOOS=linux \
+    go build -a -installsuffix cgo \
+    -o /go/bin/server \
+    github.com/KinjiKawaguchi/Coteacher/coteacher-server/cmd/server
+
+# Final stage: runtime environment
+# CA証明書が必要なので、alpineをベースにする
+# Final stage: runtime environment
+FROM alpine:latest
 
 # 必要なパッケージをインストール
-RUN apt-get update && apt-get install -y --no-install-recommends tzdata ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apk --no-cache add ca-certificates
 
-# タイムゾーン設定
-ENV TZ Asia/Tokyo
-
-# ワーキングディレクトリを設定
+# アプリケーション実行用のディレクトリを設定
 WORKDIR /app
 
-# ビルドステージからバイナリをコピー
-COPY --from=builder /app/coteacher-backend .
+# ビルドステージからバイナリファイルをコピー
+COPY --from=builder /go/bin/server /app/server
 
-# コンテナ起動時にバイナリを実行
-ENTRYPOINT ["/app/coteacher-backend"]
+# .envファイルを/appディレクトリにコピー
+COPY --from=builder /srv/grpc/.env /app/.env
+
+# アプリケーションの起動
+ENTRYPOINT ["/app/server"]

@@ -10,9 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	Config "github.com/KinjiKawaguchi/Coteacher/coteacher-server/config"
-
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/api/connect_server"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/config"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 
 	"github.com/go-sql-driver/mysql" //lint:ignore ST1019 this is just example
@@ -21,10 +20,10 @@ import (
 )
 
 func main() {
+	// コンフィグを読み込む
+	config, _ := config.New()
 
-	config, _ := Config.New()
-
-	// Open a connection to the database
+	// MySQLへの接続をテスト
 	db, err := sql.Open("mysql", config.DSN)
 	if err != nil {
 		log.Fatal("failed to open db connection", err)
@@ -34,13 +33,10 @@ func main() {
 	if err := db.Ping(); err != nil {
 		log.Fatalf("Failed to ping PlanetScale: %v", err)
 	}
-	log.Println("Successfully connected to PlanetScale!")
 
-	// その他の設定
-	jst, err := time.LoadLocation("Asia/Tokyo")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// PlanetScaleへの接続を開始
+	log.Println("Connecting to PlanetScale...")
+
 	mysqlConfig := &mysql.Config{
 		User:                 config.DBUser,
 		Passwd:               config.DBPassword,
@@ -48,21 +44,20 @@ func main() {
 		Addr:                 config.DBAddress,
 		DBName:               config.DBName,
 		ParseTime:            true,
-		Loc:                  jst,
 		TLSConfig:            "true", // この行は必要に応じて調整してください。
 		AllowNativePasswords: true,
 		InterpolateParams:    true,
 	}
-
-	log.Println("Connecting to PlanetScale...")
 
 	entClient, err := ent.Open("mysql", mysqlConfig.FormatDSN())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println("Running migration...")
+	log.Println("Successfully connected to PlanetScale!")
 
+	// マイグレーションを実行
+	log.Println("Running migration...")
 	defer entClient.Close()
 	if err := entClient.Schema.Create(context.Background()); err != nil {
 		log.Println("Migration failed!")

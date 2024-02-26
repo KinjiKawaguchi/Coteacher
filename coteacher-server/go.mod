@@ -1,6 +1,6 @@
 module github.com/KinjiKawaguchi/Coteacher/coteacher-server
 
-replace github.com/KinjiKawaguchi/Coteacher/proto-gen/go => ../proto-gen/go
+replace github.com/KinjiKawaguchi/Coteacher/proto-gen/go => ./proto-gen/go
 
 go 1.21.5
 
