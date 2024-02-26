@@ -49,8 +49,5 @@ COPY --from=builder /go/bin/server /app/server
 # .envファイルを/appディレクトリにコピー
 COPY --from=builder /srv/grpc/.env /app/.env
 
-# secretsディレクトリを/appディレクトリにコピー
-COPY --from=builder /srv/grpc/secrets /app/secrets
-
 # アプリケーションの起動
 ENTRYPOINT ["/app/server"]
