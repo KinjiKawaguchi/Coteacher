@@ -45,7 +45,7 @@ jobs:
             --build-arg PORT="${{ secrets.ENV_PORT }}"
 
       - name: Configure Docker to use the gcloud command-line tool as a credential helper for the us region
-        run: gcloud auth configure-docker --quiet
+        run: gcloud auth configure-docker us.gcr.io
 
       - name: Push Docker Image to Google Container Registry
         run: |
