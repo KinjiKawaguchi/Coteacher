@@ -425,3 +425,77 @@ export class SubmitAIResponseResponse extends Message<SubmitAIResponseResponse> 
   }
 }
 
+/**
+ * @generated from message coteacher.v1.CreateDatasetRequest
+ */
+export class CreateDatasetRequest extends Message<CreateDatasetRequest> {
+  constructor(data?: PartialMessage<CreateDatasetRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.CreateDatasetRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateDatasetRequest {
+    return new CreateDatasetRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateDatasetRequest {
+    return new CreateDatasetRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateDatasetRequest {
+    return new CreateDatasetRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateDatasetRequest | PlainMessage<CreateDatasetRequest> | undefined, b: CreateDatasetRequest | PlainMessage<CreateDatasetRequest> | undefined): boolean {
+    return proto3.util.equals(CreateDatasetRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.CreateDatasetResponse
+ */
+export class CreateDatasetResponse extends Message<CreateDatasetResponse> {
+  /**
+   * @generated from field: repeated string ai_input = 1;
+   */
+  aiInput: string[] = [];
+
+  /**
+   * @generated from field: repeated string ai_output = 2;
+   */
+  aiOutput: string[] = [];
+
+  constructor(data?: PartialMessage<CreateDatasetResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.CreateDatasetResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "ai_input", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+    { no: 2, name: "ai_output", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateDatasetResponse {
+    return new CreateDatasetResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateDatasetResponse {
+    return new CreateDatasetResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateDatasetResponse {
+    return new CreateDatasetResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateDatasetResponse | PlainMessage<CreateDatasetResponse> | undefined, b: CreateDatasetResponse | PlainMessage<CreateDatasetResponse> | undefined): boolean {
+    return proto3.util.equals(CreateDatasetResponse, a, b);
+  }
+}
+

@@ -10,7 +10,7 @@ import (
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/class"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/class_invitation_code"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/form"
-	question "github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/question"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/question"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/response" // Import the missing package
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/student"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/student_class"
@@ -18,7 +18,7 @@ import (
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/user"
 	"github.com/rs/cors"
 
-	"github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1/coteacherv1connect"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/proto-gen/go/coteacher/v1/coteacherv1connect"
 
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"

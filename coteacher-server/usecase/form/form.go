@@ -12,7 +12,7 @@ import (
 	form "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/form"
 	studentClass "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
 
-	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
+	pb "github.com/KinjiKawaguchi/Coteacher/coteacher-server/proto-gen/go/coteacher/v1"
 
 	"github.com/google/uuid"
 	"golang.org/x/exp/slog"

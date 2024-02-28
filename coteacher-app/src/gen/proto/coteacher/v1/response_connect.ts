@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { GetNumberOfResponsesByFormIDRequest, GetNumberOfResponsesByFormIDResponse, GetNumberOfResponsesByStudentIDRequest, GetNumberOfResponsesByStudentIDResponse, GetResponseListByFormIDRequest, GetResponseListByFormIDResponse, SubmitAIResponseRequest, SubmitAIResponseResponse, SubmitResponseRequest, SubmitResponseResponse } from "./response_pb";
+import { CreateDatasetRequest, CreateDatasetResponse, GetNumberOfResponsesByFormIDRequest, GetNumberOfResponsesByFormIDResponse, GetNumberOfResponsesByStudentIDRequest, GetNumberOfResponsesByStudentIDResponse, GetResponseListByFormIDRequest, GetResponseListByFormIDResponse, SubmitAIResponseRequest, SubmitAIResponseResponse, SubmitResponseRequest, SubmitResponseResponse } from "./response_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -55,6 +55,15 @@ export const ResponseService = {
       name: "SubmitAIResponse",
       I: SubmitAIResponseRequest,
       O: SubmitAIResponseResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc coteacher.v1.ResponseService.CreateDataset
+     */
+    createDataset: {
+      name: "CreateDataset",
+      I: CreateDatasetRequest,
+      O: CreateDatasetResponse,
       kind: MethodKind.Unary,
     },
   }

@@ -6,8 +6,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/teacher"
 
-	coteacherv1 "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
-	"github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1/coteacherv1connect"
+	coteacherv1 "github.com/KinjiKawaguchi/Coteacher/coteacher-server/proto-gen/go/coteacher/v1"
+	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/proto-gen/go/coteacher/v1/coteacherv1connect"
 )
 
 type teacherServiceServer struct {
