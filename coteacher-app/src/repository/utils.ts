@@ -14,6 +14,7 @@ export function transformAnswerToResponseAnswer(
   const answer = new Response_Answer();
   answer.answerText = a?.answerText || '';
   if (a?.question?.id) answer.questionId = a.question.id;
+  if (a?.order) answer.order = a.order;
   if (a?.selectedOptionList) {
     answer.answerOptionIds = a.selectedOptionList
       .filter(o => o !== undefined)
