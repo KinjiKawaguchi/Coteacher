@@ -10,6 +10,7 @@ service ResponseService {
   rpc GetResponseListByFormID(GetResponseListByFormIDRequest) returns (GetResponseListByFormIDResponse);
   rpc SubmitResponse(SubmitResponseRequest) returns (SubmitResponseResponse);
   rpc SubmitAIResponse(SubmitAIResponseRequest) returns (SubmitAIResponseResponse);
+  rpc CreateDataset(CreateDatasetRequest) returns (CreateDatasetResponse);
 }
 
 message GetNumberOfResponsesByStudentIDRequest {
@@ -59,3 +60,11 @@ message SubmitAIResponseRequest {
 message SubmitAIResponseResponse {
   bool success = 1;
 }
+
+message CreateDatasetRequest {}
+
+message CreateDatasetResponse {
+        repeated string ai_input = 1;
+        repeated string ai_output = 2;
+}
+

@@ -8,7 +8,7 @@ import (
 
 	"context"
 
-	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
+	pb "github.com/KinjiKawaguchi/Coteacher/coteacher-server/proto-gen/go/coteacher/v1"
 
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 	entclass "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/class"
