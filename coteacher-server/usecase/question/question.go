@@ -1,4 +1,4 @@
-package question
+package form
 
 import (
 	"context"
@@ -7,9 +7,10 @@ import (
 
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 	ent_question "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/question"
+	question "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/question"
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/utils"
 
-	pb "github.com/KinjiKawaguchi/Coteacher/coteacher-server/proto-gen/go/coteacher/v1"
+	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
 
 	"github.com/google/uuid"
 	"golang.org/x/exp/slog"
@@ -33,7 +34,7 @@ func (i *Interactor) GetQuestionListByFormID(ctx context.Context, req *pb.GetQue
 
 	// Get all questions by form id.
 	questions, err := i.entClient.Question.Query().
-		Where(ent_question.FormID(formID)).
+		Where(question.FormID(formID)).
 		WithTextQuestion().
 		WithQuestionOption().
 		All(ctx)
@@ -190,21 +191,21 @@ func (i *Interactor) SaveQuestionList(ctx context.Context, req *pb.SaveQuestionL
 	}, nil
 }
 
-func convertPbQuestionTypeToEntQuestionType(pbType pb.Question_QuestionType) ent_question.QuestionType {
+func convertPbQuestionTypeToEntQuestionType(pbType pb.Question_QuestionType) question.QuestionType {
 	switch pbType {
 	case pb.Question_QUESTION_TYPE_TEXT:
-		return ent_question.QuestionTypeText
+		return question.QuestionTypeText
 	case pb.Question_QUESTION_TYPE_PARAGRAPH_TEXT:
-		return ent_question.QuestionTypeParagraphText
+		return question.QuestionTypeParagraphText
 	case pb.Question_QUESTION_TYPE_CHECKBOX:
-		return ent_question.QuestionTypeCheckbox
+		return question.QuestionTypeCheckbox
 	case pb.Question_QUESTION_TYPE_RADIO:
-		return ent_question.QuestionTypeRadio
+		return question.QuestionTypeRadio
 	case pb.Question_QUESTION_TYPE_LIST:
-		return ent_question.QuestionTypeList
+		return question.QuestionTypeList
 	case pb.Question_QUESTION_TYPE_MULTIPLE_CHOICE:
-		return ent_question.QuestionTypeMultipleChoice
+		return question.QuestionTypeMultipleChoice
 	default:
-		return ent_question.QuestionTypeUnspecified
+		return question.QuestionTypeUnspecified
 	}
 }

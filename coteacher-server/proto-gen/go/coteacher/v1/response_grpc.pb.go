@@ -24,7 +24,6 @@ const (
 	ResponseService_GetResponseListByFormID_FullMethodName         = "/coteacher.v1.ResponseService/GetResponseListByFormID"
 	ResponseService_SubmitResponse_FullMethodName                  = "/coteacher.v1.ResponseService/SubmitResponse"
 	ResponseService_SubmitAIResponse_FullMethodName                = "/coteacher.v1.ResponseService/SubmitAIResponse"
-	ResponseService_CreateDataset_FullMethodName                   = "/coteacher.v1.ResponseService/CreateDataset"
 )
 
 // ResponseServiceClient is the client API for ResponseService service.
@@ -36,7 +35,6 @@ type ResponseServiceClient interface {
 	GetResponseListByFormID(ctx context.Context, in *GetResponseListByFormIDRequest, opts ...grpc.CallOption) (*GetResponseListByFormIDResponse, error)
 	SubmitResponse(ctx context.Context, in *SubmitResponseRequest, opts ...grpc.CallOption) (*SubmitResponseResponse, error)
 	SubmitAIResponse(ctx context.Context, in *SubmitAIResponseRequest, opts ...grpc.CallOption) (*SubmitAIResponseResponse, error)
-	CreateDataset(ctx context.Context, in *CreateDatasetRequest, opts ...grpc.CallOption) (*CreateDatasetResponse, error)
 }
 
 type responseServiceClient struct {
@@ -92,15 +90,6 @@ func (c *responseServiceClient) SubmitAIResponse(ctx context.Context, in *Submit
 	return out, nil
 }
 
-func (c *responseServiceClient) CreateDataset(ctx context.Context, in *CreateDatasetRequest, opts ...grpc.CallOption) (*CreateDatasetResponse, error) {
-	out := new(CreateDatasetResponse)
-	err := c.cc.Invoke(ctx, ResponseService_CreateDataset_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // ResponseServiceServer is the server API for ResponseService service.
 // All implementations should embed UnimplementedResponseServiceServer
 // for forward compatibility
@@ -110,7 +99,6 @@ type ResponseServiceServer interface {
 	GetResponseListByFormID(context.Context, *GetResponseListByFormIDRequest) (*GetResponseListByFormIDResponse, error)
 	SubmitResponse(context.Context, *SubmitResponseRequest) (*SubmitResponseResponse, error)
 	SubmitAIResponse(context.Context, *SubmitAIResponseRequest) (*SubmitAIResponseResponse, error)
-	CreateDataset(context.Context, *CreateDatasetRequest) (*CreateDatasetResponse, error)
 }
 
 // UnimplementedResponseServiceServer should be embedded to have forward compatible implementations.
@@ -131,9 +119,6 @@ func (UnimplementedResponseServiceServer) SubmitResponse(context.Context, *Submi
 }
 func (UnimplementedResponseServiceServer) SubmitAIResponse(context.Context, *SubmitAIResponseRequest) (*SubmitAIResponseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitAIResponse not implemented")
-}
-func (UnimplementedResponseServiceServer) CreateDataset(context.Context, *CreateDatasetRequest) (*CreateDatasetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateDataset not implemented")
 }
 
 // UnsafeResponseServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -237,24 +222,6 @@ func _ResponseService_SubmitAIResponse_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ResponseService_CreateDataset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateDatasetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ResponseServiceServer).CreateDataset(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ResponseService_CreateDataset_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ResponseServiceServer).CreateDataset(ctx, req.(*CreateDatasetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // ResponseService_ServiceDesc is the grpc.ServiceDesc for ResponseService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -281,10 +248,6 @@ var ResponseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SubmitAIResponse",
 			Handler:    _ResponseService_SubmitAIResponse_Handler,
-		},
-		{
-			MethodName: "CreateDataset",
-			Handler:    _ResponseService_CreateDataset_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
