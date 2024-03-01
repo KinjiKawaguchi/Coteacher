@@ -44,7 +44,7 @@ export async function callOpenAI(
 
   console.log(content);
   const response = await openai.chat.completions.create({
-    model: 'gpt-4',
+    model: 'gpt-3.5-turbo',
     messages: [
       {
         role: 'system',
@@ -78,7 +78,7 @@ export async function callOpenAI(
       },
     ],
     temperature: 2,
-    max_tokens: 5000,
+    max_tokens: 4096,
     top_p: 0.5,
     frequency_penalty: 0,
     presence_penalty: 0,

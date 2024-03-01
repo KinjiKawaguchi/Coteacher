@@ -35,12 +35,6 @@ func main() {
 		log.Fatalf("Failed to ping PlanetScale: %v", err)
 	}
 	log.Println("Successfully connected to PlanetScale!")
-
-	// その他の設定
-	jst, err := time.LoadLocation("Asia/Tokyo")
-	if err != nil {
-		log.Fatal(err)
-	}
 	mysqlConfig := &mysql.Config{
 		User:                 config.DBUser,
 		Passwd:               config.DBPassword,
@@ -48,7 +42,6 @@ func main() {
 		Addr:                 config.DBAddress,
 		DBName:               config.DBName,
 		ParseTime:            true,
-		Loc:                  jst,
 		TLSConfig:            "true", // この行は必要に応じて調整してください。
 		AllowNativePasswords: true,
 		InterpolateParams:    true,

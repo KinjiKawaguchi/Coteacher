@@ -34,3 +34,12 @@ plugins:
     opt:
       - target=ts
       - import_extension=none
+        # Python用の設定 (クライアント側)
+  - plugin: buf.build/grpc/python:v1.61.0
+    out:
+      ../machine_learning/src/generated/
+      # dependencies
+  - plugin: buf.build/protocolbuffers/python:v25.2
+    out: ../machine_learning/src/generated/
+  - plugin: buf.build/protocolbuffers/pyi:v25.2
+    out: ../machine_learning/src/generated/

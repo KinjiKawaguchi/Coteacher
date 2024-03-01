@@ -425,3 +425,151 @@ export class SubmitAIResponseResponse extends Message<SubmitAIResponseResponse> 
   }
 }
 
+/**
+ * @generated from message coteacher.v1.CreateDatasetRequest
+ */
+export class CreateDatasetRequest extends Message<CreateDatasetRequest> {
+  constructor(data?: PartialMessage<CreateDatasetRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.CreateDatasetRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateDatasetRequest {
+    return new CreateDatasetRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateDatasetRequest {
+    return new CreateDatasetRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateDatasetRequest {
+    return new CreateDatasetRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateDatasetRequest | PlainMessage<CreateDatasetRequest> | undefined, b: CreateDatasetRequest | PlainMessage<CreateDatasetRequest> | undefined): boolean {
+    return proto3.util.equals(CreateDatasetRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.message
+ */
+export class message extends Message<message> {
+  /**
+   * @generated from field: string role = 1;
+   */
+  role = "";
+
+  /**
+   * @generated from field: string content = 2;
+   */
+  content = "";
+
+  constructor(data?: PartialMessage<message>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.message";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "role", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "content", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): message {
+    return new message().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): message {
+    return new message().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): message {
+    return new message().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: message | PlainMessage<message> | undefined, b: message | PlainMessage<message> | undefined): boolean {
+    return proto3.util.equals(message, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.messages
+ */
+export class messages extends Message<messages> {
+  /**
+   * @generated from field: repeated coteacher.v1.message messages = 1;
+   */
+  messages: message[] = [];
+
+  constructor(data?: PartialMessage<messages>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.messages";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "messages", kind: "message", T: message, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): messages {
+    return new messages().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): messages {
+    return new messages().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): messages {
+    return new messages().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: messages | PlainMessage<messages> | undefined, b: messages | PlainMessage<messages> | undefined): boolean {
+    return proto3.util.equals(messages, a, b);
+  }
+}
+
+/**
+ * @generated from message coteacher.v1.CreateDatasetResponse
+ */
+export class CreateDatasetResponse extends Message<CreateDatasetResponse> {
+  /**
+   * @generated from field: repeated coteacher.v1.messages repeated_messages = 1;
+   */
+  repeatedMessages: messages[] = [];
+
+  constructor(data?: PartialMessage<CreateDatasetResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "coteacher.v1.CreateDatasetResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "repeated_messages", kind: "message", T: messages, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateDatasetResponse {
+    return new CreateDatasetResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateDatasetResponse {
+    return new CreateDatasetResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateDatasetResponse {
+    return new CreateDatasetResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CreateDatasetResponse | PlainMessage<CreateDatasetResponse> | undefined, b: CreateDatasetResponse | PlainMessage<CreateDatasetResponse> | undefined): boolean {
+    return proto3.util.equals(CreateDatasetResponse, a, b);
+  }
+}
+

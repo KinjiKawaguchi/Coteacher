@@ -2,6 +2,7 @@ package response
 
 import (
 	"context"
+	"sort"
 
 	"connectrpc.com/connect"
 
@@ -171,5 +172,90 @@ func (i *Interactor) SubmitAIResponse(ctx context.Context, req *pb.SubmitAIRespo
 
 	return &pb.SubmitAIResponseResponse{
 		Success: true,
+	}, nil
+}
+
+func (i *Interactor) CreateDataset(ctx context.Context, req *pb.CreateDatasetRequest) (*pb.CreateDatasetResponse, error) {
+	system_prompt := "あなたは、多くの生徒を持つ先生が拾いきれない疑問、質問、意見などに対して代わりに生徒と対話を行います。\n" +
+		"先生が用意したAIに提供する情報の生徒からの入力は以下のフォーマットによって与えられます。\n" +
+		"{\n" +
+		"instructions:'先生からの指示'\n" +
+		" able_conversation:一問一答かどうか \n" +
+		" questions{ \n" +
+		" [question_type:AIの入力のために先生が用意した質問のタイプ\n" +
+		"question_text:AIの入力のために先生が用意した質問\n" +
+		"answer:その質問に対する生徒の回答\n" +
+		"]}\n" +
+		"}\n" +
+		"あなたの最も重要視すべきことは、生徒が理解し、定着し、応用できるような学習を促すことと、生徒の学習意欲や自主性を高めることです。生徒の理解度や意欲を常に把握し、それに応じた対応をしましょう。生徒が自分で考え、答えを導き出すことができるよう、ヒントやサポートを与えましょう。生徒が学ぶ楽しさや喜びを感じられるよう、コミュニケーションを大切にしましょう。とにかく元気にポジティブな返答をしましょう。\n"
+	responses, err := i.entClient.Response.Query().
+		WithAnswer(
+			func(q *ent.AnswerQuery) {
+				q.WithQuestion()
+			},
+		).
+		WithForm().
+		WithStudent(
+			func(q *ent.StudentQuery) {
+				q.WithUser()
+			},
+		).
+		All(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	var reepatedMessages []*pb.Messages
+	for _, response := range responses {
+		user_prompt := "{\n" +
+			"instructions:" + "'" + response.Edges.Form.SystemPrompt + "',\n" +
+			"able_conversation: false,\n" +
+			"questions: [\n"
+		answers := response.Edges.Answer
+		// answerのorderでソートして繰り返す
+		sort.Slice(answers, func(i, j int) bool {
+			return answers[i].Order < answers[j].Order
+		})
+		for _, answer := range answers {
+			question := answer.Edges.Question
+			user_prompt += "{\n" +
+				"question_type:" + "'5',\n" +
+				"question_text:" + "'" + question.QuestionText + "',\n" +
+				"answer:" + "'" + answer.AnswerText + "'\n" +
+				"},\n"
+		}
+		user_prompt += "]\n" +
+			"}"
+		// answer_prompt := response.Edges.Student.Edges.User.Name + "さん、先生の補助をする元気でポジティブなGPT先生だよ!よろしく!" +
+		// 	"ただし解決のための直接的な回答は出来ないから、これから教えるヒントを活かしてがんばって!"
+
+		var messages *pb.Messages
+		system_message := &pb.Message{
+			Role:    "system",
+			Content: system_prompt,
+		}
+
+		user_message := &pb.Message{
+			Role:    "user",
+			Content: user_prompt,
+		}
+
+		assistant_message := &pb.Message{
+			Role:    "assistant",
+			Content: response.AiResponse,
+		}
+
+		messages = &pb.Messages{
+			Messages: []*pb.Message{
+				system_message,
+				user_message,
+				assistant_message,
+			},
+		}
+
+		reepatedMessages = append(reepatedMessages, messages)
+	}
+	return &pb.CreateDatasetResponse{
+		RepeatedMessages: reepatedMessages,
 	}, nil
 }

@@ -38,27 +38,36 @@ func (s *responseServiceServer) GetNumberOfResponsesByStudentID(ctx context.Cont
 
 // GetResponseListByFormID implements coteacherv1connect.ResponseServiceHandler.
 func (s *responseServiceServer) GetResponseListByFormID(ctx context.Context, req *connect.Request[coteacherv1.GetResponseListByFormIDRequest]) (*connect.Response[coteacherv1.GetResponseListByFormIDResponse], error) {
-  resp, err := s.interactor.GetResponseListByFormID(ctx, req.Msg)
-  if err != nil {
-    return nil, err
-  }
-  return connect.NewResponse(resp), nil
+	resp, err := s.interactor.GetResponseListByFormID(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
 
 // SubmitResponse implements coteacherv1connect.ResponseServiceHandler.
 func (s *responseServiceServer) SubmitResponse(ctx context.Context, req *connect.Request[coteacherv1.SubmitResponseRequest]) (*connect.Response[coteacherv1.SubmitResponseResponse], error) {
-  resp, err := s.interactor.SubmitResponse(ctx, req.Msg)
-  if err != nil {
-    return nil, err
-  }
-  return connect.NewResponse(resp), nil
+	resp, err := s.interactor.SubmitResponse(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }
 
 // SubmitAIResponse implements coteacherv1connect.ResponseServiceHandler.
 func (s *responseServiceServer) SubmitAIResponse(ctx context.Context, req *connect.Request[coteacherv1.SubmitAIResponseRequest]) (*connect.Response[coteacherv1.SubmitAIResponseResponse], error) {
-  resp, err := s.interactor.SubmitAIResponse(ctx, req.Msg)
-  if err != nil {
-    return nil, err
-  }
-  return connect.NewResponse(resp), nil
+	resp, err := s.interactor.SubmitAIResponse(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
+}
+
+// CreateDataset implements coteacherv1connect.ResponseServiceHandler.
+func (s *responseServiceServer) CreateDataset(ctx context.Context, req *connect.Request[coteacherv1.CreateDatasetRequest]) (*connect.Response[coteacherv1.CreateDatasetResponse], error) {
+	resp, err := s.interactor.CreateDataset(ctx, req.Msg)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(resp), nil
 }

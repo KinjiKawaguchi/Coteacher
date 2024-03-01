@@ -48,6 +48,9 @@ const (
 	// ResponseServiceSubmitAIResponseProcedure is the fully-qualified name of the ResponseService's
 	// SubmitAIResponse RPC.
 	ResponseServiceSubmitAIResponseProcedure = "/coteacher.v1.ResponseService/SubmitAIResponse"
+	// ResponseServiceCreateDatasetProcedure is the fully-qualified name of the ResponseService's
+	// CreateDataset RPC.
+	ResponseServiceCreateDatasetProcedure = "/coteacher.v1.ResponseService/CreateDataset"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
@@ -58,6 +61,7 @@ var (
 	responseServiceGetResponseListByFormIDMethodDescriptor         = responseServiceServiceDescriptor.Methods().ByName("GetResponseListByFormID")
 	responseServiceSubmitResponseMethodDescriptor                  = responseServiceServiceDescriptor.Methods().ByName("SubmitResponse")
 	responseServiceSubmitAIResponseMethodDescriptor                = responseServiceServiceDescriptor.Methods().ByName("SubmitAIResponse")
+	responseServiceCreateDatasetMethodDescriptor                   = responseServiceServiceDescriptor.Methods().ByName("CreateDataset")
 )
 
 // ResponseServiceClient is a client for the coteacher.v1.ResponseService service.
@@ -67,6 +71,7 @@ type ResponseServiceClient interface {
 	GetResponseListByFormID(context.Context, *connect.Request[v1.GetResponseListByFormIDRequest]) (*connect.Response[v1.GetResponseListByFormIDResponse], error)
 	SubmitResponse(context.Context, *connect.Request[v1.SubmitResponseRequest]) (*connect.Response[v1.SubmitResponseResponse], error)
 	SubmitAIResponse(context.Context, *connect.Request[v1.SubmitAIResponseRequest]) (*connect.Response[v1.SubmitAIResponseResponse], error)
+	CreateDataset(context.Context, *connect.Request[v1.CreateDatasetRequest]) (*connect.Response[v1.CreateDatasetResponse], error)
 }
 
 // NewResponseServiceClient constructs a client for the coteacher.v1.ResponseService service. By
@@ -109,6 +114,12 @@ func NewResponseServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(responseServiceSubmitAIResponseMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		createDataset: connect.NewClient[v1.CreateDatasetRequest, v1.CreateDatasetResponse](
+			httpClient,
+			baseURL+ResponseServiceCreateDatasetProcedure,
+			connect.WithSchema(responseServiceCreateDatasetMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -119,6 +130,7 @@ type responseServiceClient struct {
 	getResponseListByFormID         *connect.Client[v1.GetResponseListByFormIDRequest, v1.GetResponseListByFormIDResponse]
 	submitResponse                  *connect.Client[v1.SubmitResponseRequest, v1.SubmitResponseResponse]
 	submitAIResponse                *connect.Client[v1.SubmitAIResponseRequest, v1.SubmitAIResponseResponse]
+	createDataset                   *connect.Client[v1.CreateDatasetRequest, v1.CreateDatasetResponse]
 }
 
 // GetNumberOfResponsesByStudentID calls
@@ -147,6 +159,11 @@ func (c *responseServiceClient) SubmitAIResponse(ctx context.Context, req *conne
 	return c.submitAIResponse.CallUnary(ctx, req)
 }
 
+// CreateDataset calls coteacher.v1.ResponseService.CreateDataset.
+func (c *responseServiceClient) CreateDataset(ctx context.Context, req *connect.Request[v1.CreateDatasetRequest]) (*connect.Response[v1.CreateDatasetResponse], error) {
+	return c.createDataset.CallUnary(ctx, req)
+}
+
 // ResponseServiceHandler is an implementation of the coteacher.v1.ResponseService service.
 type ResponseServiceHandler interface {
 	GetNumberOfResponsesByStudentID(context.Context, *connect.Request[v1.GetNumberOfResponsesByStudentIDRequest]) (*connect.Response[v1.GetNumberOfResponsesByStudentIDResponse], error)
@@ -154,6 +171,7 @@ type ResponseServiceHandler interface {
 	GetResponseListByFormID(context.Context, *connect.Request[v1.GetResponseListByFormIDRequest]) (*connect.Response[v1.GetResponseListByFormIDResponse], error)
 	SubmitResponse(context.Context, *connect.Request[v1.SubmitResponseRequest]) (*connect.Response[v1.SubmitResponseResponse], error)
 	SubmitAIResponse(context.Context, *connect.Request[v1.SubmitAIResponseRequest]) (*connect.Response[v1.SubmitAIResponseResponse], error)
+	CreateDataset(context.Context, *connect.Request[v1.CreateDatasetRequest]) (*connect.Response[v1.CreateDatasetResponse], error)
 }
 
 // NewResponseServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -192,6 +210,12 @@ func NewResponseServiceHandler(svc ResponseServiceHandler, opts ...connect.Handl
 		connect.WithSchema(responseServiceSubmitAIResponseMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	responseServiceCreateDatasetHandler := connect.NewUnaryHandler(
+		ResponseServiceCreateDatasetProcedure,
+		svc.CreateDataset,
+		connect.WithSchema(responseServiceCreateDatasetMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/coteacher.v1.ResponseService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ResponseServiceGetNumberOfResponsesByStudentIDProcedure:
@@ -204,6 +228,8 @@ func NewResponseServiceHandler(svc ResponseServiceHandler, opts ...connect.Handl
 			responseServiceSubmitResponseHandler.ServeHTTP(w, r)
 		case ResponseServiceSubmitAIResponseProcedure:
 			responseServiceSubmitAIResponseHandler.ServeHTTP(w, r)
+		case ResponseServiceCreateDatasetProcedure:
+			responseServiceCreateDatasetHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -231,4 +257,8 @@ func (UnimplementedResponseServiceHandler) SubmitResponse(context.Context, *conn
 
 func (UnimplementedResponseServiceHandler) SubmitAIResponse(context.Context, *connect.Request[v1.SubmitAIResponseRequest]) (*connect.Response[v1.SubmitAIResponseResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.ResponseService.SubmitAIResponse is not implemented"))
+}
+
+func (UnimplementedResponseServiceHandler) CreateDataset(context.Context, *connect.Request[v1.CreateDatasetRequest]) (*connect.Response[v1.CreateDatasetResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("coteacher.v1.ResponseService.CreateDataset is not implemented"))
 }
