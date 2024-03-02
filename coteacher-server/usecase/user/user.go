@@ -19,7 +19,7 @@ import (
 	entteacher "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/teacher"
 	entuser "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/user"
 
-	"golang.org/x/exp/slog"
+	"log/slog"
 
 	"github.com/google/uuid"
 )

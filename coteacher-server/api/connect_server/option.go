@@ -3,7 +3,7 @@ package connect_server
 import (
 	"github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent"
 
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 type option struct {

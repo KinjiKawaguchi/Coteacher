@@ -3,8 +3,9 @@ package student_class
 import (
 	"time"
 
+	"log/slog"
+
 	"connectrpc.com/connect"
-	"golang.org/x/exp/slog"
 
 	utils "github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/utils"
 

@@ -1,8 +1,9 @@
 package teacher
 
 import (
+	"log/slog"
+
 	"connectrpc.com/connect"
-	"golang.org/x/exp/slog"
 
 	"context"
 
