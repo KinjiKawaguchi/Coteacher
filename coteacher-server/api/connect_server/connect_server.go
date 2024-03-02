@@ -29,9 +29,13 @@ func New(addr string, opts ...optionFunc) *http.Server {
 	for _, f := range opts {
 		f(opt)
 	}
+	// Firebase Admin SDKの初期化
+	authClient := interceptor.InitializeFirebaseApp(opt.logger) // InitializeFirebaseApp関数を呼び出す
 
+	// 認証インターセプターの追加
 	interceptors := connect.WithInterceptors(
-		interceptor.Logger(),
+		interceptor.AuthInterceptor(authClient), // 認証インターセプターを追加
+		interceptor.Logger(),                    // 既存のロガーインターセプター
 	)
 
 	mux := http.NewServeMux()
@@ -88,7 +92,7 @@ func New(addr string, opts ...optionFunc) *http.Server {
 			http.MethodGet,
 			http.MethodPost,
 		},
-		AllowedOrigins: []string{"http://localhost:5000", "http://localhost:3000", opt.FrontendURL},
+		AllowedOrigins: []string{"http:*", "https:*"},
 		AllowedHeaders: []string{
 			"Accept-Encoding",
 			"Content-Encoding",
