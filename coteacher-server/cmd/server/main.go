@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -21,26 +20,14 @@ import (
 )
 
 func main() {
-
 	config, _ := Config.New()
-
-	// Open a connection to the database
-	db, err := sql.Open("mysql", config.DSN)
-	if err != nil {
-		log.Fatal("failed to open db connection", err)
-	}
-
-	// PlanetScaleへの接続をテスト
-	if err := db.Ping(); err != nil {
-		log.Fatalf("Failed to ping PlanetScale: %v", err)
-	}
-	log.Println("Successfully connected to PlanetScale!")
 
 	// その他の設定
 	jst, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	mysqlConfig := &mysql.Config{
 		User:                 config.DBUser,
 		Passwd:               config.DBPassword,
@@ -49,12 +36,11 @@ func main() {
 		DBName:               config.DBName,
 		ParseTime:            true,
 		Loc:                  jst,
-		TLSConfig:            "true", // この行は必要に応じて調整してください。
 		AllowNativePasswords: true,
 		InterpolateParams:    true,
 	}
 
-	log.Println("Connecting to PlanetScale...")
+	log.Println("Connecting to CloudSQL...")
 
 	entClient, err := ent.Open("mysql", mysqlConfig.FormatDSN())
 	if err != nil {

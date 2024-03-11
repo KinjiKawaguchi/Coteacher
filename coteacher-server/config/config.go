@@ -8,7 +8,6 @@ import (
 )
 
 type Config struct {
-	DSN         string `envconfig:"DSN" required:"true"`
 	DBUser      string `envconfig:"DB_USER_NAME" required:"true"`
 	DBPassword  string `envconfig:"DB_PASSWORD" required:"true"`
 	DBAddress   string `envconfig:"DB_ADDR" required:"true"`
@@ -31,7 +30,6 @@ func New() (*Config, error) {
 	}
 
 	// デバッグログを出力
-	log.Println("DSN:", config.DSN)
 	log.Println("DB User:", config.DBUser)
 	log.Println("DB Address:", config.DBAddress)
 	log.Println("DB Name:", config.DBName)
