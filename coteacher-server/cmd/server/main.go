@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,16 +16,21 @@ import (
 
 	"github.com/go-sql-driver/mysql" //lint:ignore ST1019 this is just example
 	_ "github.com/go-sql-driver/mysql"
-	"golang.org/x/exp/slog"
 )
 
 func main() {
-	config, _ := Config.New()
+	logger := slog.Default()
+
+	config, err := Config.New()
+	if err != nil {
+		logger.Error("Failed to load config", err)
+	}
 
 	// その他の設定
 	jst, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
-		log.Fatal(err)
+		logger.Error("Failed to load location", err)
+		return
 	}
 
 	mysqlConfig := &mysql.Config{
@@ -40,27 +45,22 @@ func main() {
 		InterpolateParams:    true,
 	}
 
-	log.Println("Connecting to CloudSQL...")
+	logger.Info("Connecting to CloudSQL...")
 
 	entClient, err := ent.Open("mysql", mysqlConfig.FormatDSN())
 	if err != nil {
-		log.Fatal(err)
+		logger.Error("failed to open ent client", err)
+		return
 	}
-
-	log.Println("Running migration...")
-
 	defer entClient.Close()
+
+	logger.Info("ent client opened")
+
 	if err := entClient.Schema.Create(context.Background()); err != nil {
-		log.Println("Migration failed!")
-		log.Fatal(err)
+		logger.Error("failed to create schema", err)
+		return
 	}
-
-	log.Println("Migration done!")
-
-	// logger
-	logger := slog.Default()
-
-	log.Println("Starting server...")
+	logger.Info("schema created")
 
 	srv := connect_server.New(
 		fmt.Sprintf("0.0.0.0:%s", config.Port),
@@ -72,7 +72,7 @@ func main() {
 	go func() {
 		logger.Info("server launched", slog.String("port", config.Port))
 		if err := srv.ListenAndServe(); err != nil {
-			log.Fatal(err)
+			logger.Error("failed to listen and serve", err)
 		}
 	}()
 	sigCh := make(chan os.Signal, 1)
@@ -82,6 +82,6 @@ func main() {
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
-		log.Fatal(err)
+		logger.Error("failed to shutdown", err)
 	}
 }

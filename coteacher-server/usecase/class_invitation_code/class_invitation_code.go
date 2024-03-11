@@ -4,9 +4,10 @@ import (
 	"math/rand"
 	"time"
 
+	"log/slog"
+
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	"golang.org/x/exp/slog"
 
 	utils "github.com/KinjiKawaguchi/Coteacher/coteacher-server/usecase/utils"
 

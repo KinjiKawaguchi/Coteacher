@@ -14,8 +14,9 @@ import (
 
 	pb "github.com/KinjiKawaguchi/Coteacher/proto-gen/go/coteacher/v1"
 
+	"log/slog"
+
 	"github.com/google/uuid"
-	"golang.org/x/exp/slog"
 )
 
 type Interactor struct {

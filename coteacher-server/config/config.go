@@ -14,6 +14,7 @@ type Config struct {
 	DBName      string `envconfig:"DB_NAME" required:"true"`
 	FrontEndURL string `envconfig:"FRONTEND_URL" required:"true"`
 	Port        string `envconfig:"PORT" required:"true"`
+	SAKeyPath   string `envconfig:"SA_KEY_PATH" required:"true"`
 }
 
 func New() (*Config, error) {

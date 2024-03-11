@@ -18,7 +18,7 @@ import (
 	entclassinvitationcode "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/classinvitationcode"
 	entstudentclass "github.com/KinjiKawaguchi/Coteacher/coteacher-server/domain/repository/ent/studentclass"
 
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 type Interactor struct {
