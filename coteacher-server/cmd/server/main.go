@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log/slog"
 	"os"
@@ -20,23 +19,12 @@ import (
 )
 
 func main() {
-	// logger
 	logger := slog.Default()
 
-	config, _ := Config.New()
-
-	// Open a connection to the database
-	db, err := sql.Open("mysql", config.DSN)
+	config, err := Config.New()
 	if err != nil {
-		logger.Error("failed to open db connection", err)
+		logger.Error("Failed to load config", err)
 	}
-
-	// PlanetScaleへの接続をテスト
-	if err := db.Ping(); err != nil {
-		logger.Error("Failed to ping PlanetScale: %v", err)
-		return
-	}
-	logger.Info("Successfully connected to PlanetScale")
 
 	// その他の設定
 	jst, err := time.LoadLocation("Asia/Tokyo")
@@ -44,6 +32,7 @@ func main() {
 		logger.Error("Failed to load location", err)
 		return
 	}
+
 	mysqlConfig := &mysql.Config{
 		User:                 config.DBUser,
 		Passwd:               config.DBPassword,
@@ -52,10 +41,11 @@ func main() {
 		DBName:               config.DBName,
 		ParseTime:            true,
 		Loc:                  jst,
-		TLSConfig:            "true", // この行は必要に応じて調整してください。
 		AllowNativePasswords: true,
 		InterpolateParams:    true,
 	}
+
+	logger.Info("Connecting to CloudSQL...")
 
 	entClient, err := ent.Open("mysql", mysqlConfig.FormatDSN())
 	if err != nil {
