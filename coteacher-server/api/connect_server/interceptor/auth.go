@@ -29,9 +29,23 @@ func InitializeFirebaseApp(logger *slog.Logger) *auth.Client {
 func AuthInterceptor(authClient *auth.Client) connect.UnaryInterceptorFunc {
 	return func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
+			// 認証をスキップするメソッド名
+			skipAuthMethods := []string{
+				"/coteacher.v1.HealthcheckService/Ping",
+				"/coteacher.v1.TeacherService/CheckTeacherExistsByEmail",
+			}
+
+			method := req.Spec().Procedure
+
+			// 認証をスキップするかどうかのチェック
+			for _, skipMethod := range skipAuthMethods {
+				if method == skipMethod {
+					return next(ctx, req) // 認証をスキップ
+				}
+			}
+
 			// リクエストヘッダーからAuthorizationヘッダーを取得
 			token := req.Header().Get("Authorization")
-
 			// Bearer トークンを抽出
 			const prefix = "Bearer "
 			if len(token) >= len(prefix) && token[:len(prefix)] == prefix {
